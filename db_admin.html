@@ -22,6 +22,7 @@
             <th class="px-4 py-3 text-left">คะแนน</th>
             <th class="px-4 py-3 text-left">สถานะ</th>
             <th class="px-4 py-3 text-left">วันที่สอบ</th>
+            <th class="px-4 py-3 text-left">ลบ</th>
           </tr>
         </thead>
         <tbody id="dashboardBody" class="divide-y divide-blue-100">
@@ -52,7 +53,10 @@
       db.ref('quiz-results').once('value', snapshot => {
         const dataList = [];
         snapshot.forEach(child => {
-          dataList.push(child.val());
+          dataList.push({
+            id: child.key,
+            ...child.val()
+          });
         });
 
         dataList.reverse().forEach(data => {
@@ -64,10 +68,27 @@
             <td class="px-4 py-2 font-semibold ${data.score >= 3 ? 'text-green-600' : 'text-red-500'}">${data.score}</td>
             <td class="px-4 py-2">${data.status}</td>
             <td class="px-4 py-2">${data.date}</td>
+            <td class="px-4 py-2">
+              <button onclick="deleteResult('${data.id}')" class="bg-red-500 text-white px-4 py-2 rounded">ลบ</button>
+            </td>
           `;
           tbody.appendChild(row);
         });
       });
+    }
+
+    function deleteResult(id) {
+      if (confirm("คุณต้องการลบข้อมูลนี้หรือไม่?")) {
+        db.ref('quiz-results/' + id).remove()
+          .then(() => {
+            alert("ลบข้อมูลสำเร็จ");
+            loadDashboard(); // รีเฟรชหน้าจอเพื่อแสดงข้อมูลที่อัพเดท
+          })
+          .catch(error => {
+            console.error("เกิดข้อผิดพลาดในการลบข้อมูล:", error);
+            alert("ลบข้อมูลไม่สำเร็จ");
+          });
+      }
     }
 
     window.onload = loadDashboard;
