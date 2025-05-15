@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>สร้างคำถามแบบทดสอบ</title>
+    <title>จัดการคำถามแบบทดสอบ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide-react@latest/umd/lucide-react.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -48,6 +49,9 @@
         }
         .option-group {
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         .option-label {
             display: block;
@@ -63,13 +67,16 @@
             border-radius: 0.375rem;
             margin-bottom: 0.5rem;
             font-size: 1rem;
+            flex: 1;
             focus:outline-none;
             focus:ring-2;
             focus:ring-blue-500;
         }
-
         .add-option-button,
-        .remove-option-button {
+        .remove-option-button,
+        .edit-question-button,
+        .delete-question-button,
+        .move-question-button {
             background-color: #f0fdf4;
             color: #15803d;
             padding: 0.5rem 1rem;
@@ -78,6 +85,9 @@
             transition: background-color 0.2s ease;
             margin-top: 0.5rem;
             border: 1px solid #15803d;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         .add-option-button:hover {
             background-color: #dcfce7;
@@ -90,7 +100,30 @@
         .remove-option-button:hover {
             background-color: #fee2e2;
         }
-
+        .edit-question-button {
+            background-color: #fef08a;
+            color: #1e293b;
+            border-color: #1e293b;
+        }
+        .edit-question-button:hover {
+            background-color: #fde68a;
+        }
+        .delete-question-button {
+            background-color: #fecaca;
+            color: #991b1b;
+            border-color: #991b1b;
+        }
+        .delete-question-button:hover {
+            background-color: #fca5a5;
+        }
+        .move-question-button {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-color: #0369a1;
+        }
+        .move-question-button:hover {
+            background-color: #b7e0f5;
+        }
         .submit-button {
             background-color: #6366f1;
             color: white;
@@ -122,10 +155,44 @@
             color: #dc2626;
             border: 1px solid #dc2626;
         }
-
+        #questionList {
+            margin-top: 2rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        #questionList h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        #questionList ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #questionList li {
+            background-color: #f8fafc;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #questionList li:hover {
+            background-color: #f0f0f0;
+        }
+        #questionList li span {
+            font-weight: 500;
+            color: #1e293b;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
     <div class="container max-w-2xl mx-auto">
@@ -145,13 +212,22 @@
                 <label class="input-label">ตัวเลือก:</label>
                 <div class="option-group">
                     <input type="text" name="options[]" class="option-input" required>
-                    <button type="button" class="remove-option-button">ลบ</button>
+                    <button type="button" class="remove-option-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1.6-1.4 3-3 3H8c-1.6 0-3-1.4-3-3V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        ลบ
+                    </button>
                 </div>
                 <div class="option-group">
                     <input type="text" name="options[]" class="option-input" required>
-                    <button type="button" class="remove-option-button">ลบ</button>
+                    <button type="button" class="remove-option-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1.6-1.4 3-3 3H8c-1.6 0-3-1.4-3-3V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        ลบ
+                    </button>
                 </div>
-                <button type="button" id="addOption" class="add-option-button">เพิ่มตัวเลือก</button>
+                <button type="button" id="addOption" class="add-option-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                    เพิ่มตัวเลือก
+                </button>
             </div>
             <div class="form-group">
                 <label for="correctAnswer" class="input-label">คำตอบที่ถูกต้อง:</label>
@@ -160,19 +236,25 @@
             <button type="submit" class="submit-button">สร้างคำถาม</button>
             <div id="message" class="mt-4 text-center font-semibold"></div>
         </form>
+
+        <div id="questionList">
+            <h2>รายการคำถาม</h2>
+            <ul id="questionListUL">
+                 </ul>
+        </div>
     </div>
 
     <script>
        const firebaseConfig = {
-        apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
-        authDomain: "createby9jay.firebaseapp.com",
-        databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "createby9jay",
-        storageBucket: "createby9jay.appspot.com",
-        messagingSenderId: "1030838893241",
-        appId: "1:1030838893241:web:7d61055e099000c3273968",
-        measurementId: "G-45P0P2E0SQ"
-      };
+      apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
+      authDomain: "createby9jay.firebaseapp.com",
+      databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "createby9jay",
+      storageBucket: "createby9jay.appspot.com",
+      messagingSenderId: "1030838893241",
+      appId: "1:1030838893241:web:7d61055e099000c3273968",
+      measurementId: "G-45P0P2E0SQ"
+    };
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -181,15 +263,20 @@
         const optionsGroup = document.getElementById('optionsGroup');
         const addOptionButton = document.getElementById('addOption');
         const messageContainer = document.getElementById('message');
+        const questionListUL = document.getElementById('questionListUL');
 
-        let questionIdCounter = 0;
+        let questions = [];
+        let editingIndex = null;
 
         function addOption() {
             const optionGroup = document.createElement('div');
             optionGroup.className = 'option-group';
             optionGroup.innerHTML = `
                 <input type="text" name="options[]" class="option-input" required>
-                <button type="button" class="remove-option-button">ลบ</button>
+                <button type="button" class="remove-option-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1.6-1.4 3-3 3H8c-1.6 0-3-1.4-3-3V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    ลบ
+                </button>
             `;
             optionsGroup.appendChild(optionGroup);
         }
@@ -214,59 +301,172 @@
             if (!questionData.correctAnswer.trim()) {
                 return "กรุณากรอกคำตอบที่ถูกต้อง";
             }
-
             const correctAnswerExists = questionData.options.some(option => option.trim().toLowerCase() === questionData.correctAnswer.trim().toLowerCase());
             if (!correctAnswerExists) {
                 return "คำตอบที่ถูกต้องไม่ตรงกับตัวเลือกใดๆ";
             }
-
             return null;
         }
 
+        function saveQuestion(questionData) {
+            if (editingIndex !== null) {
+                questions[editingIndex] = questionData;
+                editingIndex = null;
+            } else {
+                questions.push(questionData);
+            }
+            updateFirebase();
+            questionForm.reset();
+            Array.from(optionsGroup.querySelectorAll('.option-group'))
+                 .forEach((group, index) => {
+                    if (index > 1) {
+                        group.remove();
+                    }
+                 });
+            messageContainer.textContent = 'คำถามถูกบันทึกเรียบร้อยแล้ว';
+            messageContainer.className = 'alert alert-success';
+            renderQuestionList();
+            addOption();
+            addOption();
+        }
+
+        function updateFirebase() {
+            db.ref('questions').set(questions)
+              .then(() => {
+                console.log('Questions updated in Firebase');
+              })
+              .catch(error => {
+                console.error('Error updating questions in Firebase:', error);
+              });
+        }
+
+        function loadQuestions() {
+            db.ref('questions').once('value')
+              .then(snapshot => {
+                const data = snapshot.val();
+                if (data) {
+                  questions = Object.values(data);
+                  renderQuestionList();
+                }
+              })
+              .catch(error => {
+                console.error("Error fetching questions:", error);
+              });
+        }
+
+        function renderQuestionList() {
+            questionListUL.innerHTML = '';
+            questions.forEach((question, index) => {
+                const li = document.createElement('li');
+                li.setAttribute('data-index', index);
+                li.innerHTML = `
+                    <span>${question.question}</span>
+                    <div>
+                        <button class="edit-question-button" onclick="editQuestion(${index})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/><path d="M15 5v2h2"/><path d="M3.29 17.57L7.22 13.64"/></svg>
+                            แก้ไข
+                        </button>
+                        <button class="delete-question-button" onclick="deleteQuestion(${index})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1.6-1.4 3-3 3H8c-1.6 0-3-1.4-3-3V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                            ลบ
+                        </button>
+                        <button class="move-question-button" onclick="moveQuestionUp(${index})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                            ขึ้น
+                        </button>
+                        <button class="move-question-button" onclick="moveQuestionDown(${index})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down"><path d="M12 15V3"/><path d="M5 11l7 7 7-7"/></svg>
+                            ลง
+                        </button>
+                    </div>
+                `;
+                questionListUL.appendChild(li);
+            });
+             new Sortable(questionListUL, {
+                animation: 150,
+                onEnd(evt) {
+                    const newIndex = evt.newIndex;
+                    const oldIndex = evt.oldIndex;
+                    const movedItem = questions.splice(oldIndex, 1)[0];
+                    questions.splice(newIndex, 0, movedItem);
+                    updateFirebase();
+                    renderQuestionList();
+                },
+            });
+        }
+
+        function editQuestion(index) {
+            const question = questions[index];
+            editingIndex = index;
+            document.getElementById('question').value = question.question;
+            document.getElementById('type').value = question.type;
+            optionsGroup.innerHTML = '';
+            question.options.forEach(option => {
+                const optionGroup = document.createElement('div');
+                optionGroup.className = 'option-group';
+                optionGroup.innerHTML = `
+                    <input type="text" name="options[]" class="option-input" value="${option}" required>
+                    <button type="button" class="remove-option-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1.6-1.4 3-3 3H8c-1.6 0-3-1.4-3-3V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        ลบ
+                    </button>
+                `;
+                optionsGroup.appendChild(optionGroup);
+            });
+            document.getElementById('correctAnswer').value = question.correctAnswer;
+            messageContainer.textContent = `กำลังแก้ไขคำถามที่ ${index + 1}`;
+            messageContainer.className = 'alert alert-info';
+        }
+
+        function deleteQuestion(index) {
+            if (confirm("Are you sure you want to delete this question?")) {
+                questions.splice(index, 1);
+                updateFirebase();
+                renderQuestionList();
+                messageContainer.textContent = 'คำถามถูกลบแล้ว';
+                messageContainer.className = 'alert alert-success';
+            }
+        }
+
+        function moveQuestionUp(index) {
+            if (index > 0) {
+                const movedItem = questions.splice(index, 1)[0];
+                questions.splice(index - 1, 0, movedItem);
+                updateFirebase();
+                renderQuestionList();
+            }
+        }
+
+        function moveQuestionDown(index) {
+            if (index < questions.length - 1) {
+              const movedItem = questions.splice(index, 1)[0];
+              questions.splice(index + 1, 0, movedItem);
+              updateFirebase();
+              renderQuestionList();
+            }
+        }
 
 
         questionForm.addEventListener('submit', (event) => {
             event.preventDefault();
-
             const question = document.getElementById('question').value.trim();
             const type = document.getElementById('type').value;
             const options = Array.from(document.querySelectorAll('input[name="options[]"]'))
                                     .map(input => input.value.trim());
             const correctAnswer = document.getElementById('correctAnswer').value.trim();
-
             const questionData = {
                 question,
                 type,
                 options,
                 correctAnswer,
             };
-
             const errorMessage = validateForm(questionData);
             if (errorMessage) {
                 messageContainer.textContent = errorMessage;
                 messageContainer.className = 'alert alert-danger';
                 return;
             }
-
-            const newQuestionRef = db.ref('questions').push();
-            newQuestionRef.set(questionData)
-                .then(() => {
-                    messageContainer.textContent = 'คำถามถูกสร้างและบันทึกเรียบร้อยแล้ว';
-                    messageContainer.className = 'alert alert-success';
-                    questionForm.reset();
-                    Array.from(optionsGroup.querySelectorAll('.option-group'))
-                         .forEach((group, index) => {
-                            if (index > 1) { // Keep the first two options
-                                group.remove();
-                            }
-                         });
-                    addOption();  // Add one option field
-                    addOption();
-                })
-                .catch((error) => {
-                    messageContainer.textContent = 'เกิดข้อผิดพลาด: ' + error.message;
-                    messageContainer.className = 'alert alert-danger';
-                });
+            saveQuestion(questionData);
         });
 
         addOptionButton.addEventListener('click', addOption);
@@ -276,6 +476,10 @@
                 removeOption(event);
             }
         });
+
+        window.onload = () => {
+            loadQuestions();
+        };
     </script>
 </body>
 </html>
