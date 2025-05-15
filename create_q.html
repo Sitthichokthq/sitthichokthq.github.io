@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>สร้างคำถามแบบทดสอบ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .text-input,
+        .textarea-input,
+        .select-input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            focus:outline-none;
+            focus:ring-2;
+            focus:ring-blue-500;
+        }
+        .textarea-input {
+            resize: vertical;
+        }
+        .option-group {
+            margin-bottom: 1rem;
+        }
+        .option-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .option-input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            focus:outline-none;
+            focus:ring-2;
+            focus:ring-blue-500;
+        }
+
+        .add-option-button,
+        .remove-option-button {
+            background-color: #f0fdf4;
+            color: #15803d;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 0.5rem;
+            border: 1px solid #15803d;
+        }
+        .add-option-button:hover {
+            background-color: #dcfce7;
+        }
+        .remove-option-button {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border-color: #dc2626;
+        }
+        .remove-option-button:hover {
+            background-color: #fee2e2;
+        }
+
+        .submit-button {
+            background-color: #6366f1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .submit-button:hover {
+            background-color: #4338ca;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .alert-success {
+            background-color: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #16a34a;
+        }
+        .alert-danger {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container max-w-2xl mx-auto">
+        <h1 class="form-title text-center">สร้างคำถามแบบทดสอบ</h1>
+        <form id="questionForm" class="form-card">
+            <div class="form-group">
+                <label for="question" class="input-label">คำถาม:</label>
+                <textarea id="question" name="question" class="textarea-input" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="type" class="input-label">ประเภทคำถาม:</label>
+                <select id="type" name="type" class="select-input" required>
+                    <option value="multipleChoice">ปรนัย</option>
+                </select>
+            </div>
+            <div id="optionsGroup" class="form-group">
+                <label class="input-label">ตัวเลือก:</label>
+                <div class="option-group">
+                    <input type="text" name="options[]" class="option-input" required>
+                    <button type="button" class="remove-option-button">ลบ</button>
+                </div>
+                <div class="option-group">
+                    <input type="text" name="options[]" class="option-input" required>
+                    <button type="button" class="remove-option-button">ลบ</button>
+                </div>
+                <button type="button" id="addOption" class="add-option-button">เพิ่มตัวเลือก</button>
+            </div>
+            <div class="form-group">
+                <label for="correctAnswer" class="input-label">คำตอบที่ถูกต้อง:</label>
+                <input type="text" id="correctAnswer" name="correctAnswer" class="text-input" required>
+            </div>
+            <button type="submit" class="submit-button">สร้างคำถาม</button>
+            <div id="message" class="mt-4 text-center font-semibold"></div>
+        </form>
+    </div>
+
+    <script>
+       const firebaseConfig = {
+        apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
+        authDomain: "createby9jay.firebaseapp.com",
+        databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "createby9jay",
+        storageBucket: "createby9jay.appspot.com",
+        messagingSenderId: "1030838893241",
+        appId: "1:1030838893241:web:7d61055e099000c3273968",
+        measurementId: "G-45P0P2E0SQ"
+      };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const questionForm = document.getElementById('questionForm');
+        const optionsGroup = document.getElementById('optionsGroup');
+        const addOptionButton = document.getElementById('addOption');
+        const messageContainer = document.getElementById('message');
+
+        let questionIdCounter = 0;
+
+        function addOption() {
+            const optionGroup = document.createElement('div');
+            optionGroup.className = 'option-group';
+            optionGroup.innerHTML = `
+                <input type="text" name="options[]" class="option-input" required>
+                <button type="button" class="remove-option-button">ลบ</button>
+            `;
+            optionsGroup.appendChild(optionGroup);
+        }
+
+        function removeOption(event) {
+            event.target.parentNode.remove();
+        }
+
+        function validateForm(questionData) {
+            if (!questionData.question.trim()) {
+                return "กรุณากรอกคำถาม";
+            }
+            if (!questionData.type) {
+                return "กรุณาเลือกประเภทคำถาม";
+            }
+            if (questionData.options.length < 2) {
+                return "กรุณาเพิ่มตัวเลือกอย่างน้อย 2 ตัวเลือก";
+            }
+            if (questionData.options.some(option => !option.trim())) {
+                return "กรุณากรอกทุกตัวเลือกให้ครบ";
+            }
+            if (!questionData.correctAnswer.trim()) {
+                return "กรุณากรอกคำตอบที่ถูกต้อง";
+            }
+
+            const correctAnswerExists = questionData.options.some(option => option.trim().toLowerCase() === questionData.correctAnswer.trim().toLowerCase());
+            if (!correctAnswerExists) {
+                return "คำตอบที่ถูกต้องไม่ตรงกับตัวเลือกใดๆ";
+            }
+
+            return null;
+        }
+
+
+
+        questionForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const question = document.getElementById('question').value.trim();
+            const type = document.getElementById('type').value;
+            const options = Array.from(document.querySelectorAll('input[name="options[]"]'))
+                                    .map(input => input.value.trim());
+            const correctAnswer = document.getElementById('correctAnswer').value.trim();
+
+            const questionData = {
+                question,
+                type,
+                options,
+                correctAnswer,
+            };
+
+            const errorMessage = validateForm(questionData);
+            if (errorMessage) {
+                messageContainer.textContent = errorMessage;
+                messageContainer.className = 'alert alert-danger';
+                return;
+            }
+
+            const newQuestionRef = db.ref('questions').push();
+            newQuestionRef.set(questionData)
+                .then(() => {
+                    messageContainer.textContent = 'คำถามถูกสร้างและบันทึกเรียบร้อยแล้ว';
+                    messageContainer.className = 'alert alert-success';
+                    questionForm.reset();
+                    Array.from(optionsGroup.querySelectorAll('.option-group'))
+                         .forEach((group, index) => {
+                            if (index > 1) { // Keep the first two options
+                                group.remove();
+                            }
+                         });
+                    addOption();  // Add one option field
+                    addOption();
+                })
+                .catch((error) => {
+                    messageContainer.textContent = 'เกิดข้อผิดพลาด: ' + error.message;
+                    messageContainer.className = 'alert alert-danger';
+                });
+        });
+
+        addOptionButton.addEventListener('click', addOption);
+
+        optionsGroup.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-option-button')) {
+                removeOption(event);
+            }
+        });
+    </script>
+</body>
+</html>

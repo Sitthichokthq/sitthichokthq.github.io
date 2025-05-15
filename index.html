@@ -1,189 +1,233 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ระบบแบบทดสอบ</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Firebase SDK (Compat version for CDN) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-</head>
-<body class="bg-gradient-to-br from-blue-100 via-white to-pink-100 min-h-screen flex flex-col items-center justify-start p-4 font-sans">
-
-  <section id="formSection" class="w-full max-w-xl bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4 text-center">กรอกข้อมูลก่อนเริ่มทำแบบทดสอบ</h1>
-    <input id="name" type="text" placeholder="ชื่อ" class="block mb-3 p-3 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-    <input id="lastname" type="text" placeholder="นามสกุล" class="block mb-3 p-3 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-    <input id="tel" type="text" placeholder="เบอร์โทร" class="block mb-4 p-3 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-    <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">เริ่มทำแบบทดสอบ</button>
-  </section>
-
-  <section id="quizSection" class="w-full max-w-xl bg-white p-6 rounded shadow hidden mt-8">
-    <h2 class="text-xl font-semibold mb-4 text-center">แบบทดสอบ</h2>
-
-    <!-- โจทย์ -->
-      <div class="question" data-answer="เราชอบเธอนะ">
-        <p class="font-semibold">1. ถ้าคุณชอบใครสักคนหนึ่ง จะบอกชอบเขาว่าอะไร?</p>
-        <label><input type="radio" name="q1" value="เราชอบเธอนะ" class="mr-2"> เราชอบเธอนะ </label><br>
-        <label><input type="radio" name="q1" value="กูชอบมึงนะอีเหี้ย" class="mr-2">กูชอบมึงนะอีเหี้ย</label><br>
-        <label><input type="radio" name="q1" value="สวัสดีคนไทยบินได้" class="mr-2">สวัสดีคนไทยบินได้</label>
-      </div>
-
-      <div class="question" data-answer="จากดิสคอร์ดของชนกันต์">
-        <p class="font-semibold">2. ที่มาของใบเนยมาจากไหน?</p>
-        <label><input type="radio" name="q2" value="คนที่ภูมิชอบอยากมาก" class="mr-2">คนที่ภูมิชอบอยากมาก</label><br>
-        <label><input type="radio" name="q2" value="แฟนภูมิ" class="mr-2">แฟนภูมิ</label><br>
-        <label><input type="radio" name="q2" value="จากดิสคอร์ดของชนกันต์" class="mr-2"> จากดิสคอร์ดของชนกันต์ </label>
-      </div>
-
-      <div class="question" data-answer="ซิน">
-        <p class="font-semibold">3. ใครน่ารักที่สุดในนี้?</p>
-        <label><input type="radio" name="q3" value="ภูมิ" class="mr-2">ภูมิ</label><br>
-        <label><input type="radio" name="q3" value="ก้อง" class="mr-2">ก้อง</label><br>
-        <label><input type="radio" name="q3" value="ซิน" class="mr-2">ซิน</label>
-      </div>
-
-      <div class="question" data-answer="สร้างไอจีลับทักหาคนที่ชอบ">
-        <p class="font-semibold">4. ถ้าเกิดเราเป็นคนแอบชอบใครสักคนคุณจะทำไง?</p>
-        <label><input type="radio" name="q4" value="เดินไปจับมือคนที่ชอบ" class="mr-2">เดินไปจับมือคนที่ชอบ</label><br>
-        <label><input type="radio" name="q4" value="สร้างไอจีลับทักหาคนที่ชอบ" class="mr-2"> สร้างไอจีลับทักหาคนที่ชอบ </label><br>
-        <label><input type="radio" name="q4" value="บอกเพื่อ" class="mr-2">บอกเพื่อน</label>
-      </div>
-
-      <div class="question" data-answer="หนังแนวตลก การ์ตูน หนังผี เรท 16 ปีขึ้น">
-        <p class="font-semibold">5.หนังแนวไหนที่ต่ำกว่าอายุ 18 ปี ดูได้? </p>
-        <label><input type="radio" name="q5" value="หนังแนวหวานหวาดเสียว" class="mr-2">หนังแนวหวานหวาดเสียว</label><br>
-        <label><input type="radio" name="q5" value="หนังแนวตลก การ์ตูน หนังผี เรท 16 ปีขึ้น" class="mr-2"> หนังแนวตลก การ์ตูน หนังผี เรท 16 ปีขึ้น </label><br>
-        <label><input type="radio" name="q5" value="หนังยาง" class="mr-2">หนังยาง</label>
-      </div>
-    </div>
-
-    <div class="mt-6 space-y-2">
-      <button id="submitBtn" onclick="checkAnswers()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full">ส่งคำตอบ</button>
-      <button id="backBtn" onclick="goToHome()" class="hidden bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded w-full">กลับหน้าแรก</button>
-    </div>
-  </section>
-
-  <!-- Modal เตือน -->
-  <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white p-6 rounded shadow text-center">
-      <p class="text-red-600 font-semibold mb-4">กรุณากรอกข้อมูลให้ครบก่อนเริ่มทำแบบทดสอบ</p>
-      <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">ตกลง</button>
-    </div>
-  </div>
-
-  <!-- Modal แสดงผลลัพธ์ -->
-  <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white p-6 rounded shadow w-[90%] max-w-md text-center">
-      <h2 class="text-xl font-bold mb-2">ผลการทำแบบทดสอบ</h2>
-      <p id="modalName"></p>
-      <p id="modalTel"></p>
-      <p id="modalScore"></p>
-      <p id="modalStatus" class="font-bold text-lg mt-2"></p>
-      <p id="modalDate"></p>
-      <button onclick="closeResultModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">ปิด</button>
-    </div>
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
-      authDomain: "createby9jay.firebaseapp.com",
-      databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "createby9jay",
-      storageBucket: "createby9jay.appspot.com",
-      messagingSenderId: "1030838893241",
-      appId: "1:1030838893241:web:7d61055e099000c3273968",
-      measurementId: "G-45P0P2E0SQ"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let studentData = {};
-
-    function startQuiz() {
-      const name = document.getElementById('name').value.trim();
-      const lastName = document.getElementById('lastname').value.trim();
-      const tel = document.getElementById('tel').value.trim();
-
-      if (!name || !lastName || !tel) {
-        document.getElementById('warningModal').classList.remove('hidden');
-        return;
-      }
-
-      studentData = { name, lastName, tel };
-
-      document.getElementById('formSection').classList.add('hidden');
-      document.getElementById('quizSection').classList.remove('hidden');
-    }
-
-    function checkAnswers() {
-      let score = 0;
-      const questions = document.querySelectorAll('.question');
-
-      questions.forEach((q) => {
-        q.classList.remove('border', 'border-red-500', 'border-green-500', 'rounded-md', 'p-4');
-        const answer = q.getAttribute('data-answer');
-        const selected = q.querySelector('input[type="radio"]:checked');
-        const radios = q.querySelectorAll('input[type="radio"]');
-        radios.forEach(r => r.disabled = true);
-
-        if (selected) {
-          if (selected.value === answer) {
-            score++;
-            q.classList.add('border', 'border-green-500', 'rounded-md', 'p-4', 'bg-green-50');
-          } else {
-            q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4', 'bg-red-50');
-          }
-        } else {
-          q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4', 'bg-red-50');
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ระบบแบบทดสอบ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .question-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        .answer-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+        }
+        .answer-label:hover {
+            background-color: #f7fafc;
+        }
+        .answer-input {
+            margin-right: 0.5rem;
+        }
+        .selected-answer {
+            background-color: #f0fdf4;
+            border-color: #16a34a;
+            color: #16a34a;
+        }
+        .wrong-answer {
+            background-color: #fef2f2;
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+         .correct-answer {
+            background-color: #f0fdf4; /* Light green for correct answer */
+            border-color: #16a34a;
+            color: #16a34a;
         }
 
-        const answerEl = document.createElement("p");
-        answerEl.className = "text-sm text-green-600 mt-1";
-        answerEl.innerText = `คำตอบที่ถูก: ${answer}`;
-        q.appendChild(answerEl);
-      });
-
-      const date = new Date().toLocaleDateString('th-TH');
-      const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
-
-      document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name} ${studentData.lastName}`;
-      document.getElementById('modalTel').innerText = `เบอร์โทร: ${studentData.tel}`;
-      document.getElementById('modalScore').innerText = `คะแนน: ${score} / 5`;
-      document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
-      document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
-
-      db.ref('quiz-results').push({
-        name: studentData.name,
-        lastName: studentData.lastName,
-        tel: studentData.tel,
-        score: score,
-        status: status,
-        date: date,
-        timestamp: new Date().toISOString()
-      });
-
-      document.getElementById('submitBtn').classList.add('hidden');
-      document.getElementById('backBtn').classList.remove('hidden');
-      document.getElementById('resultModal').classList.remove('hidden');
-    }
-
-    function closeResultModal() {
-      document.getElementById('resultModal').classList.add('hidden');
-    }
-
-    function goToHome() {
-      location.reload();
-    }
-
-    window.startQuiz = startQuiz;
-    window.checkAnswers = checkAnswers;
-    window.closeResultModal = closeResultModal;
-    window.goToHome = goToHome;
-  </script>
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-white to-pink-100 min-h-screen flex flex-col items-center justify-start p-4 font-sans">
+    <section id="formSection" class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-semibold mb-6 text-center text-blue-700">กรอกข้อมูลก่อนเริ่มทำแบบทดสอบ</h1>
+        <input id="name" type="text" placeholder="ชื่อ" class="block mb-4 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <input id="lastname" type="text" placeholder="นามสกุล" class="block mb-4 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <input id="tel" type="text" placeholder="เบอร์โทร" class="block mb-6 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">เริ่มทำแบบทดสอบ</button>
+    </section>
+    <section id="quizSection" class="w-full max-w-xl bg-white p-6 rounded-lg shadow-md hidden mt-8">
+        <h2 class="text-2xl font-semibold mb-6 text-center text-green-700">แบบทดสอบ</h2>
+        <div id="questionsContainer">
+            </div>
+        <div class="mt-8 space-y-3">
+            <button id="submitBtn" onclick="checkAnswers()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">ส่งคำตอบ</button>
+            <button id="backBtn" onclick="goToHome()" class="hidden bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">กลับหน้าแรก</button>
+        </div>
+    </section>
+    <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-md shadow-lg text-center">
+            <p class="text-red-600 font-semibold mb-4">กรุณากรอกข้อมูลให้ครบก่อนเริ่มทำแบบทดสอบ</p>
+            <button onclick="closeWarningModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">ตกลง</button>
+        </div>
+    </div>
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-md shadow-lg w-[90%] max-w-md text-center">
+            <h2 class="text-2xl font-bold mb-4 text-purple-700">ผลการทำแบบทดสอบ</h2>
+            <p id="modalName" class="text-lg"></p>
+            <p id="modalTel" class="text-lg"></p>
+            <p id="modalScore" class="text-xl font-semibold"></p>
+            <p id="modalStatus" class="font-bold text-xl mt-2"></p>
+            <p id="modalDate" class="text-gray-600"></p>
+            <button onclick="closeResultModal()" class="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">ปิด</button>
+        </div>
+    </div>
+    <script>
+        const firebaseConfig = {
+        apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
+        authDomain: "createby9jay.firebaseapp.com",
+        databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "createby9jay",
+        storageBucket: "createby9jay.appspot.com",
+        messagingSenderId: "1030838893241",
+        appId: "1:1030838893241:web:7d61055e099000c3273968",
+        measurementId: "G-45P0P2E0SQ"
+      };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let studentData = {};
+        let questions = [];
+        function fetchDataAndStartQuiz() {
+            loadQuestions().then(() => {
+                startQuiz();
+            });
+        }
+        function startQuiz() {
+            const name = document.getElementById('name').value.trim();
+            const lastName = document.getElementById('lastname').value.trim();
+            const tel = document.getElementById('tel').value.trim();
+            if (!name || !lastName || !tel) {
+                document.getElementById('warningModal').classList.remove('hidden');
+                return;
+            }
+            studentData = { name, lastName, tel };
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('quizSection').classList.remove('hidden');
+            renderQuestions();
+        }
+        function renderQuestions() {
+            const questionsContainer = document.getElementById('questionsContainer');
+            questionsContainer.innerHTML = '';
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.setAttribute('data-answer', question.correctAnswer);
+                questionDiv.innerHTML = `
+                    <p class="question-title">${index + 1}. ${question.question}</p>
+                    ${question.options.map(option => `
+                        <label class="answer-label">
+                            <input type="radio" name="q${index}" value="${option}" class="answer-input"> ${option}
+                        </label><br>
+                    `).join('')}
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+        }
+        function checkAnswers() {
+            let score = 0;
+            const questionCards = document.querySelectorAll('.question-card');
+            questionCards.forEach((q) => {
+                const answer = q.getAttribute('data-answer');
+                const selected = q.querySelector('input[type="radio"]:checked');
+                const radios = q.querySelectorAll('input[type="radio"]');
+                if (selected) {
+                    if (selected.value === answer) {
+                        score++;
+                        q.classList.add('correct-answer');
+                    } else {
+                        q.classList.add('wrong-answer');
+                    }
+                     radios.forEach(r => r.disabled = true);
+                } else {
+                    q.classList.add('wrong-answer');
+                     radios.forEach(r => r.disabled = true);
+                }
+                const answerEl = document.createElement("p");
+                answerEl.className = "text-sm text-green-600 mt-2";
+                answerEl.innerText = `คำตอบที่ถูกต้อง: ${answer}`;
+                q.appendChild(answerEl);
+            });
+            const date = new Date().toLocaleDateString('th-TH');
+            const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
+            document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name} ${studentData.lastName}`;
+            document.getElementById('modalTel').innerText = `เบอร์โทร: ${studentData.tel}`;
+             document.getElementById('modalScore').innerText = `คะแนน: ${score} / ${questions.length}`;
+            document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
+            document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
+            saveResult(studentData.name, studentData.lastName, studentData.tel, score, status, date);
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('backBtn').classList.remove('hidden');
+            document.getElementById('resultModal').classList.remove('hidden');
+        }
+        function closeResultModal() {
+            document.getElementById('resultModal').classList.add('hidden');
+        }
+        function goToHome() {
+            location.reload();
+        }
+        function closeWarningModal() {
+            document.getElementById('warningModal').classList.add('hidden');
+        }
+        function saveResult(name, lastName, tel, score, status, date) {
+            db.ref('quiz-results').push({
+                name: name,
+                lastName: lastName,
+                tel: tel,
+                score: score,
+                status: status,
+                date: date,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                console.log('Result saved successfully!');
+            }).catch((error) => {
+                console.error('Error saving result:', error);
+            });
+        }
+        function loadQuestions() {
+            return new Promise((resolve, reject) => {
+                db.ref('questions').once('value')
+                    .then(snapshot => {
+                        const data = snapshot.val();
+                        if (data) {
+                            questions = Object.values(data);
+                            resolve();
+                        } else {
+                            reject(new Error("No questions found in the database."));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching questions:", error);
+                        reject(error);
+                    });
+            });
+        }
+        window.onload = () => {
+            fetchDataAndStartQuiz();
+        };
+        window.startQuiz = startQuiz;
+        window.checkAnswers = checkAnswers;
+        window.closeResultModal = closeResultModal;
+        window.goToHome = goToHome;
+        window.closeWarningModal = closeWarningModal;
+    </script>
 </body>
 </html>
