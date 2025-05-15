@@ -1,39 +1,105 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>แดชบอร์ดผลการสอบ</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>แดชบอร์ดผลการสอบ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .dashboard-container {
+            max-width: 1200px; /* เพิ่มความกว้างสูงสุด */
+            margin: auto;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-title {
+            font-size: 2.5rem; /* ปรับขนาดตัวอักษรใหญ่ขึ้น */
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 2rem; /* เพิ่มระยะห่างด้านล่าง */
+            text-align: center;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        .results-table thead {
+            background-color: #eff6ff;
+            color: #3b82f6;
+        }
+        .results-table th,
+        .results-table td {
+            padding: 1.25rem 1rem; /* เพิ่ม padding */
+            text-align: left;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        .results-table th {
+            font-weight: 600;
+        }
+        .results-table tbody tr:hover {
+            background-color: #f7fafc;
+        }
+        .pass-status {
+            color: #16a34a;
+            font-weight: 600;
+        }
+        .fail-status {
+            color: #dc2626;
+            font-weight: 600;
+        }
+        .delete-button {
+            background-color: #ef4444;
+            color: white;
+            padding: 0.75rem 1.5rem; /* เพิ่ม padding */
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1rem; /* เพิ่มขนาดตัวอักษร */
+        }
+        .delete-button:hover {
+            background-color: #c81e1e;
+        }
+        .delete-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
-<body class="bg-blue-50 min-h-screen text-gray-800">
-  <div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-blue-700 mb-6">แดชบอร์ดผลการทำแบบทดสอบ</h1>
-    
-    <div class="overflow-x-auto bg-white rounded-lg shadow-lg">
-      <table class="min-w-full text-sm text-gray-700">
-        <thead class="bg-blue-200 text-blue-900">
-          <tr>
-            <th class="px-4 py-3 text-left">ชื่อ</th>
-            <th class="px-4 py-3 text-left">นามสกุล</th>
-            <th class="px-4 py-3 text-left">เบอร์โทร</th>
-            <th class="px-4 py-3 text-left">คะแนน</th>
-            <th class="px-4 py-3 text-left">สถานะ</th>
-            <th class="px-4 py-3 text-left">วันที่สอบ</th>
-            <th class="px-4 py-3 text-left">ลบ</th>
-          </tr>
-        </thead>
-        <tbody id="dashboardBody" class="divide-y divide-blue-100">
-          <!-- Data จะถูกเติมโดย JavaScript -->
-        </tbody>
-      </table>
+<body class="bg-gradient-to-tl from-purple-100 to-pink-100 min-h-screen flex items-center justify-center py-8">
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">แดชบอร์ดผลการทำแบบทดสอบ</h1>
+        <div class="overflow-x-auto">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>ชื่อ</th>
+                        <th>นามสกุล</th>
+                        <th>เบอร์โทร</th>
+                        <th>คะแนน</th>
+                        <th>สถานะ</th>
+                        <th>วันที่สอบ</th>
+                        <th>ลบ</th>
+                    </tr>
+                </thead>
+                <tbody id="dashboardBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
-  </div>
-
-  <script>
-    const firebaseConfig = {
+    <script>
+        const firebaseConfig = {
       apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
       authDomain: "createby9jay.firebaseapp.com",
       databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -43,55 +109,50 @@
       appId: "1:1030838893241:web:7d61055e099000c3273968",
       measurementId: "G-45P0P2E0SQ"
     };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    function loadDashboard() {
-      const tbody = document.getElementById('dashboardBody');
-      tbody.innerHTML = '';
-      db.ref('quiz-results').once('value', snapshot => {
-        const dataList = [];
-        snapshot.forEach(child => {
-          dataList.push({
-            id: child.key,
-            ...child.val()
-          });
-        });
-
-        dataList.reverse().forEach(data => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td class="px-4 py-2">${data.name}</td>
-            <td class="px-4 py-2">${data.lastName}</td>
-            <td class="px-4 py-2">${data.tel}</td>
-            <td class="px-4 py-2 font-semibold ${data.score >= 3 ? 'text-green-600' : 'text-red-500'}">${data.score}</td>
-            <td class="px-4 py-2">${data.status}</td>
-            <td class="px-4 py-2">${data.date}</td>
-            <td class="px-4 py-2">
-              <button onclick="deleteResult('${data.id}')" class="bg-red-500 text-white px-4 py-2 rounded">ลบ</button>
-            </td>
-          `;
-          tbody.appendChild(row);
-        });
-      });
-    }
-
-    function deleteResult(id) {
-      if (confirm("คุณต้องการลบข้อมูลนี้หรือไม่?")) {
-        db.ref('quiz-results/' + id).remove()
-          .then(() => {
-            alert("ลบข้อมูลสำเร็จ");
-            loadDashboard(); // รีเฟรชหน้าจอเพื่อแสดงข้อมูลที่อัพเดท
-          })
-          .catch(error => {
-            console.error("เกิดข้อผิดพลาดในการลบข้อมูล:", error);
-            alert("ลบข้อมูลไม่สำเร็จ");
-          });
-      }
-    }
-
-    window.onload = loadDashboard;
-  </script>
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        function loadDashboard() {
+            const tbody = document.getElementById('dashboardBody');
+            tbody.innerHTML = '';
+            db.ref('quiz-results').once('value', snapshot => {
+                const dataList = [];
+                snapshot.forEach(child => {
+                    dataList.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+                dataList.reverse().forEach(data => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.name}</td>
+                        <td>${data.lastName}</td>
+                        <td>${data.tel}</td>
+                        <td class="${data.score >= 3 ? 'text-green-600' : 'text-red-500'} font-semibold">${data.score}</td>
+                        <td class="${data.status === 'ผ่าน' ? 'pass-status' : 'fail-status'}">${data.status}</td>
+                        <td>${data.date}</td>
+                        <td>
+                            <button class="delete-button" onclick="deleteResult('${data.id}')">ลบ</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+        function deleteResult(id) {
+            if (confirm("คุณต้องการลบข้อมูลนี้หรือไม่?")) {
+                db.ref('quiz-results/' + id).remove()
+                    .then(() => {
+                        alert("ลบข้อมูลสำเร็จ");
+                        loadDashboard();
+                    })
+                    .catch(error => {
+                        console.error("เกิดข้อผิดพลาดในการลบข้อมูล:", error);
+                        alert("ลบข้อมูลไม่สำเร็จ");
+                    });
+            }
+        }
+        window.onload = loadDashboard;
+    </script>
 </body>
 </html>
