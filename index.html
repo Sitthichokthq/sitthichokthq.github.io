@@ -246,15 +246,15 @@
     </div>
     <script>
         const firebaseConfig = {
-      apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
-      authDomain: "createby9jay.firebaseapp.com",
-      databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "createby9jay",
-      storageBucket: "createby9jay.appspot.com",
-      messagingSenderId: "1030838893241",
-      appId: "1:1030838893241:web:7d61055e099000c3273968",
-      measurementId: "G-45P0P2E0SQ"
-    };
+        apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
+        authDomain: "createby9jay.firebaseapp.com",
+        databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "createby9jay",
+        storageBucket: "createby9jay.appspot.com",
+        messagingSenderId: "1030838893241",
+        appId: "1:1030838893241:web:7d61055e099000c3273968",
+        measurementId: "G-45P0P2E0SQ"
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
@@ -275,11 +275,17 @@
                             questions = Object.values(data);
                             resolve();
                         } else {
-                            reject(new Error("No questions found in the database."));
+                            const error = new Error("No questions found in the database.");
+                            console.error("Error fetching questions:", error);
+                            messageContainer.textContent = "ไม่พบคำถามในฐานข้อมูล กรุณาตรวจสอบ";
+                            messageContainer.className = 'alert alert-danger';
+                            reject(error);
                         }
                     })
                     .catch(error => {
                         console.error("Error fetching questions:", error);
+                        messageContainer.textContent = "เกิดข้อผิดพลาดในการโหลดคำถาม: " + error.message;
+                        messageContainer.className = 'alert alert-danger';
                         reject(error);
                     });
             });
@@ -329,10 +335,10 @@
                     } else {
                         q.classList.add('wrong-answer');
                     }
-                     radios.forEach(r => r.disabled = true);
+                    radios.forEach(r => r.disabled = true);
                 } else {
                     q.classList.add('wrong-answer');
-                     radios.forEach(r => r.disabled = true);
+                    radios.forEach(r => r.disabled = true);
                 }
                 const answerEl = document.createElement("p");
                 answerEl.className = "text-sm text-green-600 mt-2";
@@ -343,7 +349,7 @@
             const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
             document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name} ${studentData.lastName}`;
             document.getElementById('modalTel').innerText = `เบอร์โทร: ${studentData.tel}`;
-             document.getElementById('modalScore').innerText = `คะแนน: ${score} / ${questions.length}`;
+            document.getElementById('modalScore').innerText = `คะแนน: ${score} / ${questions.length}`;
             document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
             document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
             saveResult(studentData.name, studentData.lastName, studentData.tel, score, status, date);
@@ -379,6 +385,8 @@
                 console.log('Result saved successfully!');
             }).catch((error) => {
                 console.error('Error saving result:', error);
+                 messageContainer.textContent = 'เกิดข้อผิดพลาดในการบันทึกผลคะแนน: ' + error.message;
+                 messageContainer.className = 'alert alert-danger';
             });
         }
         function handleAuth(event) {
@@ -393,9 +401,12 @@
                         loadQuestions().then(()=> {
                             document.getElementById('authForm').classList.add('hidden');
                             document.getElementById('formSection').classList.remove('hidden');
-                        })
+                        }).catch(err => {
+                             console.error("Error during login:", err);
+                        });
                     })
                     .catch(error => {
+                        console.error("Login Error:", error);
                         messageContainer.textContent = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' + error.message;
                         messageContainer.className = 'alert alert-danger';
                     });
@@ -410,15 +421,29 @@
                             lastName: lastName,
                             tel: tel,
                             email: email
+                        }).then(() => {
+                            messageContainer.textContent = 'ลงทะเบียนสำเร็จ';
+                            messageContainer.className = 'alert alert-success';
+                             loadQuestions().then(()=> {
+                                document.getElementById('authForm').classList.add('hidden');
+                                document.getElementById('formSection').classList.remove('hidden');
+                            }).catch(err => {
+                                 console.error("Error during registration:", err);
+                            });
+                        }).catch(error => {
+                            console.error("Error creating user in database:", error);
+                            messageContainer.textContent = 'เกิดข้อผิดพลาดในการบันทึกข้อมูลผู้ใช้: ' + error.message;
+                            messageContainer.className = 'alert alert-danger';
+                             // Clean up user from auth
+                            userCredential.user.delete().then(() => {
+                                console.log("Successfully deleted firebase user");
+                            }).catch(err => {
+                                console.error("Error deleting firebase user:", err);
+                            });
                         });
-                        messageContainer.textContent = 'ลงทะเบียนสำเร็จ';
-                        messageContainer.className = 'alert alert-success';
-                         loadQuestions().then(()=> {
-                            document.getElementById('authForm').classList.add('hidden');
-                            document.getElementById('formSection').classList.remove('hidden');
-                        })
                     })
                     .catch(error => {
+                        console.error("Registration Error:", error);
                         messageContainer.textContent = 'เกิดข้อผิดพลาดในการลงทะเบียน: ' + error.message;
                         messageContainer.className = 'alert alert-danger';
                     });
@@ -428,6 +453,7 @@
             isLoginMode = !isLoginMode;
             authForm.reset();
             messageContainer.textContent = '';
+            messageContainer.className = 'mt-4 text-center font-semibold';
             if (isLoginMode) {
                 authButton.textContent = 'เข้าสู่ระบบ';
                 toggleAuthModeButton.textContent = 'ลงทะเบียน';
@@ -454,15 +480,29 @@
                         lastName: user.displayName.split(' ')[1] || '',
                         tel: '',
                         email: user.email
+                    }).then(() => {
+                        messageContainer.textContent = 'เข้าสู่ระบบด้วย Google สำเร็จ';
+                        messageContainer.className = 'alert alert-success';
+                         loadQuestions().then(()=> {
+                            document.getElementById('authForm').classList.add('hidden');
+                            document.getElementById('formSection').classList.remove('hidden');
+                        }).catch(err => {
+                             console.error("Error during google sign in:", err);
+                        });
+                    }).catch(error => {
+                        console.error("Error creating user in database:", error);
+                        messageContainer.textContent = 'เกิดข้อผิดพลาดในการบันทึกข้อมูลผู้ใช้: ' + error.message;
+                        messageContainer.className = 'alert alert-danger';
+                         // Clean up user
+                        user.delete().then(() => {
+                            console.log("Successfully deleted firebase user");
+                        }).catch(err => {
+                            console.error("Error deleting firebase user:", err);
+                        });
                     });
-                    messageContainer.textContent = 'เข้าสู่ระบบด้วย Google สำเร็จ';
-                    messageContainer.className = 'alert alert-success';
-                     loadQuestions().then(()=> {
-                        document.getElementById('authForm').classList.add('hidden');
-                        document.getElementById('formSection').classList.remove('hidden');
-                    })
                 })
                 .catch((error) => {
+                    console.error("Google Sign-In Error:", error);
                     messageContainer.textContent = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google: ' + error.message;
                     messageContainer.className = 'alert alert-danger';
                 });
@@ -470,12 +510,14 @@
         authButton.addEventListener('click', handleAuth);
         toggleAuthModeButton.addEventListener('click', toggleAuthMode);
         googleLoginButton.addEventListener('click', signInWithGoogle);
-        window.onload = () => {
+        window.onload= () => {
             if (auth.currentUser) {
                 loadQuestions().then(() => {
                     document.getElementById('authForm').classList.add('hidden');
                     document.getElementById('formSection').classList.remove('hidden');
-                })
+                }).catch(err => {
+                     console.error("Error on window load:", err);
+                });
             }
         };
         window.startQuiz = startQuiz;
