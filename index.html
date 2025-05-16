@@ -10,105 +10,253 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        .question-card {
+        .form-card {
             background-color: white;
             border-radius: 0.5rem;
             padding: 2rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 1.5rem;
         }
-        .question-title {
-            font-size: 1.25rem;
+        .form-title {
+            font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1rem;
             color: #1e293b;
         }
-        .answer-label {
+        .input-label {
             display: block;
             margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .text-input,
+        .textarea-input,
+        .select-input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            focus:outline-none;
+            focus:ring-2;
+            focus:ring-blue-500;
+        }
+        .textarea-input {
+            resize: vertical;
+        }
+        .option-group {
+            margin-bottom: 1rem;
+        }
+        .option-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .option-input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            focus:outline-none;
+            focus:ring-2;
+            focus:ring-blue-500;
+        }
+        .add-option-button,
+        .remove-option-button {
+            background-color: #f0fdf4;
+            color: #15803d;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+            border: 1px solid #15803d;
         }
-        .answer-label:hover {
-            background-color: #f7fafc;
+        .add-option-button:hover {
+            background-color: #dcfce7;
         }
-        .answer-input {
-            margin-right: 0.5rem;
-        }
-        .selected-answer {
-            background-color: #f0fdf4;
-            border-color: #16a34a;
-            color: #16a34a;
-        }
-        .wrong-answer {
+        .remove-option-button {
             background-color: #fef2f2;
-            border-color: #dc2626;
             color: #dc2626;
+            border-color: #dc2626;
         }
-         .correct-answer {
-            background-color: #f0fdf4; /* Light green for correct answer */
-            border-color: #16a34a;
-            color: #16a34a;
+        .remove-option-button:hover {
+            background-color: #fee2e2;
         }
-
+        .submit-button {
+            background-color: #6366f1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .submit-button:hover {
+            background-color: #4338ca;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .alert-success {
+            background-color: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #16a34a;
+        }
+        .alert-danger {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+        .auth-form {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+            text-align: center;
+        }
+        .auth-switch {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .auth-switch a {
+            color: #6366f1;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .auth-switch a:hover {
+            color: #4338ca;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-100 via-white to-pink-100 min-h-screen flex flex-col items-center justify-start p-4 font-sans">
-    <section id="formSection" class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-semibold mb-6 text-center text-blue-700">กรอกข้อมูลก่อนเริ่มทำแบบทดสอบ</h1>
-        <input id="name" type="text" placeholder="ชื่อ" class="block mb-4 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-        <input id="lastname" type="text" placeholder="นามสกุล" class="block mb-4 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-        <input id="tel" type="text" placeholder="เบอร์โทร" class="block mb-6 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-        <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">เริ่มทำแบบทดสอบ</button>
-    </section>
-    <section id="quizSection" class="w-full max-w-xl bg-white p-6 rounded-lg shadow-md hidden mt-8">
-        <h2 class="text-2xl font-semibold mb-6 text-center text-green-700">แบบทดสอบ</h2>
-        <div id="questionsContainer">
+<body class="bg-gray-100 p-6">
+    <div class="container max-w-2xl mx-auto">
+        <div id="authForm" class="auth-form">
+            <h2 class="auth-title">ลงทะเบียน</h2>
+            <div id="message" class="mt-4 text-center font-semibold"></div>
+            <div class="form-group">
+                <label for="email" class="input-label">อีเมล:</label>
+                <input type="email" id="email" name="email" class="text-input" required>
             </div>
-        <div class="mt-8 space-y-3">
-            <button id="submitBtn" onclick="checkAnswers()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">ส่งคำตอบ</button>
-            <button id="backBtn" onclick="goToHome()" class="hidden bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">กลับหน้าแรก</button>
+            <div class="form-group">
+                <label for="password" class="input-label">รหัสผ่าน:</label>
+                <input type="password" id="password" name="password" class="text-input" required>
+            </div>
+            <div class="form-group">
+                <label for="name" class="input-label">ชื่อ:</label>
+                <input type="text" id="name" name="name" class="text-input" required>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="input-label">นามสกุล:</label>
+                <input type="text" id="lastname" name="lastname" class="text-input" required>
+            </div>
+            <div class="form-group">
+                <label for="tel" class="input-label">เบอร์โทรศัพท์:</label>
+                <input type="tel" id="tel" name="tel" class="text-input" required>
+            </div>
+            <button id="authButton" type="submit" class="submit-button">ลงทะเบียน</button>
+            <div class="auth-switch">
+                มีบัญชีอยู่แล้ว? <a id="toggleAuthMode">เข้าสู่ระบบ</a>
+            </div>
         </div>
-    </section>
-    <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-md shadow-lg text-center">
-            <p class="text-red-600 font-semibold mb-4">กรุณากรอกข้อมูลให้ครบก่อนเริ่มทำแบบทดสอบ</p>
-            <button onclick="closeWarningModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">ตกลง</button>
+        <div id="quizSection" class="hidden">
+            <section id="formSection" class="w-full max-w-md bg-white p-6 rounded-lg shadow-md mt-8">
+                <h1 class="text-2xl font-semibold mb-6 text-center text-blue-700">กรอกข้อมูลก่อนเริ่มทำแบบทดสอบ</h1>
+                <input id="name" type="text" placeholder="ชื่อ" class="block mb-4 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <input id="lastname" type="text" placeholder="นามสกุล" class="block mb-4 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <input id="tel" type="text" placeholder="เบอร์โทร" class="block mb-6 p-3 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">เริ่มทำแบบทดสอบ</button>
+            </section>
+            <section  class="w-full max-w-xl bg-white p-6 rounded-lg shadow-md  mt-8">
+                <h2 class="text-2xl font-semibold mb-6 text-center text-green-700">แบบทดสอบ</h2>
+                <div id="questionsContainer">
+                    </div>
+                <div class="mt-8 space-y-3">
+                    <button id="submitBtn" onclick="checkAnswers()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">ส่งคำตอบ</button>
+                    <button id="backBtn" onclick="goToHome()" class="hidden bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">กลับหน้าแรก</button>
+                </div>
+            </section>
         </div>
-    </div>
-    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-md shadow-lg w-[90%] max-w-md text-center">
-            <h2 class="text-2xl font-bold mb-4 text-purple-700">ผลการทำแบบทดสอบ</h2>
-            <p id="modalName" class="text-lg"></p>
-            <p id="modalTel" class="text-lg"></p>
-            <p id="modalScore" class="text-xl font-semibold"></p>
-            <p id="modalStatus" class="font-bold text-xl mt-2"></p>
-            <p id="modalDate" class="text-gray-600"></p>
-            <button onclick="closeResultModal()" class="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">ปิด</button>
+        <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white p-6 rounded-md shadow-lg text-center">
+                <p class="text-red-600 font-semibold mb-4">กรุณากรอกข้อมูลให้ครบก่อนเริ่มทำแบบทดสอบ</p>
+                <button onclick="closeWarningModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">ตกลง</button>
+            </div>
+        </div>
+        <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white p-6 rounded-md shadow-lg w-[90%] max-w-md text-center">
+                <h2 class="text-2xl font-bold mb-4 text-purple-700">ผลการทำแบบทดสอบ</h2>
+                <p id="modalName" class="text-lg"></p>
+                <p id="modalTel" class="text-lg"></p>
+                <p id="modalScore" class="text-xl font-semibold"></p>
+                <p id="modalStatus" class="font-bold text-xl mt-2"></p>
+                <p id="modalDate" class="text-gray-600"></p>
+                <button onclick="closeResultModal()" class="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-md w-full transition duration-300 ease-in-out">ปิด</button>
+            </div>
         </div>
     </div>
     <script>
         const firebaseConfig = {
-        apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
-        authDomain: "createby9jay.firebaseapp.com",
-        databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "createby9jay",
-        storageBucket: "createby9jay.appspot.com",
-        messagingSenderId: "1030838893241",
-        appId: "1:1030838893241:web:7d61055e099000c3273968",
-        measurementId: "G-45P0P2E0SQ"
-      };
+      apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
+      authDomain: "createby9jay.firebaseapp.com",
+      databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "createby9jay",
+      storageBucket: "createby9jay.appspot.com",
+      messagingSenderId: "1030838893241",
+      appId: "1:1030838893241:web:7d61055e099000c3273968",
+      measurementId: "G-45P0P2E0SQ"
+    };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
+        const authForm = document.getElementById('authForm');
+        const authButton = document.getElementById('authButton');
+        const toggleAuthModeButton = document.getElementById('toggleAuthMode');
+        const messageContainer = document.getElementById('message');
+        let isLoginMode = true;
         let studentData = {};
         let questions = [];
-        function fetchDataAndStartQuiz() {
-            loadQuestions().then(() => {
-                startQuiz();
+        function loadQuestions() {
+            return new Promise((resolve, reject) => {
+                db.ref('questions').once('value')
+                    .then(snapshot => {
+                        const data = snapshot.val();
+                        if (data) {
+                            questions = Object.values(data);
+                            resolve();
+                        } else {
+                            reject(new Error("No questions found in the database."));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching questions:", error);
+                        reject(error);
+                    });
             });
         }
         function startQuiz() {
@@ -182,7 +330,13 @@
             document.getElementById('resultModal').classList.add('hidden');
         }
         function goToHome() {
-            location.reload();
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('authForm').classList.remove('hidden');
+            isLoginMode = true;
+            authButton.textContent = 'เข้าสู่ระบบ';
+            toggleAuthModeButton.textContent = 'ลงทะเบียน';
+            authForm.reset();
         }
         function closeWarningModal() {
             document.getElementById('warningModal').classList.add('hidden');
@@ -202,26 +356,76 @@
                 console.error('Error saving result:', error);
             });
         }
-        function loadQuestions() {
-            return new Promise((resolve, reject) => {
-                db.ref('questions').once('value')
-                    .then(snapshot => {
-                        const data = snapshot.val();
-                        if (data) {
-                            questions = Object.values(data);
-                            resolve();
-                        } else {
-                            reject(new Error("No questions found in the database."));
-                        }
+        function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            if (isLoginMode) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(userCredential => {
+                        messageContainer.textContent = 'เข้าสู่ระบบสำเร็จ';
+                        messageContainer.className = 'alert alert-success';
+                        loadQuestions().then(()=> {
+                            document.getElementById('authForm').classList.add('hidden');
+                            document.getElementById('formSection').classList.remove('hidden');
+                        })
                     })
                     .catch(error => {
-                        console.error("Error fetching questions:", error);
-                        reject(error);
+                        messageContainer.textContent = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' + error.message;
+                        messageContainer.className = 'alert alert-danger';
                     });
-            });
+            } else {
+                const name = document.getElementById('name').value.trim();
+                const lastName = document.getElementById('lastname').value.trim();
+                const tel = document.getElementById('tel').value.trim();
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(userCredential => {
+                        db.ref('users/' + userCredential.user.uid).set({
+                            name: name,
+                            lastName: lastName,
+                            tel: tel,
+                            email: email
+                        });
+                        messageContainer.textContent = 'ลงทะเบียนสำเร็จ';
+                        messageContainer.className = 'alert alert-success';
+                        loadQuestions().then(()=> {
+                            document.getElementById('authForm').classList.add('hidden');
+                            document.getElementById('formSection').classList.remove('hidden');
+                        })
+                    })
+                    .catch(error => {
+                        messageContainer.textContent = 'เกิดข้อผิดพลาดในการลงทะเบียน: ' + error.message;
+                        messageContainer.className = 'alert alert-danger';
+                    });
+            }
         }
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            authForm.reset();
+            messageContainer.textContent = '';
+            if (isLoginMode) {
+                authButton.textContent = 'เข้าสู่ระบบ';
+                toggleAuthModeButton.textContent = 'ลงทะเบียน';
+                document.getElementById('name').parentNode.classList.add('hidden');
+                document.getElementById('lastname').parentNode.classList.add('hidden');
+                document.getElementById('tel').parentNode.classList.add('hidden');
+            } else {
+                authButton.textContent = 'ลงทะเบียน';
+                toggleAuthModeButton.textContent = 'เข้าสู่ระบบ';
+                document.getElementById('name').parentNode.classList.remove('hidden');
+                document.getElementById('lastname').parentNode.classList.remove('hidden');
+                document.getElementById('tel').parentNode.classList.remove('hidden');
+            }
+        }
+        authButton.addEventListener('click', handleAuth);
+        toggleAuthModeButton.addEventListener('click', toggleAuthMode);
         window.onload = () => {
-            fetchDataAndStartQuiz();
+            if (auth.currentUser) {
+                loadQuestions().then(() => {
+                    document.getElementById('authForm').classList.add('hidden');
+                    document.getElementById('formSection').classList.remove('hidden');
+                })
+            }
         };
         window.startQuiz = startQuiz;
         window.checkAnswers = checkAnswers;
