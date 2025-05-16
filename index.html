@@ -22,6 +22,7 @@
             font-weight: 600;
             margin-bottom: 1rem;
             color: #1e293b;
+            text-align: center;
         }
         .input-label {
             display: block;
@@ -149,6 +150,25 @@
         .auth-switch a:hover {
             color: #4338ca;
         }
+        .google-login-button {
+            background-color: #4285f4;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .google-login-button:hover {
+            background-color: #3574e0;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -180,6 +200,10 @@
                 <input type="tel" id="tel" name="tel" class="text-input" required>
             </div>
             <button id="authButton" type="submit" class="submit-button">ลงทะเบียน</button>
+            <button id="googleLoginButton" class="google-login-button" type="button">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="h-6 w-6">
+                ลงทะเบียนด้วย Google
+            </button>
             <div class="auth-switch">
                 มีบัญชีอยู่แล้ว? <a id="toggleAuthMode">เข้าสู่ระบบ</a>
             </div>
@@ -238,6 +262,7 @@
         const authButton = document.getElementById('authButton');
         const toggleAuthModeButton = document.getElementById('toggleAuthMode');
         const messageContainer = document.getElementById('message');
+        const googleLoginButton = document.getElementById('googleLoginButton');
         let isLoginMode = true;
         let studentData = {};
         let questions = [];
@@ -388,7 +413,7 @@
                         });
                         messageContainer.textContent = 'ลงทะเบียนสำเร็จ';
                         messageContainer.className = 'alert alert-success';
-                        loadQuestions().then(()=> {
+                         loadQuestions().then(()=> {
                             document.getElementById('authForm').classList.add('hidden');
                             document.getElementById('formSection').classList.remove('hidden');
                         })
@@ -409,16 +434,42 @@
                 document.getElementById('name').parentNode.classList.add('hidden');
                 document.getElementById('lastname').parentNode.classList.add('hidden');
                 document.getElementById('tel').parentNode.classList.add('hidden');
+                googleLoginButton.textContent = 'เข้าสู่ระบบด้วย Google';
             } else {
                 authButton.textContent = 'ลงทะเบียน';
                 toggleAuthModeButton.textContent = 'เข้าสู่ระบบ';
                 document.getElementById('name').parentNode.classList.remove('hidden');
                 document.getElementById('lastname').parentNode.classList.remove('hidden');
                 document.getElementById('tel').parentNode.classList.remove('hidden');
+                googleLoginButton.textContent = 'ลงทะเบียนด้วย Google';
             }
+        }
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    db.ref('users/' + user.uid).set({
+                        name: user.displayName.split(' ')[0],
+                        lastName: user.displayName.split(' ')[1] || '',
+                        tel: '',
+                        email: user.email
+                    });
+                    messageContainer.textContent = 'เข้าสู่ระบบด้วย Google สำเร็จ';
+                    messageContainer.className = 'alert alert-success';
+                     loadQuestions().then(()=> {
+                        document.getElementById('authForm').classList.add('hidden');
+                        document.getElementById('formSection').classList.remove('hidden');
+                    })
+                })
+                .catch((error) => {
+                    messageContainer.textContent = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google: ' + error.message;
+                    messageContainer.className = 'alert alert-danger';
+                });
         }
         authButton.addEventListener('click', handleAuth);
         toggleAuthModeButton.addEventListener('click', toggleAuthMode);
+        googleLoginButton.addEventListener('click', signInWithGoogle);
         window.onload = () => {
             if (auth.currentUser) {
                 loadQuestions().then(() => {
