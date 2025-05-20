@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบลงทะเบียนชมรมกีฬาสี</title>
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --light-color: #e2f0e6;
+            --dark-color: #145523;
+            --white-color: #ffffff;
+            --text-color: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: var(--white-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-left: 20px;
+        }
+        
+        .nav-link {
+            color: var(--white-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .banner {
+            background: linear-gradient(rgba(40, 167, 69, 0.8), rgba(20, 85, 35, 0.9)), url('/api/placeholder/1200/600') center/cover;
+            color: var(--white-color);
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .banner p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-light {
+            background-color: var(--white-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-light:hover {
+            background-color: var(--light-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .card {
+            background-color: var(--white-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .clubs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .club-card {
+            background-color: var(--white-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .club-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .club-card-body {
+            padding: 15px;
+        }
+        
+        .club-card-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .club-card-text {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .club-members {
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .active-page {
+            display: block;
+        }
+        
+        .profile-info {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-info .label {
+            font-weight: bold;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            background-color: var(--white-color);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+          #user-name-display {
+    color: white;
+    font-weight: bold;
+    margin-left: 20px;
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand" onclick="showPage('home')">ระบบลงทะเบียนชมรมกีฬาสี</a>
+        <ul class="navbar-nav" id="navbarNav">
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showPage('home')">หน้าแรก</a>
+            </li>
+            <li class="nav-item" id="clubs-nav">
+                <a class="nav-link" href="#" onclick="showPage('clubs')">ชมรมกีฬา</a>
+            </li>
+            <li class="nav-item" id="profile-nav" style="display: none;">
+                <a class="nav-link" href="#" onclick="showPage('profile')">โปรไฟล์</a>
+            </li>
+            <li class="nav-item" id="login-nav">
+                <a class="nav-link" href="#" onclick="showPage('login')">เข้าสู่ระบบ</a>
+            </li>
+            <li class="nav-item" id="register-nav">
+                <a class="nav-link" href="#" onclick="showPage('register')">สมัครสมาชิก</a>
+            </li>
+            <li class="nav-item" id="logout-nav" style="display: none;">
+                <a class="nav-link" href="#" onclick="logout()">ออกจากระบบ</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home" class="page active-page">
+        <div class="banner">
+            <h1>ยินดีต้อนรับสู่กีฬาสีเขียว</h1>
+            <p>ร่วมเป็นส่วนหนึ่งของทีมสีเขียว และร่วมสร้างความประทับใจไปด้วยกัน</p>
+            <a href="#" class="btn" onclick="showPage('clubs')">ลงทะเบียนชมรมกีฬา</a>
+        </div>
+        
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">กิจกรรมกีฬาสีเขียว</h2>
+                <p>ร่วมเป็นส่วนหนึ่งของทีมสีเขียวในการแข่งขันกีฬาสีประจำปีนี้ โดยลงทะเบียนเข้าร่วมชมรมกีฬาที่คุณถนัดและชื่นชอบ</p>
+                <p>เริ่มต้นโดยการสมัครสมาชิกและเลือกชมรมที่คุณสนใจ</p>
+                <div style="margin-top: 20px;">
+                    <a href="#" class="btn" onclick="showPage('register')">สมัครสมาชิก</a>
+                    <a href="#" class="btn btn-light" onclick="showPage('login')">เข้าสู่ระบบ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">เข้าสู่ระบบ</h2>
+                <div class="form-group">
+                    <label for="email">อีเมล</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="กรอกอีเมลของคุณ">
+                </div>
+                <div class="form-group">
+                    <label for="password">รหัสผ่าน</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ">
+                </div>
+                <button class="btn" onclick="loginUser()">เข้าสู่ระบบ</button>
+                <p style="margin-top: 15px;">ยังไม่มีบัญชี? <a href="#" onclick="showPage('register')">สมัครสมาชิก</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Page -->
+    <div id="register" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">สมัครสมาชิก</h2>
+                <div class="form-group">
+                    <label for="email">อีเมล</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="กรอกอีเมลของคุณ">
+                </div>
+                <div class="form-group">
+                    <label for="password">รหัสผ่าน</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ">
+                </div>
+                <div class="form-group">
+                    <label for="firstname">ชื่อ</label>
+                    <input type="text" id="register-firstname" class="form-control" placeholder="กรอกชื่อของคุณ">
+                </div>
+                <div class="form-group">
+                    <label for="lastname">นามสกุล</label>
+                    <input type="text" id="register-lastname" class="form-control" placeholder="กรอกนามสกุลของคุณ">
+                </div>
+                <div class="form-group">
+                    <label for="grade">ระดับชั้น</label>
+                    <select id="register-grade" class="form-control">
+                        <option value="">เลือกระดับชั้น</option>
+                        <option value="ม.1">ม.1</option>
+                        <option value="ม.2">ม.2</option>
+                        <option value="ม.3">ม.3</option>
+                        <option value="ม.4">ม.4</option>
+                        <option value="ม.5">ม.5</option>
+                        <option value="ม.6">ม.6</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="room">ห้อง</label>
+                    <select id="register-room" class="form-control">
+                        <option value="">เลือกห้อง</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="studentid">เลขประจำตัวนักเรียน</label>
+                    <input type="text" id="register-studentid" class="form-control" placeholder="กรอกเลขประจำตัวนักเรียน">
+                </div>
+                <button class="btn" onclick="registerUser()">สมัครสมาชิก</button>
+                <p style="margin-top: 15px;">มีบัญชีอยู่แล้ว? <a href="#" onclick="showPage('login')">เข้าสู่ระบบ</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clubs Page -->
+    <div id="clubs" class="page">
+        <div class="container">
+            <h2 class="card-title">ชมรมกีฬาที่เปิดรับสมัคร</h2>
+            <p id="clubs-info">กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา</p>
+            <div class="clubs-grid" id="clubs-container">
+                <!-- Clubs will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Club Detail Page -->
+    <div id="club-detail" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title" id="selected-club-name">ชมรมที่เลือก</h2>
+                <div id="selected-club-info">
+                    <p id="selected-club-description"></p>
+                    <p class="club-members" id="selected-club-members"></p>
+                </div>
+                <button class="btn" id="cancel-club" onclick="cancelClub()">ยกเลิกการเข้าร่วมชมรม</button>
+                <button class="btn btn-light" onclick="showPage('clubs')">กลับไปหน้าชมรม</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">โปรไฟล์ของฉัน</h2>
+                <div class="profile-info" id="profile-info-container">
+                    <!-- Profile info will be loaded here -->
+                </div>
+                <button class="btn" onclick="showEditProfileModal()">แก้ไขข้อมูล</button>
+                <div id="user-club-info">
+                    <h3 style="margin: 20px 0 10px 0;">ชมรมที่เข้าร่วม</h3>
+                    <p id="joined-club-info">คุณยังไม่ได้เข้าร่วมชมรมใด</p>
+                    <div id="joined-club-container" style="display: none;">
+                        <div class="club-card">
+                            <div class="club-card-body">
+                                <h3 class="club-card-title" id="joined-club-name"></h3>
+                                <p class="club-card-text" id="joined-club-description"></p>
+                                <button class="btn" onclick="goToJoinedClub()">ดูรายละเอียด</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="overlay" id="edit-profile-overlay">
+        <div class="modal">
+            <h2 class="modal-title">แก้ไขข้อมูลส่วนตัว</h2>
+            <div class="form-group">
+                <label for="edit-firstname">ชื่อ</label>
+                <input type="text" id="edit-firstname" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="edit-lastname">นามสกุล</label>
+                <input type="text" id="edit-lastname" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="edit-grade">ระดับชั้น</label>
+                <select id="edit-grade" class="form-control">
+                    <option value="ม.1">ม.1</option>
+                    <option value="ม.2">ม.2</option>
+                    <option value="ม.3">ม.3</option>
+                    <option value="ม.4">ม.4</option>
+                    <option value="ม.5">ม.5</option>
+                    <option value="ม.6">ม.6</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-room">ห้อง</label>
+                <select id="edit-room" class="form-control">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-studentid">เลขประจำตัวนักเรียน</label>
+                <input type="text" id="edit-studentid" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" onclick="closeEditProfileModal()">ยกเลิก</button>
+                <button class="btn" onclick="updateProfile()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-database-compat.min.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
+  authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
+  databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sitthichokthq-cbfbf",
+  storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
+  messagingSenderId: "810616160157",
+  appId: "1:810616160157:web:2280d80df55b61a0fdb974",
+  measurementId: "G-ST39DD230B"
+};
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Global variables
+        let currentUser = null;
+        let currentUserData = null;
+        let clubs = [];
+        let userClub = null;
+        
+        // Club data
+        const clubsData = [
+            {
+                id: "football",
+                name: "ฟุตบอล",
+                description: "ชมรมฟุตบอลสีเขียวที่พร้อมสร้างทีมแข็งแกร่งเพื่อการแข่งขัน",
+                maxMembers: 25
+            },
+            {
+                id: "basketball",
+                name: "บาสเกตบอล",
+                description: "ชมรมบาสเกตบอลสีเขียวที่มีความสามัคคีและความเป็นมืออาชีพ",
+                maxMembers: 20
+            },
+            {
+                id: "volleyball",
+                name: "วอลเลย์บอล",
+                description: "ชมรมวอลเลย์บอลสีเขียวที่มุ่งมั่นสู่ชัยชนะ",
+                maxMembers: 18
+            },
+            {
+                id: "badminton",
+                name: "แบดมินตัน",
+                description: "ชมรมแบดมินตันสีเขียวที่มุ่งพัฒนาทักษะและความแม่นยำ",
+                maxMembers: 20
+            },
+            {
+                id: "tabletennis",
+                name: "เทเบิลเทนนิส",
+                description: "ชมรมเทเบิลเทนนิสสีเขียวที่เน้นกลยุทธ์และความรวดเร็ว",
+                maxMembers: 15
+            },
+            {
+                id: "swimming",
+                name: "ว่ายน้ำ",
+                description: "ชมรมว่ายน้ำสีเขียวที่พร้อมแข่งขันในทุกระดับ",
+                maxMembers: 30
+            }
+        ];
+        
+        // Initial database setup
+        function setupDatabase() {
+            const dbRef = firebase.database().ref();
+            
+            // Check if clubs exist in database
+            dbRef.child('clubs').once('value')
+                .then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        // If clubs don't exist, initialize them
+                        clubsData.forEach(club => {
+                            dbRef.child('clubs').child(club.id).set({
+                                name: club.name,
+                                description: club.description,
+                                maxMembers: club.maxMembers,
+                                members: 0
+                            });
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error checking clubs:", error);
+                });
+        }
+        
+        // Show a specific page
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active-page');
+            });
+            
+            // Show the selected page
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // Handle specific page logic
+            if (pageId === 'clubs') {
+                loadClubs();
+            } else if (pageId === 'profile') {
+                loadUserProfile();
+            } else if (pageId === 'club-detail') {
+                loadSelectedClubDetail();
+            }
+        }
+        
+        // Register a new user
+        function registerUser() {
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const firstname = document.getElementById('register-firstname').value;
+            const lastname = document.getElementById('register-lastname').value;
+            const grade = document.getElementById('register-grade').value;
+            const room = document.getElementById('register-room').value;
+            const studentId = document.getElementById('register-studentid').value;
+            
+            // Validate fields
+            if (!email || !password || !firstname || !lastname || !grade || !room || !studentId) {
+                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                return;
+            }
+            
+            // Create user with email and password
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Get user and add additional data
+                    const user = userCredential.user;
+                    const userData = {
+                        email: email,
+                        firstname: firstname,
+                        lastname: lastname,
+                        grade: grade,
+                        room: room,
+                        studentId: studentId,
+                        clubId: null
+                    };
+                    
+                    // Save user data to database
+                    return firebase.database().ref('users/' + user.uid).set(userData);
+                })
+                .then(() => {
+                    alert('สมัครสมาชิกสำเร็จ!');
+                    document.getElementById('register-email').value = '';
+                    document.getElementById('register-password').value = '';
+                    document.getElementById('register-firstname').value = '';
+                    document.getElementById('register-lastname').value = '';
+                    document.getElementById('register-grade').value = '';
+                    document.getElementById('register-room').value = '';
+                    document.getElementById('register-studentid').value = '';
+                    
+                    // Load user data and show profile page
+                    loadUserData();
+                })
+                .catch((error) => {
+                    alert('เกิดข้อผิดพลาด: ' + error.message);
+                });
+        }
+        
+        // Login user
+        function loginUser() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Validate fields
+            if (!email || !password) {
+                alert('กรุณากรอกอีเมลและรหัสผ่าน');
+                return;
+            }
+            
+            // Sign in with email and password
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Clear login form
+                    document.getElementById('login-email').value = '';
+                    document.getElementById('login-password').value = '';
+                    
+                    alert('เข้าสู่ระบบสำเร็จ!');
+                    
+                    // Load user data and show profile page
+                    loadUserData();
+                })
+                .catch((error) => {
+                    alert('เกิดข้อผิดพลาด: ' + error.message);
+                });
+        }
+        
+        // Logout user
+        function logout() {
+            firebase.auth().signOut()
+                .then(() => {
+                    currentUser = null;
+                    currentUserData = null;
+                    userClub = null;
+                    updateUI();
+                    showPage('home');
+                    alert('ออกจากระบบสำเร็จ!');
+                })
+                .catch((error) => {
+                    alert('เกิดข้อผิดพลาด: ' + error.message);
+                });
+        }
+        
+        // Load user data
+        function loadUserData() {
+            currentUser = firebase.auth().currentUser;
+            
+            if (currentUser) {
+                firebase.database().ref('users/' + currentUser.uid).once('value')
+                    .then((snapshot) => {
+                        currentUserData = snapshot.val();
+                        
+                        // Check if user has a club
+                        if (currentUserData.clubId) {
+                            return firebase.database().ref('clubs/' + currentUserData.clubId).once('value');
+                        } else {
+                            userClub = null;
+                            updateUI();
+                            showPage('profile');
+                            return null;
+                        }
+                    })
+                    .then((clubSnapshot) => {
+                        if (clubSnapshot) {
+                            userClub = clubSnapshot.val();
+                            userClub.id = currentUserData.clubId;
+                        }
+                        
+                        updateUI();
+                        showPage('profile');
+                    })
+                    .catch((error) => {
+                        console.error("Error loading user data:", error);
+                    });
+            }
+        }
+        
+        // Update UI based on authentication state
+        function updateUI() {
+            if (currentUser) {
+                // User is logged in
+                document.getElementById('login-nav').style.display = 'block';
+                document.getElementById('register-nav').style.display = 'block';
+                document.getElementById('profile-nav').style.display = 'none';
+                document.getElementById('logout-nav').style.display = 'none';
+                document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
+            }
+        }
+        
+        // Load clubs
+        function loadClubs() {
+            firebase.database().ref('clubs').once('value')
+                .then((snapshot) => {
+                    clubs = [];
+                    snapshot.forEach((childSnapshot) => {
+                        const club = childSnapshot.val();
+                        club.id = childSnapshot.key;
+                        clubs.push(club);
+                    });
+                    
+                    renderClubs();
+                })
+                .catch((error) => {
+                    console.error("Error loading clubs:", error);
+                });
+        }
+        
+        // Render clubs in the clubs page
+        function renderClubs() {
+            const clubsContainer = document.getElementById('clubs-container');
+            clubsContainer.innerHTML = '';
+            
+            clubs.forEach(club => {
+                const clubCard = document.createElement('div');
+                clubCard.className = 'club-card';
+                
+                let buttonHtml = '';
+                let isDisabled = false;
+                let buttonText = 'เข้าร่วมชมรม';
+                
+                // Check if user is logged in
+                if (currentUser) {
+                    // Check if user already joined a club
+                    if (currentUserData.clubId) {
+                        if (currentUserData.clubId === club.id) {
+                            buttonText = 'คุณเป็นสมาชิกแล้ว';
+                        } else {
+                            buttonText = 'คุณเป็นสมาชิกชมรมอื่นแล้ว';
+                            isDisabled = true;
+                        }
+                    }
+                    
+                    // Check if club is full
+                    if (club.members >= club.maxMembers) {
+                        buttonText = 'ชมรมเต็มแล้ว';
+                        isDisabled = true;
+                    }
+                } else {
+                    // User is not logged in
+                    buttonText = 'กรุณาเข้าสู่ระบบ';
+                    isDisabled = true;
+                }
+                
+                buttonHtml = `<button class="btn" ${isDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : `onclick="joinClub('${club.id}')"`}>${buttonText}</button>`;
+                
+                clubCard.innerHTML = `
+                    <img src="/api/placeholder/300/180" alt="${club.name}">
+                    <div class="club-card-body">
+                        <h3 class="club-card-title">${club.name}</h3>
+                        <p class="club-card-text">${club.description}</p>
+                        <p class="club-members">สมาชิก: ${club.members || 0}/${club.maxMembers}</p>
+                        ${buttonHtml}
+                    </div>
+                `;
+                
+                clubsContainer.appendChild(clubCard);
+            });
+        }
+        
+        // Join a club
+        function joinClub(clubId) {
+            if (!currentUser) {
+                alert('กรุณาเข้าสู่ระบบก่อนเข้าร่วมชมรม');
+                showPage('login');
+                return;
+            }
+            
+            if (currentUserData.clubId) {
+                alert('คุณเป็นสมาชิกชมรมอยู่แล้ว');
+                return;
+            }
+            
+            // Get the club data
+            firebase.database().ref('clubs/' + clubId).once('value')
+                .then((snapshot) => {
+                    const club = snapshot.val();
+                    
+                    // Check if club is full
+                    if (club.members >= club.maxMembers) {
+                        alert('ชมรมเต็มแล้ว');
+                        return;
+                    }
+                    
+                    // Update club members count
+                    const updates = {};
+                    updates[`clubs/${clubId}/members`] = (club.members || 0) + 1;
+                    updates[`users/${currentUser.uid}/clubId`] = clubId;
+                    
+                    return firebase.database().ref().update(updates);
+                })
+                .then(() => {
+                    alert('เข้าร่วมชมรมสำเร็จ!');
+                    
+                    // Reload user data
+                    loadUserData();
+                })
+                .catch((error) => {
+                    console.error("Error joining club:", error);
+                    alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                });
+        }
+        
+        // Cancel club membership
+        function cancelClub() {
+            if (!currentUser || !currentUserData.clubId) {
+                alert('คุณไม่ได้เป็นสมาชิกชมรมใด');
+                return;
+            }
+            
+            const clubId = currentUserData.clubId;
+            
+            // Get the club data
+            firebase.database().ref('clubs/' + clubId).once('value')
+                .then((snapshot) => {
+                    const club = snapshot.val();
+                    
+                    // Update club members count
+                    const updates = {};
+                    updates[`clubs/${clubId}/members`] = Math.max(0, (club.members || 0) - 1);
+                    updates[`users/${currentUser.uid}/clubId`] = null;
+                    
+                    return firebase.database().ref().update(updates);
+                })
+                .then(() => {
+                    alert('ยกเลิกการเข้าร่วมชมรมสำเร็จ!');
+                    
+                    // Reload user data
+                    loadUserData();
+                })
+                .catch((error) => {
+                    console.error("Error cancelling club:", error);
+                    alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                });
+        }
+        
+        // Load user profile
+        function loadUserProfile() {
+            if (!currentUser || !currentUserData) {
+                showPage('login');
+                return;
+            }
+            
+            const profileInfoContainer = document.getElementById('profile-info-container');
+            profileInfoContainer.innerHTML = `
+                <div class="label">อีเมล</div>
+                <div>${currentUserData.email}</div>
+                
+                <div class="label">ชื่อ</div>
+                <div>${currentUserData.firstname}</div>
+                
+                <div class="label">นามสกุล</div>
+                <div>${currentUserData.lastname}</div>
+                
+                <div class="label">ระดับชั้น</div>
+                <div>${currentUserData.grade}</div>
+                
+                <div class="label">ห้อง</div>
+                <div>${currentUserData.room}</div>
+                
+                <div class="label">เลขประจำตัว</div>
+                <div>${currentUserData.studentId}</div>
+            `;
+            
+            // Show user's club if any
+            if (userClub) {
+                document.getElementById('joined-club-info').style.display = 'none';
+                document.getElementById('joined-club-container').style.display = 'block';
+                document.getElementById('joined-club-name').textContent = userClub.name;
+                document.getElementById('joined-club-description').textContent = userClub.description;
+            } else {
+                document.getElementById('joined-club-info').style.display = 'block';
+                document.getElementById('joined-club-container').style.display = 'none';
+            }
+        }
+        
+        // Load selected club detail
+        function loadSelectedClubDetail() {
+            if (!currentUser || !currentUserData || !currentUserData.clubId) {
+                showPage('clubs');
+                return;
+            }
+            
+            const clubId = currentUserData.clubId;
+            
+            firebase.database().ref('clubs/' + clubId).once('value')
+                .then((snapshot) => {
+                    const club = snapshot.val();
+                    
+                    document.getElementById('selected-club-name').textContent = club.name;
+                    document.getElementById('selected-club-description').textContent = club.description;
+                    document.getElementById('selected-club-members').textContent = `สมาชิก: ${club.members || 0}/${club.maxMembers}`;
+                })
+                .catch((error) => {
+                    console.error("Error loading club detail:", error);
+                });
+        }
+        
+        // Go to joined club detail
+        function goToJoinedClub() {
+            showPage('club-detail');
+        }
+        
+        // Show edit profile modal
+        function showEditProfileModal() {
+            if (!currentUserData) return;
+            
+            document.getElementById('edit-firstname').value = currentUserData.firstname;
+            document.getElementById('edit-lastname').value = currentUserData.lastname;
+            document.getElementById('edit-grade').value = currentUserData.grade;
+            document.getElementById('edit-room').value = currentUserData.room;
+            document.getElementById('edit-studentid').value = currentUserData.studentId;
+            
+            document.getElementById('edit-profile-overlay').style.display = 'flex';
+        }
+        
+        // Close edit profile modal
+        function closeEditProfileModal() {
+            document.getElementById('edit-profile-overlay').style.display = 'none';
+        }
+        
+        // Update user profile
+        function updateProfile() {
+            if (!currentUser) return;
+            
+            const firstname = document.getElementById('edit-firstname').value;
+            const lastname = document.getElementById('edit-lastname').value;
+            const grade = document.getElementById('edit-grade').value;
+            const room = document.getElementById('edit-room').value;
+            const studentId = document.getElementById('edit-studentid').value;
+            
+            // Validate fields
+            if (!firstname || !lastname || !grade || !room || !studentId) {
+                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                return;
+            }
+            
+            // Update user data
+            const updates = {
+                firstname: firstname,
+                lastname: lastname,
+                grade: grade,
+                room: room,
+                studentId: studentId
+            };
+            
+            firebase.database().ref('users/' + currentUser.uid).update(updates)
+                .then(() => {
+                    alert('อัปเดตข้อมูลสำเร็จ!');
+                    closeEditProfileModal();
+                    
+                    // Update current user data
+                    currentUserData = {
+                        ...currentUserData,
+                        ...updates
+                    };
+                    
+                    // Reload profile
+                    loadUserProfile();
+                })
+                .catch((error) => {
+                    console.error("Error updating profile:", error);
+                    alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                });
+        }
+        
+        // Check authentication state
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loadUserData();
+            } else {
+                currentUser = null;
+                currentUserData = null;
+                userClub = null;
+                updateUI();
+            }
+        });
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDatabase();
+        });
+
+         // Update UI based on authentication state (fixed version)
+    function updateUI() {
+        if (currentUser) {
+            // Show authenticated state
+            document.getElementById('login-nav').style.display = 'none';
+            document.getElementById('register-nav').style.display = 'none';
+            document.getElementById('profile-nav').style.display = 'block';
+            document.getElementById('logout-nav').style.display = 'block';
+            document.getElementById('clubs-info').textContent = '';
+        } else {
+            // Show guest state
+            document.getElementById('login-nav').style.display = 'block';
+            document.getElementById('register-nav').style.display = 'block';
+            document.getElementById('profile-nav').style.display = 'none';
+            document.getElementById('logout-nav').style.display = 'none';
+            document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
+        }
+    }
+
+    // Ensure updateUI is called immediately after setting currentUser in onAuthStateChanged
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            loadUserData();
+        } else {
+            currentUser = null;
+            currentUserData = null;
+            userClub = null;
+            updateUI();
+        }
+    });
+    // Add name display
+    function updateUI() {
+        const userNameDisplay = document.getElementById('user-name-display');
+
+        if (currentUser) {
+            document.getElementById('login-nav').style.display = 'none';
+            document.getElementById('register-nav').style.display = 'none';
+            document.getElementById('profile-nav').style.display = 'block';
+            document.getElementById('logout-nav').style.display = 'block';
+            document.getElementById('clubs-info').textContent = '';
+
+            if (currentUserData && userNameDisplay) {
+                userNameDisplay.textContent = `${currentUserData.firstname} ${currentUserData.lastname}`;
+                userNameDisplay.style.display = 'block';
+            }
+        } else {
+            document.getElementById('login-nav').style.display = 'block';
+            document.getElementById('register-nav').style.display = 'block';
+            document.getElementById('profile-nav').style.display = 'none';
+            document.getElementById('logout-nav').style.display = 'none';
+            document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
+
+            if (userNameDisplay) {
+                userNameDisplay.textContent = '';
+                userNameDisplay.style.display = 'none';
+            }
+        }
+    }
+
+    // Ensure updateUI is called immediately after setting currentUser in onAuthStateChanged
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            loadUserData();
+        } else {
+            currentUser = null;
+            currentUserData = null;
+            userClub = null;
+            updateUI();
+        }
+    });
+     // Add name display
+    function updateUI() {
+        const userNameDisplay = document.getElementById('user-name-display');
+        const homeNav = document.getElementById('home-nav');
+
+        if (currentUser) {
+            document.getElementById('login-nav').style.display = 'none';
+            document.getElementById('register-nav').style.display = 'none';
+            document.getElementById('profile-nav').style.display = 'block';
+            document.getElementById('logout-nav').style.display = 'block';
+            if (homeNav) homeNav.style.display = 'none';
+            document.getElementById('clubs-info').textContent = '';
+
+            if (currentUserData && userNameDisplay) {
+                userNameDisplay.textContent = `${currentUserData.firstname} ${currentUserData.lastname}`;
+                userNameDisplay.style.display = 'block';
+            }
+        } else {
+            document.getElementById('login-nav').style.display = 'block';
+            document.getElementById('register-nav').style.display = 'block';
+            document.getElementById('profile-nav').style.display = 'none';
+            document.getElementById('logout-nav').style.display = 'none';
+            if (homeNav) homeNav.style.display = 'block';
+            document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
+
+            if (userNameDisplay) {
+                userNameDisplay.textContent = '';
+                userNameDisplay.style.display = 'none';
+            }
+        }
+    }
+
+    // Ensure updateUI is called immediately after setting currentUser in onAuthStateChanged
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            loadUserData();
+        } else {
+            currentUser = null;
+            currentUserData = null;
+            userClub = null;
+            updateUI();
+        }
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+    const nav = document.querySelector('.navbar-nav');
+
+    // Add ID to home nav item
+    const homeNavItem = Array.from(nav.children).find(li => li.querySelector('.nav-link')?.innerText.includes('หน้าแรก'));
+    if (homeNavItem) homeNavItem.id = 'home-nav';
+
+    const nameItem = document.createElement('li');
+    nameItem.className = 'nav-item';
+    nameItem.innerHTML = '<span id="user-name-display"></span>';
+    nav.appendChild(nameItem);
+  });
+    </script>
+</body>
+</html>
