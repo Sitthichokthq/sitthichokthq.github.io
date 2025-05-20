@@ -1151,6 +1151,20 @@
     nameItem.innerHTML = '<span id="user-name-display"></span>';
     nav.appendChild(nameItem);
   });
+  // Check for duplicate firstname + studentId before registering
+    function checkDuplicateUser(firstname, studentId) {
+        return firebase.database().ref('users').once('value').then(snapshot => {
+            let isDuplicate = false;
+            snapshot.forEach(child => {
+                const user = child.val();
+                if (user.firstname === firstname && user.studentId === studentId) {
+                    isDuplicate = true;
+                    return true; // break loop
+                }
+            });
+            return isDuplicate;
+        });
+    }
     </script>
 </body>
 </html>
