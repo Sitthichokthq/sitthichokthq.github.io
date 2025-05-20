@@ -500,18 +500,21 @@
         // Club data
         const clubsData = [
             {
+                imglink: "https://cdn.pixabay.com/photo/2014/10/14/20/24/soccer-488700_1280.jpg",
                 id: "football",
                 name: "ฟุตบอล",
                 description: "ชมรมฟุตบอลสีเขียวที่พร้อมสร้างทีมแข็งแกร่งเพื่อการแข่งขัน",
                 maxMembers: 25
             },
             {
+                imglink: "https://example.com/football.jpg",
                 id: "basketball",
                 name: "บาสเกตบอล",
                 description: "ชมรมบาสเกตบอลสีเขียวที่มีความสามัคคีและความเป็นมืออาชีพ",
                 maxMembers: 20
             },
             {
+                 imglink: "https://example.com/football.jpg",
                 id: "volleyball",
                 name: "วอลเลย์บอล",
                 description: "ชมรมวอลเลย์บอลสีเขียวที่มุ่งมั่นสู่ชัยชนะ",
@@ -524,12 +527,14 @@
                 maxMembers: 20
             },
             {
+                imglink: "https://example.com/football.jpg",
                 id: "tabletennis",
                 name: "เทเบิลเทนนิส",
                 description: "ชมรมเทเบิลเทนนิสสีเขียวที่เน้นกลยุทธ์และความรวดเร็ว",
                 maxMembers: 15
             },
             {
+                imglink: "https://example.com/football.jpg",
                 id: "swimming",
                 name: "ว่ายน้ำ",
                 description: "ชมรมว่ายน้ำสีเขียวที่พร้อมแข่งขันในทุกระดับ",
@@ -551,7 +556,8 @@
                                 name: club.name,
                                 description: club.description,
                                 maxMembers: club.maxMembers,
-                                members: 0
+                                members: 0,
+                                imglink: club.imglink
                             });
                         });
                     }
@@ -780,7 +786,7 @@
                 buttonHtml = `<button class="btn" ${isDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : `onclick="joinClub('${club.id}')"`}>${buttonText}</button>`;
                 
                 clubCard.innerHTML = `
-                    <img src="/api/placeholder/300/180" alt="${club.name}">
+                    <img src="${club.imglink}" alt="${club.name}">
                     <div class="club-card-body">
                         <h3 class="club-card-title">${club.name}</h3>
                         <p class="club-card-text">${club.description}</p>
