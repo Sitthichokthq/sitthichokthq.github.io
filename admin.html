@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบหลังบ้าน - ผู้ดูแล</title>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      margin: 0;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+    h1 {
+      color: #145523;
+      margin-bottom: 20px;
+    }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .filter-bar input,
+    .filter-bar select,
+    .filter-bar button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .filter-bar button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #28a745;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    @media (max-width: 768px) {
+      .filter-bar {
+        flex-direction: column;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: white;
+        padding: 10px;
+      }
+      td {
+        position: relative;
+        padding-left: 50%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+      td::before {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 45%;
+        font-weight: bold;
+        white-space: nowrap;
+        color: #333;
+      }
+      td:nth-of-type(1)::before { content: "ชื่อ"; }
+      td:nth-of-type(2)::before { content: "ระดับชั้น"; }
+      td:nth-of-type(3)::before { content: "ห้อง"; }
+      td:nth-of-type(4)::before { content: "เลขประจำตัว"; }
+      td:nth-of-type(5)::before { content: "ชมรมกีฬา"; }
+    }
+  </style>
+</head>
+<body>
+  <h1>ระบบหลังบ้าน - ผู้ดูแล</h1>
+  <div class="filter-bar">
+    <input type="text" id="searchName" placeholder="ค้นหาชื่อ...">
+    <select id="filterClass">
+      <option value="">ทุกระดับชั้น</option>
+      <option value="ม.1">ม.1</option>
+      <option value="ม.2">ม.2</option>
+      <option value="ม.3">ม.3</option>
+      <option value="ม.4">ม.4</option>
+      <option value="ม.5">ม.5</option>
+      <option value="ม.6">ม.6</option>
+    </select>
+    <select id="filterRoom">
+      <option value="">ทุกห้อง</option>
+      <option value="1">ห้อง 1</option>
+      <option value="2">ห้อง 2</option>
+      <option value="3">ห้อง 3</option>
+      <option value="4">ห้อง 4</option>
+      <option value="5">ห้อง 5</option>
+      <option value="6">ห้อง 6</option>
+      <option value="7">ห้อง 7</option>
+      <option value="8">ห้อง 8</option>
+      <option value="9">ห้อง 9</option>
+      <option value="10">ห้อง 10</option>
+    </select>
+    <select id="filterClub">
+      <option value="">ทุกชมรม</option>
+      <option value="football">ฟุตบอล</option>
+      <option value="basketball">บาสเกตบอล</option>
+      <option value="volleyball">วอลเลย์บอล</option>
+      <option value="badminton">แบดมินตัน</option>
+      <option value="tabletennis">เทเบิลเทนนิส</option>
+      <option value="swimming">ว่ายน้ำ</option>
+    </select>
+    <button onclick="printPDF()">พิมพ์ PDF</button>
+  </div>
+  <table id="clubTable">
+    <thead>
+      <tr>
+        <th>ชื่อ</th>
+        <th>ระดับชั้น</th>
+        <th>ห้อง</th>
+        <th>เลขประจำตัว</th>
+        <th>ชมรมกีฬา</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/polyfills.utf8.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.standard_fonts_metrics.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.split_text_to_size.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.from_html.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
+  authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
+  databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sitthichokthq-cbfbf",
+  storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
+  messagingSenderId: "810616160157",
+  appId: "1:810616160157:web:2280d80df55b61a0fdb974",
+  measurementId: "G-ST39DD230B"
+};
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let allUsers = [];
+
+    function loadTableData() {
+      const tbody = document.querySelector("#clubTable tbody");
+      tbody.innerHTML = "";
+      db.ref("users").once("value", (snapshot) => {
+        allUsers = [];
+        snapshot.forEach(child => {
+          const user = child.val();
+          allUsers.push(user);
+        });
+        renderTable();
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector("#clubTable tbody");
+      tbody.innerHTML = "";
+      const nameVal = document.getElementById("searchName").value.toLowerCase();
+    const classVal = document.getElementById("filterClass").value;
+      const roomVal = document.getElementById("filterRoom").value;
+      const clubVal = document.getElementById("filterClub").value;
+
+      allUsers.filter(user => {
+        const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
+        return (
+          fullName.includes(nameVal) &&
+          (classVal === "" || user.grade === classVal) &&
+          (roomVal === "" || user.room === roomVal) &&
+          (clubVal === "" || user.clubId === clubVal)
+        );
+      }).forEach(user => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${user.firstname} ${user.lastname}</td>
+          <td>${user.grade}</td>
+          <td>${user.room}</td>
+          <td>${user.studentId}</td>
+          <td>${user.clubId || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("searchName").addEventListener("input", renderTable);
+    document.getElementById("filterClass").addEventListener("change", renderTable);
+    document.getElementById("filterRoom").addEventListener("change", renderTable);
+    document.getElementById("filterClub").addEventListener("change", renderTable);
+
+   async function printPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // โหลดฟอนต์ภาษาไทยจาก base64
+    const fontUrl = "https://cdn.jsdelivr.net/gh/kittinan/thai-fonts/th-sarabun-new-normal.ttf";
+    const fontName = "THSarabunNew";
+
+    const fontData = await fetch(fontUrl).then(res => res.arrayBuffer());
+    const uint8 = new Uint8Array(fontData);
+    doc.addFileToVFS("THSarabunNew.ttf", btoa(String.fromCharCode(...uint8)));
+    doc.addFont("THSarabunNew.ttf", fontName, "normal");
+    doc.setFont(fontName);
+    doc.setFontSize(16);
+
+    let y = 10;
+    doc.text("รายชื่อนักเรียนแยกตามห้องและชมรม", 10, y);
+    y += 10;
+
+    const filtered = allUsers.filter(user => {
+      const nameVal = document.getElementById("searchName").value.toLowerCase();
+      const classVal = document.getElementById("filterClass").value;
+      const roomVal = document.getElementById("filterRoom").value;
+      const clubVal = document.getElementById("filterClub").value;
+      const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
+      return (
+        fullName.includes(nameVal) &&
+        (classVal === "" || user.grade === classVal) &&
+        (roomVal === "" || user.room === roomVal) &&
+        (clubVal === "" || user.clubId === clubVal)
+      );
+    });
+
+    filtered.forEach((user, index) => {
+      const line = `${index + 1}. ${user.firstname} ${user.lastname} | ชั้น: ${user.grade} ห้อง: ${user.room} | รหัส: ${user.studentId} | ชมรม: ${user.clubId || '-'}`;
+      doc.text(line, 10, y);
+      y += 10;
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+
+    doc.save("รายชื่อนักเรียน.pdf");
+  }
+
+    document.addEventListener("DOMContentLoaded", loadTableData);
+  </script>
+</body>
+</html>

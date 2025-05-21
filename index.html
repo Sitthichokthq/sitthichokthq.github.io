@@ -236,17 +236,101 @@
         }
 
           #user-name-display {
-    color: white;
-    font-weight: bold;
-    margin-left: 20px;
-    display: none;
+            color: white;
+            font-weight: bold;
+            margin-left: 20px;
+            display: none;
 }
+
+.navbar-toggle {
+      display: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: white;
+    }
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+   .navbar-nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #218838;
+        margin-top: 10px;
+      }
+      .navbar-nav.active {
+        display: flex;
+      }
+      .navbar-toggle {
+        display: block;
+      }
+
+    .nav-item {
+        margin: 10px 0;
+    }
+
+    .banner h1 {
+        font-size: 1.8rem;
+    }
+
+    .banner p {
+        font-size: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .clubs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-info {
+        grid-template-columns: 1fr;
+    }
+
+    .modal {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .form-control {
+        font-size: 1rem;
+    }
+}
+
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a href="#" class="navbar-brand" onclick="showPage('home')">ระบบลงทะเบียนชมรมกีฬาสี</a>
+        <a href="#" class="navbar-brand" onclick="showPage('home')">สีเขียว - กีฬาสี</a>
+        <button class="navbar-toggle" onclick="toggleMenu()">☰</button>
         <ul class="navbar-nav" id="navbarNav">
             <li class="nav-item">
                 <a class="nav-link" href="#" onclick="showPage('home')">หน้าแรก</a>
@@ -268,6 +352,12 @@
             </li>
         </ul>
     </nav>
+
+    <script>
+    function toggleMenu() {
+      document.getElementById('navbarNav').classList.toggle('active');
+    }
+  </script>
 
     <!-- Home Page -->
     <div id="home" class="page active-page">
@@ -1165,6 +1255,14 @@
             return isDuplicate;
         });
     }
+    checkDuplicateUser(firstname, studentId).then(isDuplicate => {
+  if (isDuplicate) {
+    alert('พบข้อมูลซ้ำในระบบ');
+  } else {
+    // ดำเนินการสมัครสมาชิกต่อ
+  }
+});
+
     </script>
 </body>
 </html>
