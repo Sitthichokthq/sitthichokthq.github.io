@@ -35,6 +35,9 @@
       border: none;
       cursor: pointer;
     }
+    .filter-bar button:hover {
+      background-color: #218838;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -44,7 +47,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     th, td {
-      padding: 12px 15px;
+      padding: 12px 8px;
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
@@ -55,6 +58,126 @@
     tr:hover {
       background-color: #f1f1f1;
     }
+    .status-active {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .status-blocked {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: white;
+    }
+    .btn-edit {
+      background-color: #ffc107;
+    }
+    .btn-edit:hover {
+      background-color: #e0a800;
+    }
+    .btn-block {
+      background-color: #fd7e14;
+    }
+    .btn-block:hover {
+      background-color: #e8590c;
+    }
+    .btn-unblock {
+      background-color: #17a2b8;
+    }
+    .btn-unblock:hover {
+      background-color: #138496;
+    }
+    .btn-delete {
+      background-color: #dc3545;
+    }
+    .btn-delete:hover {
+      background-color: #c82333;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 15px;
+      top: 10px;
+    }
+    .close:hover {
+      color: black;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .btn-save {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-cancel {
+      background-color: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    
+    
     @media (max-width: 768px) {
       .filter-bar {
         flex-direction: column;
@@ -94,6 +217,11 @@
       td:nth-of-type(3)::before { content: "ห้อง"; }
       td:nth-of-type(4)::before { content: "เลขประจำตัว"; }
       td:nth-of-type(5)::before { content: "ชมรมกีฬา"; }
+      td:nth-of-type(6)::before { content: "สถานะ"; }
+      td:nth-of-type(7)::before { content: "จัดการ"; }
+      .action-buttons {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -132,8 +260,14 @@
       <option value="tabletennis">เทเบิลเทนนิส</option>
       <option value="swimming">ว่ายน้ำ</option>
     </select>
+    <select id="filterStatus">
+      <option value="">ทุกสถานะ</option>
+      <option value="active">เปิดใช้งาน</option>
+      <option value="blocked">ถูกบล็อก</option>
+    </select>
     <button onclick="printPDF()">พิมพ์ PDF</button>
   </div>
+  
   <table id="clubTable">
     <thead>
       <tr>
@@ -142,33 +276,97 @@
         <th>ห้อง</th>
         <th>เลขประจำตัว</th>
         <th>ชมรมกีฬา</th>
+        <th>สถานะ</th>
+        <th>จัดการ</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/polyfills.utf8.js"></script>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.standard_fonts_metrics.js"></script>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.split_text_to_size.js"></script>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.from_html.js"></script>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h2>แก้ไขข้อมูลนักเรียน</h2>
+      <form id="editForm">
+        <div class="form-group">
+          <label>ชื่อ:</label>
+          <input type="text" id="editFirstname" required>
+        </div>
+        <div class="form-group">
+          <label>นามสกุล:</label>
+          <input type="text" id="editLastname" required>
+        </div>
+        <div class="form-group">
+          <label>ระดับชั้น:</label>
+          <select id="editGrade" required>
+            <option value="ม.1">ม.1</option>
+            <option value="ม.2">ม.2</option>
+            <option value="ม.3">ม.3</option>
+            <option value="ม.4">ม.4</option>
+            <option value="ม.5">ม.5</option>
+            <option value="ม.6">ม.6</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ห้อง:</label>
+          <select id="editRoom" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>เลขประจำตัว:</label>
+          <input type="text" id="editStudentId" required>
+        </div>
+        <div class="form-group">
+          <label>ชมรมกีฬา:</label>
+          <select id="editClub">
+            <option value="">ไม่ได้เลือก</option>
+            <option value="football">ฟุตบอล</option>
+            <option value="basketball">บาสเกตบอล</option>
+            <option value="volleyball">วอลเลย์บอล</option>
+            <option value="badminton">แบดมินตัน</option>
+            <option value="tabletennis">เทเบิลเทนนิส</option>
+            <option value="swimming">ว่ายน้ำ</option>
+          </select>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" class="btn-cancel" onclick="closeEditModal()">ยกเลิก</button>
+          <button type="submit" class="btn-save">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
-  authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
-  databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "sitthichokthq-cbfbf",
-  storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
-  messagingSenderId: "810616160157",
-  appId: "1:810616160157:web:2280d80df55b61a0fdb974",
-  measurementId: "G-ST39DD230B"
-};
+      apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
+      authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
+      databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sitthichokthq-cbfbf",
+      storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
+      messagingSenderId: "810616160157",
+      appId: "1:810616160157:web:2280d80df55b61a0fdb974",
+      measurementId: "G-ST39DD230B"
+    };
+    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let allUsers = [];
+    let currentEditUserId = null;
 
     function loadTableData() {
       const tbody = document.querySelector("#clubTable tbody");
@@ -177,6 +375,7 @@
         allUsers = [];
         snapshot.forEach(child => {
           const user = child.val();
+          user.id = child.key; // เก็บ key สำหรับการแก้ไข/ลบ
           allUsers.push(user);
         });
         renderTable();
@@ -187,82 +386,207 @@
       const tbody = document.querySelector("#clubTable tbody");
       tbody.innerHTML = "";
       const nameVal = document.getElementById("searchName").value.toLowerCase();
-    const classVal = document.getElementById("filterClass").value;
+      const classVal = document.getElementById("filterClass").value;
       const roomVal = document.getElementById("filterRoom").value;
       const clubVal = document.getElementById("filterClub").value;
+      const statusVal = document.getElementById("filterStatus").value;
 
       allUsers.filter(user => {
         const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
+        const userStatus = user.status || 'active';
         return (
           fullName.includes(nameVal) &&
           (classVal === "" || user.grade === classVal) &&
           (roomVal === "" || user.room === roomVal) &&
-          (clubVal === "" || user.clubId === clubVal)
+          (clubVal === "" || user.clubId === clubVal) &&
+          (statusVal === "" || userStatus === statusVal)
         );
       }).forEach(user => {
         const tr = document.createElement("tr");
+        const userStatus = user.status || 'active';
+        const statusText = userStatus === 'blocked' ? 'ถูกบล็อก' : 'เปิดใช้งาน';
+        const statusClass = userStatus === 'blocked' ? 'status-blocked' : 'status-active';
+        
         tr.innerHTML = `
           <td>${user.firstname} ${user.lastname}</td>
           <td>${user.grade}</td>
           <td>${user.room}</td>
           <td>${user.studentId}</td>
           <td>${user.clubId || '-'}</td>
+          <td><span class="${statusClass}">${statusText}</span></td>
+          <td class="action-buttons">
+            <button class="btn btn-edit" onclick="openEditModal('${user.id}')">แก้ไข</button>
+            ${userStatus === 'blocked' ? 
+              `<button class="btn btn-unblock" onclick="unblockUser('${user.id}')">ปลดบล็อก</button>` :
+              `<button class="btn btn-block" onclick="blockUser('${user.id}')">บล็อก</button>`
+            }
+            <button class="btn btn-delete" onclick="deleteUser('${user.id}')">ลบ</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
+    // Event Listeners สำหรับ Filter
     document.getElementById("searchName").addEventListener("input", renderTable);
     document.getElementById("filterClass").addEventListener("change", renderTable);
     document.getElementById("filterRoom").addEventListener("change", renderTable);
     document.getElementById("filterClub").addEventListener("change", renderTable);
+    document.getElementById("filterStatus").addEventListener("change", renderTable);
 
-   async function printPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    // ฟังก์ชัน Block User
+    function blockUser(userId) {
+      if (confirm('คุณต้องการบล็อกผู้ใช้คนนี้หรือไม่?')) {
+        db.ref(`users/${userId}`).update({
+          status: 'blocked'
+        }).then(() => {
+          alert('บล็อกผู้ใช้เรียบร้อยแล้ว');
+          loadTableData();
+        }).catch((error) => {
+          alert('เกิดข้อผิดพลาด: ' + error.message);
+        });
+      }
+    }
 
-    // โหลดฟอนต์ภาษาไทยจาก base64
-    const fontUrl = "https://cdn.jsdelivr.net/gh/kittinan/thai-fonts/th-sarabun-new-normal.ttf";
-    const fontName = "THSarabunNew";
+    // ฟังก์ชัน Unblock User
+    function unblockUser(userId) {
+      if (confirm('คุณต้องการปลดบล็อกผู้ใช้คนนี้หรือไม่?')) {
+        db.ref(`users/${userId}`).update({
+          status: 'active'
+        }).then(() => {
+          alert('ปลดบล็อกผู้ใช้เรียบร้อยแล้ว');
+          loadTableData();
+        }).catch((error) => {
+          alert('เกิดข้อผิดพลาด: ' + error.message);
+        });
+      }
+    }
 
-    const fontData = await fetch(fontUrl).then(res => res.arrayBuffer());
-    const uint8 = new Uint8Array(fontData);
-    doc.addFileToVFS("THSarabunNew.ttf", btoa(String.fromCharCode(...uint8)));
-    doc.addFont("THSarabunNew.ttf", fontName, "normal");
-    doc.setFont(fontName);
-    doc.setFontSize(16);
+    // ฟังก์ชัน Delete User
+    function deleteUser(userId) {
+      if (confirm('คุณต้องการลบผู้ใช้คนนี้หรือไม่? การกระทำนี้ไม่สามารถยกเลิกได้')) {
+        db.ref(`users/${userId}`).remove()
+        .then(() => {
+          alert('ลบผู้ใช้เรียบร้อยแล้ว');
+          loadTableData();
+        }).catch((error) => {
+          alert('เกิดข้อผิดพลาด: ' + error.message);
+        });
+      }
+    }
 
-    let y = 10;
-    doc.text("รายชื่อนักเรียนแยกตามห้องและชมรม", 10, y);
-    y += 10;
+    // ฟังก์ชัน Edit User
+    function openEditModal(userId) {
+      currentEditUserId = userId;
+      const user = allUsers.find(u => u.id === userId);
+      
+      if (user) {
+        document.getElementById('editFirstname').value = user.firstname;
+        document.getElementById('editLastname').value = user.lastname;
+        document.getElementById('editGrade').value = user.grade;
+        document.getElementById('editRoom').value = user.room;
+        document.getElementById('editStudentId').value = user.studentId;
+        document.getElementById('editClub').value = user.clubId || '';
+        
+        document.getElementById('editModal').style.display = 'block';
+      }
+    }
 
-    const filtered = allUsers.filter(user => {
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      currentEditUserId = null;
+    }
+
+    // Handle Edit Form Submit
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (!currentEditUserId) return;
+      
+      const updatedData = {
+        firstname: document.getElementById('editFirstname').value,
+        lastname: document.getElementById('editLastname').value,
+        grade: document.getElementById('editGrade').value,
+        room: document.getElementById('editRoom').value,
+        studentId: document.getElementById('editStudentId').value,
+        clubId: document.getElementById('editClub').value || null
+      };
+
+      db.ref(`users/${currentEditUserId}`).update(updatedData)
+      .then(() => {
+        alert('อัปเดตข้อมูลเรียบร้อยแล้ว');
+        closeEditModal();
+        loadTableData();
+      }).catch((error) => {
+        alert('เกิดข้อผิดพลาด: ' + error.message);
+      });
+    });
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('editModal');
+      if (event.target == modal) {
+        closeEditModal();
+      }
+    }
+
+    // PDF Function (Updated to include status)
+    async function printPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const fontUrl = "https://cdn.jsdelivr.net/gh/kittinan/thai-fonts/th-sarabun-new-normal.ttf";
+      const fontName = "THSarabunNew";
+
+      try {
+        const fontData = await fetch(fontUrl).then(res => res.arrayBuffer());
+        const uint8 = new Uint8Array(fontData);
+        doc.addFileToVFS("THSarabunNew.ttf", btoa(String.fromCharCode(...uint8)));
+        doc.addFont("THSarabunNew.ttf", fontName, "normal");
+        doc.setFont(fontName);
+      } catch (error) {
+        console.log('Could not load Thai font, using default');
+      }
+      
+      doc.setFontSize(16);
+      let y = 10;
+      doc.text("รายชื่อนักเรียนแยกตามห้องและชมรม", 10, y);
+      y += 10;
+
       const nameVal = document.getElementById("searchName").value.toLowerCase();
       const classVal = document.getElementById("filterClass").value;
       const roomVal = document.getElementById("filterRoom").value;
       const clubVal = document.getElementById("filterClub").value;
-      const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
-      return (
-        fullName.includes(nameVal) &&
-        (classVal === "" || user.grade === classVal) &&
-        (roomVal === "" || user.room === roomVal) &&
-        (clubVal === "" || user.clubId === clubVal)
-      );
-    });
+      const statusVal = document.getElementById("filterStatus").value;
 
-    filtered.forEach((user, index) => {
-      const line = `${index + 1}. ${user.firstname} ${user.lastname} | ชั้น: ${user.grade} ห้อง: ${user.room} | รหัส: ${user.studentId} | ชมรม: ${user.clubId || '-'}`;
-      doc.text(line, 10, y);
-      y += 10;
-      if (y > 280) {
-        doc.addPage();
-        y = 10;
-      }
-    });
+      const filtered = allUsers.filter(user => {
+        const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
+        const userStatus = user.status || 'active';
+        return (
+          fullName.includes(nameVal) &&
+          (classVal === "" || user.grade === classVal) &&
+          (roomVal === "" || user.room === roomVal) &&
+          (clubVal === "" || user.clubId === clubVal) &&
+          (statusVal === "" || userStatus === statusVal)
+        );
+      });
 
-    doc.save("รายชื่อนักเรียน.pdf");
-  }
+      filtered.forEach((user, index) => {
+        const userStatus = user.status || 'active';
+        const statusText = userStatus === 'blocked' ? 'ถูกบล็อก' : 'เปิดใช้งาน';
+        const line = `${index + 1}. ${user.firstname} ${user.lastname} | ชั้น: ${user.grade} ห้อง: ${user.room} | รหัส: ${user.studentId} | ชมรม: ${user.clubId || '-'} | สถานะ: ${statusText}`;
+        doc.text(line, 10, y);
+        y += 10;
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+      });
 
+      doc.save("รายชื่อนักเรียน.pdf");
+    }
+
+    // Load data when page loads
     document.addEventListener("DOMContentLoaded", loadTableData);
   </script>
 </body>

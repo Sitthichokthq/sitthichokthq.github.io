@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จัดการข้อมูลชมรมกีฬา</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #f59e0b;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #06b6d4;
+      --light-color: #f8fafc;
+      --dark-color: #1e293b;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .toolbar {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 50px 12px 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 50px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .search-box i {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+    }
+
+    .add-btn {
+      background: var(--success-color);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .club-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .club-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .club-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .club-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .club-card:hover .club-image {
+      transform: scale(1.05);
+    }
+
+    .club-content {
+      padding: 20px;
+    }
+
+    .club-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--dark-color);
+      margin-bottom: 8px;
+    }
+
+    .club-description {
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .club-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: var(--light-color);
+      border-radius: 12px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    .club-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn-edit {
+      background: var(--warning-color);
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #d97706;
+      transform: translateY(-2px);
+    }
+
+    .btn-delete {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideIn 0.3s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: var(--light-color);
+      color: var(--danger-color);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-control:disabled {
+      background: var(--light-color);
+      cursor: not-allowed;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-success {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: white;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.7;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to { 
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        min-width: auto;
+      }
+
+      .club-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-trophy"></i> จัดการชมรมกีฬา</h1>
+      <p>ระบบจัดการข้อมูลชมรมกีฬาที่ทันสมัยและใช้งานง่าย</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="ค้นหาชมรม..." onkeyup="filterClubs()">
+        <i class="fas fa-search"></i>
+      </div>
+      <button class="add-btn" onclick="openCreateModal()">
+        <i class="fas fa-plus"></i>
+        เพิ่มชมรมใหม่
+      </button>
+    </div>
+
+    <div class="club-grid" id="clubGrid"></div>
+
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <i class="fas fa-users"></i>
+      <h3>ยังไม่มีชมรมกีฬา</h3>
+      <p>เริ่มต้นสร้างชมรมแรกของคุณ</p>
+    </div>
+  </div>
+
+  <!-- Create Modal -->
+  <div class="modal" id="createModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">สร้างชมรมใหม่</h2>
+        <button class="close-btn" onclick="closeCreateModal()">&times;</button>
+      </div>
+      <form id="createForm">
+        <div class="form-group">
+          <label class="form-label" for="new-id">รหัสชมรม</label>
+          <input type="text" class="form-control" id="new-id" placeholder="เช่น football, basketball">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-name">ชื่อชมรม</label>
+          <input type="text" class="form-control" id="new-name" placeholder="เช่น ชมรมฟุตบอล">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-desc">รายละเอียด</label>
+          <textarea class="form-control" id="new-desc" placeholder="บรรยายเกี่ยวกับชมรม..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-img">ลิงก์รูปภาพ</label>
+          <input type="url" class="form-control" id="new-img" placeholder="https://example.com/image.jpg">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-max">จำนวนสมาชิกสูงสุด</label>
+          <input type="number" class="form-control" id="new-max" min="1" placeholder="20">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-success" onclick="createClub()">
+            <i class="fas fa-plus"></i> สร้างชมรม
+          </button>
+          <button type="button" class="btn btn-edit" onclick="closeCreateModal()">
+            <i class="fas fa-times"></i> ยกเลิก
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">แก้ไขชมรม</h2>
+        <button class="close-btn" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="editForm">
+        <div class="form-group">
+          <label class="form-label" for="edit-id">รหัสชมรม</label>
+          <input type="text" class="form-control" id="edit-id" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-name">ชื่อชมรม</label>
+          <input type="text" class="form-control" id="edit-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-desc">รายละเอียด</label>
+          <textarea class="form-control" id="edit-desc"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-img">ลิงก์รูปภาพ</label>
+          <input type="url" class="form-control" id="edit-img">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-max">จำนวนสมาชิกสูงสุด</label>
+          <input type="number" class="form-control" id="edit-max" min="1">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" onclick="saveEdit()">
+            <i class="fas fa-save"></i> บันทึกการแก้ไข
+          </button>
+          <button type="button" class="btn btn-delete" onclick="deleteClub()">
+            <i class="fas fa-trash"></i> ลบชมรม
+          </button>
+          <button type="button" class="btn btn-edit" onclick="closeEditModal()">
+            <i class="fas fa-times"></i> ยกเลิก
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
+      authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
+      databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sitthichokthq-cbfbf",
+      storageBucket: "sitthichokthq-cbfbf.appspot.com",
+      messagingSenderId: "810616160157",
+      appId: "1:810616160157:web:2280d80df55b61a0fdb974",
+      measurementId: "G-ST39DD230B"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let clubsData = {};
+
+    function loadClubs() {
+      const grid = document.getElementById('clubGrid');
+      const emptyState = document.getElementById('emptyState');
+      
+      db.ref('clubs').once('value', snapshot => {
+        clubsData = snapshot.val() || {};
+        displayClubs(clubsData);
+      });
+    }
+
+    function displayClubs(clubs) {
+      const grid = document.getElementById('clubGrid');
+      const emptyState = document.getElementById('emptyState');
+      
+      grid.innerHTML = '';
+      
+      if (Object.keys(clubs).length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      Object.entries(clubs).forEach(([id, club]) => {
+        const card = document.createElement('div');
+        card.className = 'club-card';
+        card.innerHTML = `
+          <img src="${club.imglink}" alt="${club.name}" class="club-image" onerror="this.src='/api/placeholder/350/200'">
+          <div class="club-content">
+            <h3 class="club-title">${club.name}</h3>
+            <p class="club-description">${club.description}</p>
+            <div class="club-stats">
+              <div class="stat-item">
+                <div class="stat-value">${club.members || 0}</div>
+                <div class="stat-label">สมาชิก</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">${club.maxMembers}</div>
+                <div class="stat-label">ที่นั่งสูงสุด</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">${Math.round(((club.members || 0) / club.maxMembers) * 100)}%</div>
+                <div class="stat-label">อัตราเต็ม</div>
+              </div>
+            </div>
+            <div class="club-actions">
+              <button class="btn btn-edit" onclick="editClub('${id}')">
+                <i class="fas fa-edit"></i> แก้ไข
+              </button>
+              <button class="btn btn-delete" onclick="confirmDelete('${id}')">
+                <i class="fas fa-trash"></i> ลบ
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterClubs() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const filteredClubs = {};
+      
+      Object.entries(clubsData).forEach(([id, club]) => {
+        if (club.name.toLowerCase().includes(searchTerm) || 
+            club.description.toLowerCase().includes(searchTerm)) {
+          filteredClubs[id] = club;
+        }
+      });
+      
+      displayClubs(filteredClubs);
+    }
+
+    function openCreateModal() {
+      document.getElementById('createModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      clearCreateForm();
+    }
+
+    function clearCreateForm() {
+      document.getElementById('new-id').value = '';
+      document.getElementById('new-name').value = '';
+      document.getElementById('new-desc').value = '';
+      document.getElementById('new-img').value = '';
+      document.getElementById('new-max').value = '';
+    }
+
+    function createClub() {
+      const id = document.getElementById('new-id').value.trim();
+      const name = document.getElementById('new-name').value.trim();
+      const desc = document.getElementById('new-desc').value.trim();
+      const img = document.getElementById('new-img').value.trim();
+      const max = parseInt(document.getElementById('new-max').value);
+
+      if (!id || !name || !desc || !img || isNaN(max) || max < 1) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+        return;
+      }
+
+      if (clubsData[id]) {
+        alert('รหัสชมรมนี้มีอยู่แล้ว กรุณาใช้รหัสอื่น');
+        return;
+      }
+
+      db.ref('clubs/' + id).set({
+        name,
+        description: desc,
+        imglink: img,
+        maxMembers: max,
+        members: 0
+      }).then(() => {
+        alert('✅ สร้างชมรมสำเร็จ!');
+        closeCreateModal();
+        loadClubs();
+      }).catch(err => {
+        alert('❌ เกิดข้อผิดพลาด: ' + err.message);
+      });
+    }
+
+    function editClub(id) {
+      const club = clubsData[id];
+      if (!club) return;
+
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-name').value = club.name;
+      document.getElementById('edit-desc').value = club.description;
+      document.getElementById('edit-img').value = club.imglink;
+      document.getElementById('edit-max').value = club.maxMembers;
+
+      document.getElementById('editModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    function saveEdit() {
+      const id = document.getElementById('edit-id').value;
+      const name = document.getElementById('edit-name').value.trim();
+      const desc = document.getElementById('edit-desc').value.trim();
+      const img = document.getElementById('edit-img').value.trim();
+      const max = parseInt(document.getElementById('edit-max').value);
+
+      if (!name || !desc || !img || isNaN(max) || max < 1) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+        return;
+      }
+
+      db.ref('clubs/' + id).update({
+        name,
+        description: desc,
+        imglink: img,
+        maxMembers: max
+      }).then(() => {
+        alert('✅ บันทึกการแก้ไขสำเร็จ!');
+        closeEditModal();
+        loadClubs();
+      }).catch(err => {
+        alert('❌ เกิดข้อผิดพลาด: ' + err.message);
+      });
+    }
+
+    function confirmDelete(id) {
+      const club = clubsData[id];
+      if (!club) return;
+
+      if (confirm(`คุณต้องการลบชมรม "${club.name}" จริงหรือไม่?\n\n⚠️ การดำเนินการนี้ไม่สามารถย้อนกลับได้`)) {
+        deleteClubById(id);
+      }
+    }
+
+    function deleteClub() {
+      const id = document.getElementById('edit-id').value;
+      const club = clubsData[id];
+      
+      if (confirm(`คุณต้องการลบชมรม "${club.name}" จริงหรือไม่?\n\n⚠️ การดำเนินการนี้ไม่สามารถย้อนกลับได้`)) {
+        deleteClubById(id);
+        closeEditModal();
+      }
+    }
+
+    function deleteClubById(id) {
+      db.ref('clubs/' + id).remove()
+        .then(() => {
+          alert('✅ ลบชมรมเรียบร้อยแล้ว');
+          loadClubs();
+        })
+        .catch(err => {
+          alert('❌ เกิดข้อผิดพลาด: ' + err.message);
+        });
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      const createModal = document.getElementById('createModal');
+      const editModal = document.getElementById('editModal');
+      
+      if (event.target === createModal) {
+        closeCreateModal();
+      }
+      if (event.target === editModal) {
+        closeEditModal();
+      }
+    }
+
+    // Load clubs when page loads
+    document.addEventListener('DOMContentLoaded', loadClubs);
+  </script>
+</body>
+</html>

@@ -4,63 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบลงทะเบียนชมรมกีฬาสี</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #28a745;
-            --secondary-color: #218838;
-            --light-color: #e2f0e6;
-            --dark-color: #145523;
+            --primary-green: #22c55e;
+            --dark-green: #16a34a;
+            --light-green: #dcfce7;
+            --pale-green: #f0fdf4;
+            --emerald: #10b981;
+            --forest-green: #065f46;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
             --white-color: #ffffff;
-            --text-color: #333333;
+            --light-gray: #f8fafc;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --email-blue : #0693d4;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Sarabun', sans-serif;
         }
         
         body {
-            background-color: #f8f9fa;
-            color: var(--text-color);
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #065f46 100%);
+            color: var(--text-dark);
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         .navbar {
-            background-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .navbar-brand {
-            color: var(--white-color);
-            font-size: 1.5rem;
-            font-weight: bold;
+            color: var(--primary-green);
+            font-size: 1.8rem;
+            font-weight: 700;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            font-size: 2rem;
         }
         
         .navbar-nav {
             display: flex;
             list-style: none;
+            align-items: center;
+            gap: 20px;
         }
         
         .nav-item {
-            margin-left: 20px;
+            position: relative;
         }
         
         .nav-link {
-            color: var(--white-color);
+            color: var(--text-dark);
             text-decoration: none;
             font-weight: 500;
-            transition: opacity 0.3s;
+            padding: 10px 15px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .nav-link:hover {
-            opacity: 0.8;
+            background: var(--light-green);
+            color: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        #user-name-display {
+            background: var(--light-green);
+            color: var(--dark-green);
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .navbar-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--primary-green);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .navbar-toggle:hover {
+            background: var(--light-green);
         }
         
         .container {
@@ -70,119 +150,262 @@
         }
         
         .banner {
-            background: linear-gradient(rgba(40, 167, 69, 0.8), rgba(20, 85, 35, 0.9)), url('/api/placeholder/1200/600') center/cover;
-            color: var(--white-color);
-            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--text-dark);
+            padding: 60px 40px;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 20px;
             margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-green), var(--emerald), var(--primary-green));
         }
         
         .banner h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 15px;
+            color: var(--dark-green);
+            font-weight: 700;
         }
         
         .banner p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 30px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .banner-icon {
+            font-size: 4rem;
+            color: var(--primary-green);
+            margin-bottom: 20px;
         }
         
         .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: var(--white-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--primary-green);
+            color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            transition: all 0.3s ease;
             text-decoration: none;
-        }
-        
-        .btn-light {
-            background-color: var(--white-color);
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            box-shadow: var(--shadow);
         }
         
         .btn:hover {
-            background-color: var(--secondary-color);
+            background: var(--dark-green);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
         }
         
-        .btn-light:hover {
-            background-color: var(--light-color);
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+
+         .btn-email {
+            background: transparent;
+            color: var(--email-blue);
+            border: 2px solid var(--email-blue);
+        }
+        
+        .btn-email:hover {
+            background: var(--email-blue);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--dark-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title i {
+            color: var(--primary-green);
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
         }
         
         .form-control {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 15px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             font-size: 1rem;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
         }
-        
-        .card {
-            background-color: var(--white-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
         }
-        
-        .card-title {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: var(--primary-color);
+
+        .form-control:disabled {
+            background: var(--light-gray);
+            cursor: not-allowed;
         }
         
         .clubs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
         }
         
         .club-card {
-            background-color: var(--white-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .club-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
         }
         
         .club-card img {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .club-card:hover img {
+            transform: scale(1.05);
         }
         
         .club-card-body {
-            padding: 15px;
+            padding: 25px;
         }
         
         .club-card-title {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--dark-green);
+            font-weight: 600;
         }
         
         .club-card-text {
             margin-bottom: 15px;
-            color: var(--text-color);
+            color: var(--text-gray);
+            line-height: 1.6;
         }
         
         .club-members {
-            margin-bottom: 10px;
-            color: var(--secondary-color);
-            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--primary-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .club-stats {
+            display: flex;
+            justify-content: space-between;
+            background: var(--pale-green);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-green);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-gray);
         }
         
         .page {
             display: none;
+            min-height: calc(100vh - 80px);
         }
         
         .active-page {
@@ -192,12 +415,20 @@
         .profile-info {
             display: grid;
             grid-template-columns: 150px 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: var(--pale-green);
+            padding: 20px;
+            border-radius: 15px;
         }
         
         .profile-info .label {
-            font-weight: bold;
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+
+        .profile-info .value {
+            color: var(--text-dark);
         }
         
         .overlay {
@@ -206,175 +437,285 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             display: none;
+            backdrop-filter: blur(5px);
         }
         
         .modal {
-            background-color: var(--white-color);
-            padding: 30px;
-            border-radius: 8px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .modal-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--dark-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .modal-footer {
-            margin-top: 20px;
+            margin-top: 30px;
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 15px;
         }
 
-          #user-name-display {
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
             color: white;
-            font-weight: bold;
-            margin-left: 20px;
-            display: none;
-}
+        }
 
-.navbar-toggle {
-      display: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: white;
-    }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
 
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
 
-   .navbar-nav {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background-color: #218838;
-        margin-top: 10px;
-      }
-      .navbar-nav.active {
-        display: flex;
-      }
-      .navbar-toggle {
-        display: block;
-      }
+        .empty-state p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
 
-    .nav-item {
-        margin: 10px 0;
-    }
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .banner h1 {
-        font-size: 1.8rem;
-    }
+        .alert-info {
+            background: rgba(6, 182, 212, 0.1);
+            color: #0891b2;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
 
-    .banner p {
-        font-size: 1rem;
-    }
+        .joined-club-display {
+            background: var(--light-green);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-green);
+        }
 
-    .btn {
-        width: 100%;
-        padding: 12px;
-        font-size: 1rem;
-        margin-top: 10px;
-    }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
 
-    .container {
-        padding: 10px;
-    }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-green), var(--emerald));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
 
-    .card {
-        padding: 15px;
-    }
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px 20px;
+            }
 
-    .card-title {
-        font-size: 1.2rem;
-    }
+            .navbar-nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                margin-top: 15px;
+                padding: 15px 0;
+                border-radius: 15px;
+                gap: 5px;
+            }
 
-    .clubs-grid {
-        grid-template-columns: 1fr;
-    }
+            .navbar-nav.active {
+                display: flex;
+            }
 
-    .profile-info {
-        grid-template-columns: 1fr;
-    }
+            .navbar-toggle {
+                display: block;
+                position: absolute;
+                top: 15px;
+                right: 20px;
+            }
 
-    .modal {
-        width: 95%;
-        padding: 20px;
-    }
+            .nav-item {
+                width: 100%;
+            }
 
-    .modal-title {
-        font-size: 1.2rem;
-    }
+            .nav-link {
+                width: 100%;
+                justify-content: center;
+                margin: 5px 15px;
+            }
 
-    .form-control {
-        font-size: 1rem;
-    }
-}
+            .banner h1 {
+                font-size: 2rem;
+            }
 
+            .banner p {
+                font-size: 1.1rem;
+            }
+
+            .banner {
+                padding: 40px 20px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+
+            .clubs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-info {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                width: 95%;
+                padding: 25px;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a href="#" class="navbar-brand" onclick="showPage('home')">ชมรมกีฬาสีเขียว</a>
-        <button class="navbar-toggle" onclick="toggleMenu()">☰</button>
+        <a href="#" class="navbar-brand" onclick="showPage('home')">
+            <i class="fas fa-trophy"></i>
+            ชมรมกีฬาสีเขียว
+        </a>
+        <button class="navbar-toggle" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
         <ul class="navbar-nav" id="navbarNav">
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="showPage('home')">หน้าแรก</a>
+            <li class="nav-item" id="home-nav">
+                <a class="nav-link" href="#" onclick="showPage('home')">
+                    <i class="fas fa-home"></i> หน้าแรก
+                </a>
             </li>
             <li class="nav-item" id="clubs-nav">
-                <a class="nav-link" href="#" onclick="showPage('clubs')">ชมรมกีฬา</a>
+                <a class="nav-link" href="#" onclick="showPage('clubs')">
+                    <i class="fas fa-users"></i> ชมรมกีฬา
+                </a>
             </li>
             <li class="nav-item" id="profile-nav" style="display: none;">
-                <a class="nav-link" href="#" onclick="showPage('profile')">โปรไฟล์</a>
+                <a class="nav-link" href="#" onclick="showPage('profile')">
+                    <i class="fas fa-user"></i> โปรไฟล์
+                </a>
             </li>
             <li class="nav-item" id="login-nav">
-                <a class="nav-link" href="#" onclick="showPage('login')">เข้าสู่ระบบ</a>
+                <a class="nav-link" href="#" onclick="showPage('login')">
+                    <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
+                </a>
             </li>
             <li class="nav-item" id="register-nav">
-                <a class="nav-link" href="#" onclick="showPage('register')">สมัครสมาชิก</a>
+                <a class="nav-link" href="#" onclick="showPage('register')">
+                    <i class="fas fa-user-plus"></i> สมัครสมาชิก
+                </a>
             </li>
             <li class="nav-item" id="logout-nav" style="display: none;">
-                <a class="nav-link" href="#" onclick="logout()">ออกจากระบบ</a>
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+                </a>
+            </li>
+            <li class="nav-item">
+                <span id="user-name-display"></span>
             </li>
         </ul>
     </nav>
 
-    <script>
-    function toggleMenu() {
-      document.getElementById('navbarNav').classList.toggle('active');
-    }
-  </script>
-
     <!-- Home Page -->
     <div id="home" class="page active-page">
         <div class="banner">
+            <div class="banner-icon">
+                <i class="fas fa-medal"></i>
+            </div>
             <h1>ยินดีต้อนรับสู่กีฬาสีเขียว</h1>
+            <h3>นี่คือการทดสอบระบบ</h3>
             <p>ร่วมเป็นส่วนหนึ่งของทีมสีเขียว และร่วมสร้างความประทับใจไปด้วยกัน</p>
-            <a href="#" class="btn" onclick="showPage('clubs')">ลงทะเบียนชมรมกีฬา</a>
+            <a href="#" class="btn" onclick="showPage('clubs')">
+                <i class="fas fa-running"></i>
+                ลงทะเบียนชมรมกีฬา
+            </a>
         </div>
         
         <div class="container">
             <div class="card">
-                <h2 class="card-title">กิจกรรมกีฬาสีเขียว</h2>
+                <h2 class="card-title">
+                    <i class="fas fa-trophy"></i>
+                    กิจกรรมกีฬาสีเขียว
+                </h2>
                 <p>ร่วมเป็นส่วนหนึ่งของทีมสีเขียวในการแข่งขันกีฬาสีประจำปีนี้ โดยลงทะเบียนเข้าร่วมชมรมกีฬาที่คุณถนัดและชื่นชอบ</p>
                 <p>เริ่มต้นโดยการสมัครสมาชิกและเลือกชมรมที่คุณสนใจ</p>
-                <div style="margin-top: 20px;">
-                    <a href="#" class="btn" onclick="showPage('register')">สมัครสมาชิก</a>
-                    <a href="#" class="btn btn-light" onclick="showPage('login')">เข้าสู่ระบบ</a>
+                <div style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="#" class="btn" onclick="showPage('register')">
+                        <i class="fas fa-user-plus"></i>
+                        สมัครสมาชิก
+                    </a>
+                    <a href="#" class="btn btn-outline" onclick="showPage('login')">
+                        <i class="fas fa-sign-in-alt"></i>
+                        เข้าสู่ระบบ
+                    </a>
                 </div>
             </div>
         </div>
@@ -384,17 +725,26 @@
     <div id="login" class="page">
         <div class="container">
             <div class="card">
-                <h2 class="card-title">เข้าสู่ระบบ</h2>
+                <h2 class="card-title">
+                    <i class="fas fa-sign-in-alt"></i>
+                    เข้าสู่ระบบ
+                </h2>
                 <div class="form-group">
-                    <label for="email">อีเมล</label>
+                    <label class="form-label" for="login-email">อีเมล</label>
                     <input type="email" id="login-email" class="form-control" placeholder="กรอกอีเมลของคุณ">
                 </div>
                 <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
+                    <label class="form-label" for="login-password">รหัสผ่าน</label>
                     <input type="password" id="login-password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ">
                 </div>
-                <button class="btn" onclick="loginUser()">เข้าสู่ระบบ</button>
-                <p style="margin-top: 15px;">ยังไม่มีบัญชี? <a href="#" onclick="showPage('register')">สมัครสมาชิก</a></p>
+                <button class="btn" onclick="loginUser()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    เข้าสู่ระบบ
+                </button>
+                <p style="margin-top: 20px; text-align: center;">
+                    ยังไม่มีบัญชี? 
+                    <a href="#" onclick="showPage('register')" style="color: var(--primary-green); font-weight: 600;">สมัครสมาชิก</a>
+                </p>
             </div>
         </div>
     </div>
@@ -403,27 +753,197 @@
     <div id="register" class="page">
         <div class="container">
             <div class="card">
-                <h2 class="card-title">สมัครสมาชิก</h2>
+                <h2 class="card-title">
+                    <i class="fas fa-user-plus"></i>
+                    สมัครสมาชิก
+                </h2>
                 <div class="form-group">
-                    <label for="email">อีเมล</label>
+                    <label class="form-label" for="register-email">อีเมล</label>
                     <input type="email" id="register-email" class="form-control" placeholder="กรอกอีเมลของคุณ">
                 </div>
                 <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
+                    <label class="form-label" for="register-password">รหัสผ่าน</label>
                     <input type="password" id="register-password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ">
                 </div>
-                <div class="form-group">
-                    <label for="firstname">ชื่อ</label>
-                    <input type="text" id="register-firstname" class="form-control" placeholder="กรอกชื่อของคุณ">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label" for="register-firstname">ชื่อ</label>
+                        <input type="text" id="register-firstname" class="form-control" placeholder="กรอกชื่อของคุณ">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="register-lastname">นามสกุล</label>
+                        <input type="text" id="register-lastname" class="form-control" placeholder="กรอกนามสกุลของคุณ">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label" for="register-grade">ระดับชั้น</label>
+                        <select id="register-grade" class="form-control">
+                            <option value="">เลือกระดับชั้น</option>
+                            <option value="ม.1">ม.1</option>
+                            <option value="ม.2">ม.2</option>
+                            <option value="ม.3">ม.3</option>
+                            <option value="ม.4">ม.4</option>
+                            <option value="ม.5">ม.5</option>
+                            <option value="ม.6">ม.6</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="register-room">ห้อง</label>
+                        <select id="register-room" class="form-control">
+                            <option value="">เลือกห้อง</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="lastname">นามสกุล</label>
-                    <input type="text" id="register-lastname" class="form-control" placeholder="กรอกนามสกุลของคุณ">
+                    <label class="form-label" for="register-studentid">เลขประจำตัวนักเรียน</label>
+                    <input type="text" id="register-studentid" class="form-control" placeholder="กรอกเลขประจำตัวนักเรียน">
+                </div>
+                <button class="btn" onclick="registerUser()">
+                    <i class="fas fa-user-plus"></i>
+                    สมัครสมาชิก
+                </button>
+                <p style="margin-top: 20px; text-align: center;">
+                    มีบัญชีอยู่แล้ว? 
+                    <a href="#" onclick="showPage('login')" style="color: var(--primary-green); font-weight: 600;">เข้าสู่ระบบ</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clubs Page -->
+    <div id="clubs" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-users"></i>
+                    ชมรมกีฬาที่เปิดรับสมัคร
+                </h2>
+                <div class="alert alert-info" id="clubs-info">
+                    <i class="fas fa-info-circle"></i>
+                    กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา
+                </div>
+            </div>
+            <div class="clubs-grid" id="clubs-container">
+                <!-- Clubs will be loaded here -->
+            </div>
+            
+            <div class="empty-state" id="clubs-empty" style="display: none;">
+                <i class="fas fa-users"></i>
+                <h3>ยังไม่มีชมรมกีฬา</h3>
+                <p>โปรดรอการเปิดรับสมัครชมรมกีฬา</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Club Detail Page -->
+    <div id="club-detail" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title" id="selected-club-name">
+                    <i class="fas fa-users"></i>
+                    ชมรมที่เลือก
+                </h2>
+                <div id="selected-club-info">
+                    <p id="selected-club-description"></p>
+                    <div class="club-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="selected-club-members-count">0</div>
+                            <div class="stat-label">สมาชิกปัจจุบัน</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="selected-club-max-members">0</div>
+                            <div class="stat-label">จำนวนสูงสุด</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="selected-club-percentage">0%</div>
+                            <div class="stat-label">อัตราเต็ม</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-danger" id="cancel-club" onclick="cancelClub()">
+                        <i class="fas fa-times"></i>
+                        ยกเลิกการเข้าร่วมชมรม
+                    </button>
+                    <button class="btn btn-outline" onclick="showPage('clubs')">
+                        <i class="fas fa-arrow-left"></i>
+                        กลับไปหน้าชมรม
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-user"></i>
+                    โปรไฟล์ของฉัน
+                </h2>
+                <div class="profile-info" id="profile-info-container">
+                    <!-- Profile info will be loaded here -->
+                </div>
+                <button class="btn" onclick="showEditProfileModal()">
+                    <i class="fas fa-edit"></i>
+                    แก้ไขข้อมูล
+                </button>
+                
+                <div id="user-club-info">
+                    <h3 style="margin: 30px 0 15px 0; color: var(--dark-green); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-users"></i>
+                        ชมรมที่เข้าร่วม
+                    </h3>
+                    <p id="joined-club-info" class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        คุณยังไม่ได้เข้าร่วมชมรมใด
+                    </p>
+                    <div id="joined-club-container" class="joined-club-display" style="display: none;">
+                        <h4 id="joined-club-name" style="color: var(--dark-green); margin-bottom: 10px;"></h4>
+                        <p id="joined-club-description" style="margin-bottom: 15px;"></p>
+                        <button class="btn btn-outline" onclick="goToJoinedClub()">
+                            <i class="fas fa-eye"></i>
+                            ดูรายละเอียด
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="overlay" id="edit-profile-overlay">
+        <div class="modal">
+            <h2 class="modal-title">
+                <i class="fas fa-edit"></i>
+                แก้ไขข้อมูลส่วนตัว
+            </h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label class="form-label" for="edit-firstname">ชื่อ</label>
+                    <input type="text" id="edit-firstname" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="grade">ระดับชั้น</label>
-                    <select id="register-grade" class="form-control">
-                        <option value="">เลือกระดับชั้น</option>
+                    <label class="form-label" for="edit-lastname">นามสกุล</label>
+                    <input type="text" id="edit-lastname" class="form-control">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label class="form-label" for="edit-grade">ระดับชั้น</label>
+                    <select id="edit-grade" class="form-control">
                         <option value="ม.1">ม.1</option>
                         <option value="ม.2">ม.2</option>
                         <option value="ม.3">ม.3</option>
@@ -433,9 +953,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="room">ห้อง</label>
-                    <select id="register-room" class="form-control">
-                        <option value="">เลือกห้อง</option>
+                    <label class="form-label" for="edit-room">ห้อง</label>
+                    <select id="edit-room" class="form-control">
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -448,135 +967,52 @@
                         <option value="10">10</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="studentid">เลขประจำตัวนักเรียน</label>
-                    <input type="text" id="register-studentid" class="form-control" placeholder="กรอกเลขประจำตัวนักเรียน">
-                </div>
-                <button class="btn" onclick="registerUser()">สมัครสมาชิก</button>
-                <p style="margin-top: 15px;">มีบัญชีอยู่แล้ว? <a href="#" onclick="showPage('login')">เข้าสู่ระบบ</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Clubs Page -->
-    <div id="clubs" class="page">
-        <div class="container">
-            <h2 class="card-title">ชมรมกีฬาที่เปิดรับสมัคร</h2>
-            <p id="clubs-info">กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา</p>
-            <div class="clubs-grid" id="clubs-container">
-                <!-- Clubs will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Club Detail Page -->
-    <div id="club-detail" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title" id="selected-club-name">ชมรมที่เลือก</h2>
-                <div id="selected-club-info">
-                    <p id="selected-club-description"></p>
-                    <p class="club-members" id="selected-club-members"></p>
-                </div>
-                <button class="btn" id="cancel-club" onclick="cancelClub()">ยกเลิกการเข้าร่วมชมรม</button>
-                <button class="btn btn-light" onclick="showPage('clubs')">กลับไปหน้าชมรม</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Page -->
-    <div id="profile" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title">โปรไฟล์ของฉัน</h2>
-                <div class="profile-info" id="profile-info-container">
-                    <!-- Profile info will be loaded here -->
-                </div>
-                <button class="btn" onclick="showEditProfileModal()">แก้ไขข้อมูล</button>
-                <div id="user-club-info">
-                    <h3 style="margin: 20px 0 10px 0;">ชมรมที่เข้าร่วม</h3>
-                    <p id="joined-club-info">คุณยังไม่ได้เข้าร่วมชมรมใด</p>
-                    <div id="joined-club-container" style="display: none;">
-                        <div class="club-card">
-                            <div class="club-card-body">
-                                <h3 class="club-card-title" id="joined-club-name"></h3>
-                                <p class="club-card-text" id="joined-club-description"></p>
-                                <button class="btn" onclick="goToJoinedClub()">ดูรายละเอียด</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div class="overlay" id="edit-profile-overlay">
-        <div class="modal">
-            <h2 class="modal-title">แก้ไขข้อมูลส่วนตัว</h2>
-            <div class="form-group">
-                <label for="edit-firstname">ชื่อ</label>
-                <input type="text" id="edit-firstname" class="form-control">
             </div>
             <div class="form-group">
-                <label for="edit-lastname">นามสกุล</label>
-                <input type="text" id="edit-lastname" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="edit-grade">ระดับชั้น</label>
-                <select id="edit-grade" class="form-control">
-                    <option value="ม.1">ม.1</option>
-                    <option value="ม.2">ม.2</option>
-                    <option value="ม.3">ม.3</option>
-                    <option value="ม.4">ม.4</option>
-                    <option value="ม.5">ม.5</option>
-                    <option value="ม.6">ม.6</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="edit-room">ห้อง</label>
-                <select id="edit-room" class="form-control">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="edit-studentid">เลขประจำตัวนักเรียน</label>
-                <input type="text" id="edit-studentid" class="form-control">
+                <label class="form-label" for="edit-studentid">เลขประจำตัวนักเรียน</label>
+                <input type="text" id="edit-studentid" class="form-control" disabled>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-light" onclick="closeEditProfileModal()">ยกเลิก</button>
-                <button class="btn" onclick="updateProfile()">บันทึก</button>
+                <button class="btn btn-email" onclick="window.location.href='mailto:work.sittichok@gmail.com'">
+                    <i class="fas fa-envelope"></i>
+                    ติดต่อประสานงาน
+                </button>
+                <button class="btn btn-outline" onclick="closeEditProfileModal()">
+                    <i class="fas fa-times"></i>
+                    ยกเลิก
+                </button>
+                <button class="btn" onclick="updateProfile()">
+                    <i class="fas fa-save"></i>
+                    บันทึก
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase App (the core Firebase SDK) -->
+    <!-- Firebase Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
-    <!-- Add Firebase products that you want to use -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-database-compat.min.js"></script>
 
     <script>
+        
+        // Toggle mobile menu
+        function toggleMenu() {
+            document.getElementById('navbarNav').classList.toggle('active');
+        }
+        
+
         // Firebase configuration
         const firebaseConfig = {
-  apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
-  authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
-  databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "sitthichokthq-cbfbf",
-  storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
-  messagingSenderId: "810616160157",
-  appId: "1:810616160157:web:2280d80df55b61a0fdb974",
-  measurementId: "G-ST39DD230B"
-};
+            apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
+            authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
+            databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "sitthichokthq-cbfbf",
+            storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
+            messagingSenderId: "810616160157",
+            appId: "1:810616160157:web:2280d80df55b61a0fdb974",
+            measurementId: "G-ST39DD230B"
+        };
         
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -587,75 +1023,13 @@
         let clubs = [];
         let userClub = null;
         
-        // Club data
-        const clubsData = [
-            {
-                imglink: "https://cdn.pixabay.com/photo/2014/10/14/20/24/soccer-488700_1280.jpg",
-                id: "football",
-                name: "ฟุตบอล",
-                description: "ชมรมฟุตบอลสีเขียวที่พร้อมสร้างทีมแข็งแกร่งเพื่อการแข่งขัน",
-                maxMembers: 25
-            },
-            {
-                imglink: "https://example.com/football.jpg",
-                id: "basketball",
-                name: "บาสเกตบอล",
-                description: "ชมรมบาสเกตบอลสีเขียวที่มีความสามัคคีและความเป็นมืออาชีพ",
-                maxMembers: 20
-            },
-            {
-                 imglink: "https://example.com/football.jpg",
-                id: "volleyball",
-                name: "วอลเลย์บอล",
-                description: "ชมรมวอลเลย์บอลสีเขียวที่มุ่งมั่นสู่ชัยชนะ",
-                maxMembers: 18
-            },
-            {
-                id: "badminton",
-                name: "แบดมินตัน",
-                description: "ชมรมแบดมินตันสีเขียวที่มุ่งพัฒนาทักษะและความแม่นยำ",
-                maxMembers: 20
-            },
-            {
-                imglink: "https://example.com/football.jpg",
-                id: "tabletennis",
-                name: "เทเบิลเทนนิส",
-                description: "ชมรมเทเบิลเทนนิสสีเขียวที่เน้นกลยุทธ์และความรวดเร็ว",
-                maxMembers: 15
-            },
-            {
-                imglink: "https://example.com/football.jpg",
-                id: "swimming",
-                name: "ว่ายน้ำ",
-                description: "ชมรมว่ายน้ำสีเขียวที่พร้อมแข่งขันในทุกระดับ",
-                maxMembers: 30
-            }
-        ];
-        
-        // Initial database setup
-        function setupDatabase() {
-            const dbRef = firebase.database().ref();
-            
-            // Check if clubs exist in database
-            dbRef.child('clubs').once('value')
-                .then((snapshot) => {
-                    if (!snapshot.exists()) {
-                        // If clubs don't exist, initialize them
-                        clubsData.forEach(club => {
-                            dbRef.child('clubs').child(club.id).set({
-                                name: club.name,
-                                description: club.description,
-                                maxMembers: club.maxMembers,
-                                members: 0,
-                                imglink: club.imglink
-                            });
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error checking clubs:", error);
-                });
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Simple alert for now - could be enhanced with custom notifications
+            alert(message);
         }
+
+       
         
         // Show a specific page
         function showPage(pageId) {
@@ -667,6 +1041,11 @@
             // Show the selected page
             document.getElementById(pageId).classList.add('active-page');
             
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
             // Handle specific page logic
             if (pageId === 'clubs') {
                 loadClubs();
@@ -675,68 +1054,70 @@
             } else if (pageId === 'club-detail') {
                 loadSelectedClubDetail();
             }
+            
+            // Close mobile menu
+            document.getElementById('navbarNav').classList.remove('active');
         }
         
         // Register a new user
-        function registerUser() {
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const firstname = document.getElementById('register-firstname').value;
-            const lastname = document.getElementById('register-lastname').value;
-            const grade = document.getElementById('register-grade').value;
-            const room = document.getElementById('register-room').value;
-            const studentId = document.getElementById('register-studentid').value;
-            
-            // Validate fields
-            if (!email || !password || !firstname || !lastname || !grade || !room || !studentId) {
-                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
-                return;
-            }
-            
-            // Create user with email and password
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Get user and add additional data
-                    const user = userCredential.user;
-                    const userData = {
-                        email: email,
-                        firstname: firstname,
-                        lastname: lastname,
-                        grade: grade,
-                        room: room,
-                        studentId: studentId,
-                        clubId: null
-                    };
-                    
-                    // Save user data to database
-                    return firebase.database().ref('users/' + user.uid).set(userData);
-                })
-                .then(() => {
-                    alert('สมัครสมาชิกสำเร็จ!');
-                    document.getElementById('register-email').value = '';
-                    document.getElementById('register-password').value = '';
-                    document.getElementById('register-firstname').value = '';
-                    document.getElementById('register-lastname').value = '';
-                    document.getElementById('register-grade').value = '';
-                    document.getElementById('register-room').value = '';
-                    document.getElementById('register-studentid').value = '';
-                    
-                    // Load user data and show profile page
-                    loadUserData();
-                })
-                .catch((error) => {
-                    alert('เกิดข้อผิดพลาด: ' + error.message);
-                });
-        }
+       function registerUser() {
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value.trim();
+  const firstname = document.getElementById('register-firstname').value.trim();
+  const lastname = document.getElementById('register-lastname').value.trim();
+  const grade = document.getElementById('register-grade').value;
+  const room = document.getElementById('register-room').value;
+  const studentId = document.getElementById('register-studentid').value.trim();
+
+  if (!email || !password || !firstname || !lastname || !grade || !room || !studentId) {
+    showNotification('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+    return;
+  }
+
+  // ตรวจสอบว่าเลขประจำตัวซ้ำหรือไม่
+  firebase.database().ref('users').once('value')
+    .then(snapshot => {
+      const exists = Object.values(snapshot.val() || {}).some(user => user.studentId === studentId);
+      if (exists) {
+        showNotification('❌ ข้อมูลซ้ำ: มีผู้ใช้ที่ใช้เลขประจำตัวนี้แล้ว');
+        throw new Error('Duplicate studentId');
+      }
+
+      return firebase.auth().createUserWithEmailAndPassword(email, password);
+    })
+    .then(userCredential => {
+      const user = userCredential.user;
+      const userData = {
+        email,
+        firstname,
+        lastname,
+        grade,
+        room,
+        studentId,
+        clubId: null
+      };
+      return firebase.database().ref('users/' + user.uid).set(userData);
+    })
+    .then(() => {
+      showNotification('🎉 สมัครสมาชิกสำเร็จ!');
+      loadUserData();
+    })
+    .catch(error => {
+      if (error.message !== 'Duplicate studentId') {
+        showNotification('❌ เกิดข้อผิดพลาด: ' + error.message);
+      }
+    });
+}
+
         
         // Login user
         function loginUser() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
             
             // Validate fields
             if (!email || !password) {
-                alert('กรุณากรอกอีเมลและรหัสผ่าน');
+                showNotification('กรุณากรอกอีเมลและรหัสผ่าน');
                 return;
             }
             
@@ -747,13 +1128,13 @@
                     document.getElementById('login-email').value = '';
                     document.getElementById('login-password').value = '';
                     
-                    alert('เข้าสู่ระบบสำเร็จ!');
+                    showNotification('🎉 เข้าสู่ระบบสำเร็จ!');
                     
                     // Load user data and show profile page
                     loadUserData();
                 })
                 .catch((error) => {
-                    alert('เกิดข้อผิดพลาด: ' + error.message);
+                    showNotification('❌ เกิดข้อผิดพลาด: ' + error.message);
                 });
         }
         
@@ -766,10 +1147,10 @@
                     userClub = null;
                     updateUI();
                     showPage('home');
-                    alert('ออกจากระบบสำเร็จ!');
+                    showNotification('👋 ออกจากระบบสำเร็จ!');
                 })
                 .catch((error) => {
-                    alert('เกิดข้อผิดพลาด: ' + error.message);
+                    showNotification('❌ เกิดข้อผิดพลาด: ' + error.message);
                 });
         }
         
@@ -809,13 +1190,74 @@
         
         // Update UI based on authentication state
         function updateUI() {
+            const userNameDisplay = document.getElementById('user-name-display');
             if (currentUser) {
-                // User is logged in
+  // ซ่อนปุ่ม Login และ Register บน navbar
+  document.getElementById('login-nav').style.display = 'none';
+  document.getElementById('register-nav').style.display = 'none';
+
+  // แสดงปุ่ม Logout และ Profile
+  document.getElementById('logout-nav').style.display = 'block';
+  document.getElementById('profile-nav').style.display = 'block';
+
+  // ซ่อนปุ่มสมัครสมาชิกและเข้าสู่ระบบบนหน้าแรก
+  document.querySelectorAll('#home .btn').forEach(btn => {
+    if (btn.textContent.includes('สมัครสมาชิก') || btn.textContent.includes('เข้าสู่ระบบ')) {
+      btn.style.display = 'none';
+    }
+  });
+
+  // ซ่อนปุ่ม "ลงทะเบียนชมรมกีฬา" บนแบนเนอร์หน้าแรก
+  const homeRegisterBtn = document.querySelector('#home .banner a.btn');
+  if (homeRegisterBtn) {
+    homeRegisterBtn.style.display = 'none';
+  }
+
+} else {
+  // แสดงปุ่ม Login และ Register บน navbar
+  document.getElementById('login-nav').style.display = 'block';
+  document.getElementById('register-nav').style.display = 'block';
+
+  // ซ่อน Logout และ Profile
+  document.getElementById('logout-nav').style.display = 'none';
+  document.getElementById('profile-nav').style.display = 'none';
+
+  // แสดงปุ่มหน้าแรกทั้งหมดเมื่อยังไม่เข้าสู่ระบบ
+  document.querySelectorAll('#home .btn').forEach(btn => {
+    btn.style.display = 'inline-flex';
+  });
+
+  const homeRegisterBtn = document.querySelector('#home .banner a.btn');
+  if (homeRegisterBtn) {
+    homeRegisterBtn.style.display = 'inline-flex';
+  }
+}
+
+            
+            if (currentUser) {
+                // Show authenticated state
+                document.getElementById('login-nav').style.display = 'none';
+                document.getElementById('register-nav').style.display = 'none';
+                document.getElementById('profile-nav').style.display = 'block';
+                document.getElementById('logout-nav').style.display = 'block';
+                document.getElementById('clubs-info').innerHTML = '<i class="fas fa-check-circle"></i> เลือกชมรมที่คุณต้องการเข้าร่วม';
+                
+                if (currentUserData && userNameDisplay) {
+                    userNameDisplay.textContent = `${currentUserData.firstname} ${currentUserData.lastname}`;
+                    userNameDisplay.style.display = 'block';
+                }
+            } else {
+                // Show guest state
                 document.getElementById('login-nav').style.display = 'block';
                 document.getElementById('register-nav').style.display = 'block';
                 document.getElementById('profile-nav').style.display = 'none';
                 document.getElementById('logout-nav').style.display = 'none';
-                document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
+                document.getElementById('clubs-info').innerHTML = '<i class="fas fa-info-circle"></i> กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
+                
+                if (userNameDisplay) {
+                    userNameDisplay.textContent = '';
+                    userNameDisplay.style.display = 'none';
+                }
             }
         }
         
@@ -840,7 +1282,16 @@
         // Render clubs in the clubs page
         function renderClubs() {
             const clubsContainer = document.getElementById('clubs-container');
+            const emptyState = document.getElementById('clubs-empty');
+            
             clubsContainer.innerHTML = '';
+            
+            if (clubs.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
             
             clubs.forEach(club => {
                 const clubCard = document.createElement('div');
@@ -849,6 +1300,8 @@
                 let buttonHtml = '';
                 let isDisabled = false;
                 let buttonText = 'เข้าร่วมชมรม';
+                let buttonClass = 'btn';
+                let buttonIcon = 'fas fa-plus';
                 
                 // Check if user is logged in
                 if (currentUser) {
@@ -856,32 +1309,64 @@
                     if (currentUserData.clubId) {
                         if (currentUserData.clubId === club.id) {
                             buttonText = 'คุณเป็นสมาชิกแล้ว';
+                            buttonClass = 'btn btn-outline';
+                            buttonIcon = 'fas fa-check';
                         } else {
                             buttonText = 'คุณเป็นสมาชิกชมรมอื่นแล้ว';
+                            buttonClass = 'btn';
+                            buttonIcon = 'fas fa-ban';
                             isDisabled = true;
                         }
                     }
                     
                     // Check if club is full
-                    if (club.members >= club.maxMembers) {
+                    if (club.members >= club.maxMembers && currentUserData.clubId !== club.id) {
                         buttonText = 'ชมรมเต็มแล้ว';
+                        buttonClass = 'btn';
+                        buttonIcon = 'fas fa-times';
                         isDisabled = true;
                     }
                 } else {
                     // User is not logged in
                     buttonText = 'กรุณาเข้าสู่ระบบ';
+                    buttonClass = 'btn btn-outline';
+                    buttonIcon = 'fas fa-sign-in-alt';
                     isDisabled = true;
                 }
                 
-                buttonHtml = `<button class="btn" ${isDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : `onclick="joinClub('${club.id}')"`}>${buttonText}</button>`;
+                const members = club.members || 0;
+                const percentage = Math.round((members / club.maxMembers) * 100);
+                
+                buttonHtml = `<button class="${buttonClass}" ${isDisabled ? 'disabled' : `onclick="joinClub('${club.id}')"`}>
+                    <i class="${buttonIcon}"></i>
+                    ${buttonText}
+                </button>`;
                 
                 clubCard.innerHTML = `
-                    <img src="${club.imglink}" alt="${club.name}">
+                    <img src="${club.imglink}" alt="${club.name}" onerror="this.src='/api/placeholder/350/200'">
                     <div class="club-card-body">
                         <h3 class="club-card-title">${club.name}</h3>
                         <p class="club-card-text">${club.description}</p>
-                        <p class="club-members">สมาชิก: ${club.members || 0}/${club.maxMembers}</p>
-                        ${buttonHtml}
+                        <div class="club-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${members}</div>
+                                <div class="stat-label">สมาชิก</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${club.maxMembers}</div>
+                                <div class="stat-label">ที่นั่งสูงสุด</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${percentage}%</div>
+                                <div class="stat-label">อัตราเต็ม</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            ${buttonHtml}
+                        </div>
                     </div>
                 `;
                 
@@ -892,13 +1377,13 @@
         // Join a club
         function joinClub(clubId) {
             if (!currentUser) {
-                alert('กรุณาเข้าสู่ระบบก่อนเข้าร่วมชมรม');
+                showNotification('กรุณาเข้าสู่ระบบก่อนเข้าร่วมชมรม');
                 showPage('login');
                 return;
             }
             
             if (currentUserData.clubId) {
-                alert('คุณเป็นสมาชิกชมรมอยู่แล้ว');
+                showNotification('คุณเป็นสมาชิกชมรมอยู่แล้ว');
                 return;
             }
             
@@ -909,7 +1394,7 @@
                     
                     // Check if club is full
                     if (club.members >= club.maxMembers) {
-                        alert('ชมรมเต็มแล้ว');
+                        showNotification('❌ ชมรมเต็มแล้ว');
                         return;
                     }
                     
@@ -921,21 +1406,25 @@
                     return firebase.database().ref().update(updates);
                 })
                 .then(() => {
-                    alert('เข้าร่วมชมรมสำเร็จ!');
+                    showNotification('🎉 เข้าร่วมชมรมสำเร็จ!');
                     
                     // Reload user data
                     loadUserData();
                 })
                 .catch((error) => {
                     console.error("Error joining club:", error);
-                    alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                    showNotification('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 });
         }
         
         // Cancel club membership
         function cancelClub() {
             if (!currentUser || !currentUserData.clubId) {
-                alert('คุณไม่ได้เป็นสมาชิกชมรมใด');
+                showNotification('คุณไม่ได้เป็นสมาชิกชมรมใด');
+                return;
+            }
+            
+            if (!confirm('คุณต้องการยกเลิกการเข้าร่วมชมรมหรือไม่?')) {
                 return;
             }
             
@@ -954,14 +1443,14 @@
                     return firebase.database().ref().update(updates);
                 })
                 .then(() => {
-                    alert('ยกเลิกการเข้าร่วมชมรมสำเร็จ!');
+                    showNotification('✅ ยกเลิกการเข้าร่วมชมรมสำเร็จ!');
                     
                     // Reload user data
                     loadUserData();
                 })
                 .catch((error) => {
                     console.error("Error cancelling club:", error);
-                    alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                    showNotification('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 });
         }
         
@@ -975,22 +1464,22 @@
             const profileInfoContainer = document.getElementById('profile-info-container');
             profileInfoContainer.innerHTML = `
                 <div class="label">อีเมล</div>
-                <div>${currentUserData.email}</div>
+                <div class="value">${currentUserData.email}</div>
                 
                 <div class="label">ชื่อ</div>
-                <div>${currentUserData.firstname}</div>
+                <div class="value">${currentUserData.firstname}</div>
                 
                 <div class="label">นามสกุล</div>
-                <div>${currentUserData.lastname}</div>
+                <div class="value">${currentUserData.lastname}</div>
                 
                 <div class="label">ระดับชั้น</div>
-                <div>${currentUserData.grade}</div>
+                <div class="value">${currentUserData.grade}</div>
                 
                 <div class="label">ห้อง</div>
-                <div>${currentUserData.room}</div>
+                <div class="value">${currentUserData.room}</div>
                 
                 <div class="label">เลขประจำตัว</div>
-                <div>${currentUserData.studentId}</div>
+                <div class="value">${currentUserData.studentId}</div>
             `;
             
             // Show user's club if any
@@ -1017,10 +1506,14 @@
             firebase.database().ref('clubs/' + clubId).once('value')
                 .then((snapshot) => {
                     const club = snapshot.val();
+                    const members = club.members || 0;
+                    const percentage = Math.round((members / club.maxMembers) * 100);
                     
-                    document.getElementById('selected-club-name').textContent = club.name;
+                    document.getElementById('selected-club-name').innerHTML = `<i class="fas fa-users"></i> ${club.name}`;
                     document.getElementById('selected-club-description').textContent = club.description;
-                    document.getElementById('selected-club-members').textContent = `สมาชิก: ${club.members || 0}/${club.maxMembers}`;
+                    document.getElementById('selected-club-members-count').textContent = members;
+                    document.getElementById('selected-club-max-members').textContent = club.maxMembers;
+                    document.getElementById('selected-club-percentage').textContent = `${percentage}%`;
                 })
                 .catch((error) => {
                     console.error("Error loading club detail:", error);
@@ -1054,15 +1547,15 @@
         function updateProfile() {
             if (!currentUser) return;
             
-            const firstname = document.getElementById('edit-firstname').value;
-            const lastname = document.getElementById('edit-lastname').value;
+            const firstname = document.getElementById('edit-firstname').value.trim();
+            const lastname = document.getElementById('edit-lastname').value.trim();
             const grade = document.getElementById('edit-grade').value;
             const room = document.getElementById('edit-room').value;
-            const studentId = document.getElementById('edit-studentid').value;
+            const studentId = document.getElementById('edit-studentid').value.trim();
             
             // Validate fields
             if (!firstname || !lastname || !grade || !room || !studentId) {
-                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                showNotification('กรุณากรอกข้อมูลให้ครบทุกช่อง');
                 return;
             }
             
@@ -1077,7 +1570,7 @@
             
             firebase.database().ref('users/' + currentUser.uid).update(updates)
                 .then(() => {
-                    alert('อัปเดตข้อมูลสำเร็จ!');
+                    showNotification('✅ อัปเดตข้อมูลสำเร็จ!');
                     closeEditProfileModal();
                     
                     // Update current user data
@@ -1086,14 +1579,25 @@
                         ...updates
                     };
                     
-                    // Reload profile
+                    // Reload profile and update UI
                     loadUserProfile();
+                    updateUI();
                 })
                 .catch((error) => {
                     console.error("Error updating profile:", error);
-                    alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                    showNotification('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 });
         }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const editModal = document.getElementById('edit-profile-overlay');
+            
+            if (event.target === editModal) {
+                closeEditProfileModal();
+            }
+        }
+        
         
         // Check authentication state
         firebase.auth().onAuthStateChanged(user => {
@@ -1110,159 +1614,16 @@
         
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            setupDatabase();
+            updateUI();
         });
 
-         // Update UI based on authentication state (fixed version)
-    function updateUI() {
-        if (currentUser) {
-            // Show authenticated state
-            document.getElementById('login-nav').style.display = 'none';
-            document.getElementById('register-nav').style.display = 'none';
-            document.getElementById('profile-nav').style.display = 'block';
-            document.getElementById('logout-nav').style.display = 'block';
-            document.getElementById('clubs-info').textContent = '';
-        } else {
-            // Show guest state
-            document.getElementById('login-nav').style.display = 'block';
-            document.getElementById('register-nav').style.display = 'block';
-            document.getElementById('profile-nav').style.display = 'none';
-            document.getElementById('logout-nav').style.display = 'none';
-            document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
-        }
-    }
-
-    // Ensure updateUI is called immediately after setting currentUser in onAuthStateChanged
-    firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            loadUserData();
-        } else {
-            currentUser = null;
-            currentUserData = null;
-            userClub = null;
-            updateUI();
-        }
-    });
-    // Add name display
-    function updateUI() {
-        const userNameDisplay = document.getElementById('user-name-display');
-
-        if (currentUser) {
-            document.getElementById('login-nav').style.display = 'none';
-            document.getElementById('register-nav').style.display = 'none';
-            document.getElementById('profile-nav').style.display = 'block';
-            document.getElementById('logout-nav').style.display = 'block';
-            document.getElementById('clubs-info').textContent = '';
-
-            if (currentUserData && userNameDisplay) {
-                userNameDisplay.textContent = `${currentUserData.firstname} ${currentUserData.lastname}`;
-                userNameDisplay.style.display = 'block';
-            }
-        } else {
-            document.getElementById('login-nav').style.display = 'block';
-            document.getElementById('register-nav').style.display = 'block';
-            document.getElementById('profile-nav').style.display = 'none';
-            document.getElementById('logout-nav').style.display = 'none';
-            document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
-
-            if (userNameDisplay) {
-                userNameDisplay.textContent = '';
-                userNameDisplay.style.display = 'none';
-            }
-        }
-    }
-
-    // Ensure updateUI is called immediately after setting currentUser in onAuthStateChanged
-    firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            loadUserData();
-        } else {
-            currentUser = null;
-            currentUserData = null;
-            userClub = null;
-            updateUI();
-        }
-    });
-     // Add name display
-    function updateUI() {
-        const userNameDisplay = document.getElementById('user-name-display');
-        const homeNav = document.getElementById('home-nav');
-
-        if (currentUser) {
-            document.getElementById('login-nav').style.display = 'none';
-            document.getElementById('register-nav').style.display = 'none';
-            document.getElementById('profile-nav').style.display = 'block';
-            document.getElementById('logout-nav').style.display = 'block';
-            if (homeNav) homeNav.style.display = 'none';
-            document.getElementById('clubs-info').textContent = '';
-
-            if (currentUserData && userNameDisplay) {
-                userNameDisplay.textContent = `${currentUserData.firstname} ${currentUserData.lastname}`;
-                userNameDisplay.style.display = 'block';
-            }
-        } else {
-            document.getElementById('login-nav').style.display = 'block';
-            document.getElementById('register-nav').style.display = 'block';
-            document.getElementById('profile-nav').style.display = 'none';
-            document.getElementById('logout-nav').style.display = 'none';
-            if (homeNav) homeNav.style.display = 'block';
-            document.getElementById('clubs-info').textContent = 'กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
-
-            if (userNameDisplay) {
-                userNameDisplay.textContent = '';
-                userNameDisplay.style.display = 'none';
-            }
-        }
-    }
-
-    // Ensure updateUI is called immediately after setting currentUser in onAuthStateChanged
-    firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            loadUserData();
-        } else {
-            currentUser = null;
-            currentUserData = null;
-            userClub = null;
-            updateUI();
-        }
-    });
-    document.addEventListener('DOMContentLoaded', () => {
-    const nav = document.querySelector('.navbar-nav');
+    
 
     // Add ID to home nav item
     const homeNavItem = Array.from(nav.children).find(li => li.querySelector('.nav-link')?.innerText.includes('หน้าแรก'));
     if (homeNavItem) homeNavItem.id = 'home-nav';
 
-    const nameItem = document.createElement('li');
-    nameItem.className = 'nav-item';
-    nameItem.innerHTML = '<span id="user-name-display"></span>';
-    nav.appendChild(nameItem);
-  });
-  // Check for duplicate firstname + studentId before registering
-    function checkDuplicateUser(firstname, studentId) {
-        return firebase.database().ref('users').once('value').then(snapshot => {
-            let isDuplicate = false;
-            snapshot.forEach(child => {
-                const user = child.val();
-                if (user.firstname === firstname && user.studentId === studentId) {
-                    isDuplicate = true;
-                    return true; // break loop
-                }
-            });
-            return isDuplicate;
-        });
-    }
-    checkDuplicateUser(firstname, studentId).then(isDuplicate => {
-  if (isDuplicate) {
-    alert('พบข้อมูลซ้ำในระบบ');
-  } else {
-    // ดำเนินการสมัครสมาชิกต่อ
-  }
-});
-
+    
     </script>
 </body>
 </html>
