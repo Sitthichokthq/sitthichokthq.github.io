@@ -1,1629 +1,1068 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบลงทะเบียนชมรมกีฬาสี</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-green: #22c55e;
-            --dark-green: #16a34a;
-            --light-green: #dcfce7;
-            --pale-green: #f0fdf4;
-            --emerald: #10b981;
-            --forest-green: #065f46;
-            --success-color: #22c55e;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --info-color: #06b6d4;
-            --white-color: #ffffff;
-            --light-gray: #f8fafc;
-            --text-dark: #1f2937;
-            --text-gray: #6b7280;
-            --email-blue : #0693d4;
-            --border-color: #e5e7eb;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #065f46 100%);
-            color: var(--text-dark);
-            min-height: 100vh;
-            position: relative;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Map Analysis System — วิทชภณ พวงแก้ว</title>
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .navbar-brand {
-            color: var(--primary-green);
-            font-size: 1.8rem;
-            font-weight: 700;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+ <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --panel: #11111e;
+    --panel2: #161625;
+    --border: #2a2a45;
+    --accent: #00f5d4;
+    --accent2: #7b61ff;
+    --accent3: #ff6b6b;
+    --text: #e0e0f0;
+    --text2: #8888aa;
+    --canvas-bg: #08080f;
+    --green: #39ff14;
+    --yellow: #ffe234;
+    --red: #ff4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-        .navbar-brand i {
-            font-size: 2rem;
-        }
-        
-        .navbar-nav {
-            display: flex;
-            list-style: none;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .nav-item {
-            position: relative;
-        }
-        
-        .nav-link {
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 10px 15px;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .nav-link:hover {
-            background: var(--light-green);
-            color: var(--dark-green);
-            transform: translateY(-2px);
-        }
+  /* ── HEADER ── */
+  header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+  }
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--text2); }
+  .divider { width: 1px; height: 28px; background: var(--border); }
 
-        .nav-link.active {
-            background: var(--primary-green);
-            color: white;
-        }
+  /* ── TOOLBAR BUTTONS ── */
+  .toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel2);
+    color: var(--text2);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.active {
+    background: rgba(0,245,212,.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 8px rgba(0,245,212,.2);
+  }
+  .btn.danger:hover { border-color: var(--red); color: var(--red); }
+  .btn.upload {
+    background: rgba(0,245,212,.08);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  select.filter-sel {
+    padding: 6px 10px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+  }
+  select.filter-sel:focus { border-color: var(--accent); }
 
-        #user-name-display {
-            background: var(--light-green);
-            color: var(--dark-green);
-            padding: 8px 15px;
-            border-radius: 25px;
-            font-weight: 600;
-            display: none;
-        }
-        
-        .navbar-toggle {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: var(--primary-green);
-            padding: 10px;
-            border-radius: 5px;
-        }
+  /* ── AI ANALYZE BTN ── */
+  .btn-ai {
+    margin-left: auto;
+    background: linear-gradient(135deg, rgba(123,97,255,.2), rgba(0,245,212,.1));
+    border-color: var(--accent2);
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .btn-ai:hover { box-shadow: 0 0 12px rgba(123,97,255,.4); color: #a78bfa; }
+  .btn-ai.loading { opacity: .6; pointer-events: none; }
 
-        .navbar-toggle:hover {
-            background: var(--light-green);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .banner {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            color: var(--text-dark);
-            padding: 60px 40px;
-            text-align: center;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
+  /* ── MAIN LAYOUT ── */
+  .main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
 
-        .banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-green), var(--emerald), var(--primary-green));
-        }
-        
-        .banner h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--dark-green);
-            font-weight: 700;
-        }
-        
-        .banner p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            color: var(--text-gray);
-            line-height: 1.6;
-        }
+  /* ── CANVASES AREA ── */
+  .canvases {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 10px;
+    gap: 8px;
+  }
+  .canvas-labels {
+    display: flex;
+    gap: 8px;
+  }
+  .canvas-label {
+    flex: 1;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    padding: 4px 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px 4px 0 0;
+    border-bottom: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .canvas-label .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text2);
+    flex-shrink: 0;
+  }
+  .canvas-label.orig .dot { background: var(--accent2); }
+  .canvas-label.filt .dot { background: var(--accent); }
+  .canvas-row {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    background: var(--canvas-bg);
+    border: 1px solid var(--border);
+    border-radius: 0 4px 4px 4px;
+    overflow: hidden;
+    cursor: crosshair;
+  }
+  .canvas-wrap canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    image-rendering: pixelated;
+  }
+  .drop-zone {
+    position: absolute;
+    inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px;
+    color: var(--text2);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    pointer-events: none;
+    transition: opacity .3s;
+  }
+  .drop-zone .icon { font-size: 36px; opacity: .4; }
+  .drop-zone p { opacity: .5; text-align: center; line-height: 1.6; }
+  .canvas-wrap.has-image .drop-zone { opacity: 0; }
 
-        .banner-icon {
-            font-size: 4rem;
-            color: var(--primary-green);
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: var(--primary-green);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: var(--shadow);
-        }
-        
-        .btn:hover {
-            background: var(--dark-green);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: .08em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar-header::before {
+    content: '▶';
+    font-size: 8px;
+  }
+  .info-panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.8;
+    color: var(--text2);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .info-panel .section-title {
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: .06em;
+    margin: 10px 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-panel .row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .info-panel .row .key { color: var(--text2); }
+  .info-panel .row .val { color: var(--text); font-weight: 700; }
+  .info-panel .val.accent { color: var(--accent); }
+  .info-panel .val.green { color: var(--green); }
+  .info-panel .val.yellow { color: var(--yellow); }
+  .info-panel .placeholder {
+    text-align: center;
+    opacity: .35;
+    padding: 40px 0;
+    font-size: 11px;
+    line-height: 2;
+  }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+  /* ── AI RESPONSE ── */
+  .ai-panel {
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    display: none;
+  }
+  .ai-panel.visible { display: block; }
+  .ai-panel .ai-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    letter-spacing: .08em;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ai-panel .ai-title .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: .3; }
+  }
+  .ai-panel p { margin-bottom: 6px; }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            color: var(--primary-green);
-            border: 2px solid var(--primary-green);
-        }
-        
-        .btn-outline:hover {
-            background: var(--primary-green);
-            color: white;
-        }
+  /* ── COORD TOOLTIP ── */
+  .coord-tip {
+    position: absolute;
+    background: rgba(0,0,0,.85);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 20;
+    display: none;
+  }
 
-         .btn-email {
-            background: transparent;
-            color: var(--email-blue);
-            border: 2px solid var(--email-blue);
-        }
-        
-        .btn-email:hover {
-            background: var(--email-blue);
-            color: white;
-        }
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        .btn-danger {
-            background: var(--danger-color);
-        }
+  /* ── LOADING SPINNER ── */
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--accent2);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-        .btn-danger:hover {
-            background: #dc2626;
-        }
+  /* CROSSHAIR cursor when on filtered canvas */
+  #filteredWrap { cursor: crosshair; }
+  #filteredWrap.panning { cursor: grab; }
+  #filteredWrap.panning.active-pan { cursor: grabbing; }
+  #origWrap.panning { cursor: grab; }
+  #origWrap.panning.active-pan { cursor: grabbing; }
 
-        .btn-warning {
-            background: var(--warning-color);
-        }
-
-        .btn-warning:hover {
-            background: #d97706;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .card-title {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: var(--dark-green);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-title i {
-            color: var(--primary-green);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: 'Sarabun', sans-serif;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
-        }
-
-        .form-control:disabled {
-            background: var(--light-gray);
-            cursor: not-allowed;
-        }
-        
-        .clubs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .club-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .club-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .club-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .club-card:hover img {
-            transform: scale(1.05);
-        }
-        
-        .club-card-body {
-            padding: 25px;
-        }
-        
-        .club-card-title {
-            font-size: 1.4rem;
-            margin-bottom: 12px;
-            color: var(--dark-green);
-            font-weight: 600;
-        }
-        
-        .club-card-text {
-            margin-bottom: 15px;
-            color: var(--text-gray);
-            line-height: 1.6;
-        }
-        
-        .club-members {
-            margin-bottom: 20px;
-            color: var(--primary-green);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .club-stats {
-            display: flex;
-            justify-content: space-between;
-            background: var(--pale-green);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark-green);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-gray);
-        }
-        
-        .page {
-            display: none;
-            min-height: calc(100vh - 80px);
-        }
-        
-        .active-page {
-            display: block;
-        }
-        
-        .profile-info {
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-            background: var(--pale-green);
-            padding: 20px;
-            border-radius: 15px;
-        }
-        
-        .profile-info .label {
-            font-weight: 600;
-            color: var(--dark-green);
-        }
-
-        .profile-info .value {
-            color: var(--text-dark);
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .modal-title {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            color: var(--dark-green);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .modal-footer {
-            margin-top: 30px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: white;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-
-        .empty-state h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-        }
-
-        .empty-state p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .alert-info {
-            background: rgba(6, 182, 212, 0.1);
-            color: #0891b2;
-            border: 1px solid rgba(6, 182, 212, 0.2);
-        }
-
-        .joined-club-display {
-            background: var(--light-green);
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 5px solid var(--primary-green);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-green), var(--emerald));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 15px 20px;
-            }
-
-            .navbar-nav {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                background: rgba(255, 255, 255, 0.95);
-                margin-top: 15px;
-                padding: 15px 0;
-                border-radius: 15px;
-                gap: 5px;
-            }
-
-            .navbar-nav.active {
-                display: flex;
-            }
-
-            .navbar-toggle {
-                display: block;
-                position: absolute;
-                top: 15px;
-                right: 20px;
-            }
-
-            .nav-item {
-                width: 100%;
-            }
-
-            .nav-link {
-                width: 100%;
-                justify-content: center;
-                margin: 5px 15px;
-            }
-
-            .banner h1 {
-                font-size: 2rem;
-            }
-
-            .banner p {
-                font-size: 1.1rem;
-            }
-
-            .banner {
-                padding: 40px 20px;
-            }
-
-            .container {
-                padding: 15px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .card-title {
-                font-size: 1.5rem;
-            }
-
-            .clubs-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .profile-info {
-                grid-template-columns: 1fr;
-            }
-
-            .modal {
-                width: 95%;
-                padding: 25px;
-            }
-
-            .modal-title {
-                font-size: 1.4rem;
-            }
-
-            .modal-footer {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
+  /* Space hint badge */
+  .pan-hint {
+    position: absolute;
+    bottom: 8px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,.7);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s;
+    white-space: nowrap;
+  }
+  body.space-mode .pan-hint { opacity: 1; }
+  body.space-mode #filteredWrap { cursor: grab; }
+  body.space-mode #origWrap { cursor: grab; }
+  body.space-mode.panning-now #filteredWrap,
+  body.space-mode.panning-now #origWrap { cursor: grabbing; }
+</style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <a href="#" class="navbar-brand" onclick="showPage('home')">
-            <i class="fas fa-trophy"></i>
-            ชมรมกีฬาสีเขียว
-        </a>
-        <button class="navbar-toggle" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i>
-        </button>
-        <ul class="navbar-nav" id="navbarNav">
-            <li class="nav-item" id="home-nav">
-                <a class="nav-link" href="#" onclick="showPage('home')">
-                    <i class="fas fa-home"></i> หน้าแรก
-                </a>
-            </li>
-            <li class="nav-item" id="clubs-nav">
-                <a class="nav-link" href="#" onclick="showPage('clubs')">
-                    <i class="fas fa-users"></i> ชมรมกีฬา
-                </a>
-            </li>
-            <li class="nav-item" id="profile-nav" style="display: none;">
-                <a class="nav-link" href="#" onclick="showPage('profile')">
-                    <i class="fas fa-user"></i> โปรไฟล์
-                </a>
-            </li>
-            <li class="nav-item" id="login-nav">
-                <a class="nav-link" href="#" onclick="showPage('login')">
-                    <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
-                </a>
-            </li>
-            <li class="nav-item" id="register-nav">
-                <a class="nav-link" href="#" onclick="showPage('register')">
-                    <i class="fas fa-user-plus"></i> สมัครสมาชิก
-                </a>
-            </li>
-            <li class="nav-item" id="logout-nav" style="display: none;">
-                <a class="nav-link" href="#" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
-                </a>
-            </li>
-            <li class="nav-item">
-                <span id="user-name-display"></span>
-            </li>
-        </ul>
-    </nav>
 
-    <!-- Home Page -->
-    <div id="home" class="page active-page">
-        <div class="banner">
-            <div class="banner-icon">
-                <i class="fas fa-medal"></i>
-            </div>
-            <h1>ยินดีต้อนรับสู่กีฬาสีเขียว</h1>
-            <h3>นี่คือการทดสอบระบบ</h3>
-            <p>ร่วมเป็นส่วนหนึ่งของทีมสีเขียว และร่วมสร้างความประทับใจไปด้วยกัน</p>
-            <a href="#" class="btn" onclick="showPage('clubs')">
-                <i class="fas fa-running"></i>
-                ลงทะเบียนชมรมกีฬา
-            </a>
-        </div>
-        
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-trophy"></i>
-                    กิจกรรมกีฬาสีเขียว
-                </h2>
-                <p>ร่วมเป็นส่วนหนึ่งของทีมสีเขียวในการแข่งขันกีฬาสีประจำปีนี้ โดยลงทะเบียนเข้าร่วมชมรมกีฬาที่คุณถนัดและชื่นชอบ</p>
-                <p>เริ่มต้นโดยการสมัครสมาชิกและเลือกชมรมที่คุณสนใจ</p>
-                <div style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
-                    <a href="#" class="btn" onclick="showPage('register')">
-                        <i class="fas fa-user-plus"></i>
-                        สมัครสมาชิก
-                    </a>
-                    <a href="#" class="btn btn-outline" onclick="showPage('login')">
-                        <i class="fas fa-sign-in-alt"></i>
-                        เข้าสู่ระบบ
-                    </a>
-                </div>
-            </div>
-        </div>
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">FMA <span style="color:var(--text2);font-size:11px">วิทชภณ พวงแก้ว</span></div>
+  <div class="divider"></div>
+  <div class="toolbar">
+    <label class="btn upload" style="cursor:pointer">
+      <i class="fa-solid fa-file"></i> เลือกรูปภาพ
+      <input type="file" id="fileInput" accept="image/*" style="display:none">
+    </label>
+    <div class="divider"></div>
+    <select class="filter-sel" id="filterSel">
+      <option>Cross-Correlation</option>
+      <option>Sobel Edge</option>
+      <option>Laplacian</option>
+      <option>Sharpen</option>
+    </select>
+    <div class="divider"></div>
+    <button class="btn active" id="btnMeasure"><i class="fa-solid fa-ruler"></i> วัดระยะ</button>
+    <button class="btn" id="btnROI"><i class="fa-regular fa-square"></i> วาด ROI</button>
+    <button class="btn" id="btnInspect"><i class="fa-solid fa-eye"></i> ตรวจสอบพิกเซล</button>
+    <button class="btn danger" id="btnClear"><i class="fa-solid fa-trash"></i> ล้าง ROI</button>
+    <button class="btn" id="btnReset" title="รีเซ็ต zoom และตำแหน่ง (กด R)">⌖ รีเซ็ต View</button>
+    <button class="btn btn-ai" id="btnAI" disabled><i class="fa-solid fa-robot"></i> ✦ AI วิเคราะห์</button>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <!-- CANVASES -->
+  <div class="canvases">
+    <div class="canvas-labels">
+      <div class="canvas-label orig"><div class="dot"></div><span id="labelOrig">ภาพต้นฉบับ (Original)</span></div>
+      <div class="canvas-label filt"><div class="dot"></div><span id="labelFilt">ภาพหลัง Filter</span></div>
     </div>
-
-    <!-- Login Page -->
-    <div id="login" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-sign-in-alt"></i>
-                    เข้าสู่ระบบ
-                </h2>
-                <div class="form-group">
-                    <label class="form-label" for="login-email">อีเมล</label>
-                    <input type="email" id="login-email" class="form-control" placeholder="กรอกอีเมลของคุณ">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="login-password">รหัสผ่าน</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ">
-                </div>
-                <button class="btn" onclick="loginUser()">
-                    <i class="fas fa-sign-in-alt"></i>
-                    เข้าสู่ระบบ
-                </button>
-                <p style="margin-top: 20px; text-align: center;">
-                    ยังไม่มีบัญชี? 
-                    <a href="#" onclick="showPage('register')" style="color: var(--primary-green); font-weight: 600;">สมัครสมาชิก</a>
-                </p>
-            </div>
+    <div class="canvas-row">
+      <div class="canvas-wrap" id="origWrap">
+        <canvas id="canvasOrig"></canvas>
+        <div class="drop-zone">
+          <div class="icon"><i class="fa-solid fa-image"></i></div>
+          <p>เลือกรูปภาพเพื่อเริ่มต้น<br>หรือลาก &amp; วางที่นี่</p>
         </div>
-    </div>
-
-    <!-- Register Page -->
-    <div id="register" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-user-plus"></i>
-                    สมัครสมาชิก
-                </h2>
-                <div class="form-group">
-                    <label class="form-label" for="register-email">อีเมล</label>
-                    <input type="email" id="register-email" class="form-control" placeholder="กรอกอีเมลของคุณ">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="register-password">รหัสผ่าน</label>
-                    <input type="password" id="register-password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label class="form-label" for="register-firstname">ชื่อ</label>
-                        <input type="text" id="register-firstname" class="form-control" placeholder="กรอกชื่อของคุณ">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="register-lastname">นามสกุล</label>
-                        <input type="text" id="register-lastname" class="form-control" placeholder="กรอกนามสกุลของคุณ">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label class="form-label" for="register-grade">ระดับชั้น</label>
-                        <select id="register-grade" class="form-control">
-                            <option value="">เลือกระดับชั้น</option>
-                            <option value="ม.1">ม.1</option>
-                            <option value="ม.2">ม.2</option>
-                            <option value="ม.3">ม.3</option>
-                            <option value="ม.4">ม.4</option>
-                            <option value="ม.5">ม.5</option>
-                            <option value="ม.6">ม.6</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="register-room">ห้อง</label>
-                        <select id="register-room" class="form-control">
-                            <option value="">เลือกห้อง</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="register-studentid">เลขประจำตัวนักเรียน</label>
-                    <input type="text" id="register-studentid" class="form-control" placeholder="กรอกเลขประจำตัวนักเรียน">
-                </div>
-                <button class="btn" onclick="registerUser()">
-                    <i class="fas fa-user-plus"></i>
-                    สมัครสมาชิก
-                </button>
-                <p style="margin-top: 20px; text-align: center;">
-                    มีบัญชีอยู่แล้ว? 
-                    <a href="#" onclick="showPage('login')" style="color: var(--primary-green); font-weight: 600;">เข้าสู่ระบบ</a>
-                </p>
-            </div>
+        <div class="pan-hint"><i class="fa-solid fa-hand"></i> Space + ลาก เพื่อเลื่อนภาพ</div>
+      </div>
+      <div class="canvas-wrap" id="filteredWrap">
+        <canvas id="canvasFiltered"></canvas>
+        <div class="drop-zone">
+          <div class="icon"><i class="fa-solid fa-filter"></i></div>
+          <p>Feature Map<br>จะปรากฏที่นี่</p>
         </div>
+        <div class="coord-tip" id="coordTip"></div>
+        <div class="pan-hint"><i class="fa-solid fa-hand"></i> Space + ลาก เพื่อเลื่อนภาพ</div>
+      </div>
     </div>
+  </div>
 
-    <!-- Clubs Page -->
-    <div id="clubs" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-users"></i>
-                    ชมรมกีฬาที่เปิดรับสมัคร
-                </h2>
-                <div class="alert alert-info" id="clubs-info">
-                    <i class="fas fa-info-circle"></i>
-                    กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา
-                </div>
-            </div>
-            <div class="clubs-grid" id="clubs-container">
-                <!-- Clubs will be loaded here -->
-            </div>
-            
-            <div class="empty-state" id="clubs-empty" style="display: none;">
-                <i class="fas fa-users"></i>
-                <h3>ยังไม่มีชมรมกีฬา</h3>
-                <p>โปรดรอการเปิดรับสมัครชมรมกีฬา</p>
-            </div>
-        </div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">DATA OUTPUT</div>
+    <div class="info-panel" id="infoPanel">
+      <div class="placeholder">── โหลดรูปภาพเพื่อเริ่มวิเคราะห์ ──<br>ใช้เครื่องมือด้านบนเพื่อ<br>วัดระยะ / วาด ROI / ตรวจสอบพิกเซล</div>
     </div>
-
-    <!-- Club Detail Page -->
-    <div id="club-detail" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title" id="selected-club-name">
-                    <i class="fas fa-users"></i>
-                    ชมรมที่เลือก
-                </h2>
-                <div id="selected-club-info">
-                    <p id="selected-club-description"></p>
-                    <div class="club-stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="selected-club-members-count">0</div>
-                            <div class="stat-label">สมาชิกปัจจุบัน</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="selected-club-max-members">0</div>
-                            <div class="stat-label">จำนวนสูงสุด</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="selected-club-percentage">0%</div>
-                            <div class="stat-label">อัตราเต็ม</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button class="btn btn-danger" id="cancel-club" onclick="cancelClub()">
-                        <i class="fas fa-times"></i>
-                        ยกเลิกการเข้าร่วมชมรม
-                    </button>
-                    <button class="btn btn-outline" onclick="showPage('clubs')">
-                        <i class="fas fa-arrow-left"></i>
-                        กลับไปหน้าชมรม
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="ai-panel" id="aiPanel">
+      <div class="ai-title"><div class="pulse"></div> AI ANALYSIS</div>
+      <div id="aiText"></div>
     </div>
+  </div>
+</div>
 
-    <!-- Profile Page -->
-    <div id="profile" class="page">
-        <div class="container">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-user"></i>
-                    โปรไฟล์ของฉัน
-                </h2>
-                <div class="profile-info" id="profile-info-container">
-                    <!-- Profile info will be loaded here -->
-                </div>
-                <button class="btn" onclick="showEditProfileModal()">
-                    <i class="fas fa-edit"></i>
-                    แก้ไขข้อมูล
-                </button>
-                
-                <div id="user-club-info">
-                    <h3 style="margin: 30px 0 15px 0; color: var(--dark-green); display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-users"></i>
-                        ชมรมที่เข้าร่วม
-                    </h3>
-                    <p id="joined-club-info" class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        คุณยังไม่ได้เข้าร่วมชมรมใด
-                    </p>
-                    <div id="joined-club-container" class="joined-club-display" style="display: none;">
-                        <h4 id="joined-club-name" style="color: var(--dark-green); margin-bottom: 10px;"></h4>
-                        <p id="joined-club-description" style="margin-bottom: 15px;"></p>
-                        <button class="btn btn-outline" onclick="goToJoinedClub()">
-                            <i class="fas fa-eye"></i>
-                            ดูรายละเอียด
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+const state = {
+  originalImageData: null,   // ImageData (RGBA)
+  filteredGray: null,        // Uint8Array (grayscale)
+  imgW: 0, imgH: 0,
+  zoom: 1.0,
+  offsetX: 0, offsetY: 0,
+  tool: 'measure',
+  drawing: false,
+  startPt: null, endPt: null,
+  measurement: null,   // {p1, p2, dist}
+  roiRect: null,       // {x1,y1,x2,y2}
+  // pan state
+  panning: false,
+  panStartX: 0, panStartY: 0,
+  panOriginX: 0, panOriginY: 0,
+  spaceDown: false,
+};
 
-    <!-- Edit Profile Modal -->
-    <div class="overlay" id="edit-profile-overlay">
-        <div class="modal">
-            <h2 class="modal-title">
-                <i class="fas fa-edit"></i>
-                แก้ไขข้อมูลส่วนตัว
-            </h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group">
-                    <label class="form-label" for="edit-firstname">ชื่อ</label>
-                    <input type="text" id="edit-firstname" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="edit-lastname">นามสกุล</label>
-                    <input type="text" id="edit-lastname" class="form-control">
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group">
-                    <label class="form-label" for="edit-grade">ระดับชั้น</label>
-                    <select id="edit-grade" class="form-control">
-                        <option value="ม.1">ม.1</option>
-                        <option value="ม.2">ม.2</option>
-                        <option value="ม.3">ม.3</option>
-                        <option value="ม.4">ม.4</option>
-                        <option value="ม.5">ม.5</option>
-                        <option value="ม.6">ม.6</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="edit-room">ห้อง</label>
-                    <select id="edit-room" class="form-control">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="edit-studentid">เลขประจำตัวนักเรียน</label>
-                <input type="text" id="edit-studentid" class="form-control" disabled>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-email" onclick="window.location.href='mailto:work.sittichok@gmail.com'">
-                    <i class="fas fa-envelope"></i>
-                    ติดต่อประสานงาน
-                </button>
-                <button class="btn btn-outline" onclick="closeEditProfileModal()">
-                    <i class="fas fa-times"></i>
-                    ยกเลิก
-                </button>
-                <button class="btn" onclick="updateProfile()">
-                    <i class="fas fa-save"></i>
-                    บันทึก
-                </button>
-            </div>
-        </div>
-    </div>
+// ════════════════════════════════════════════
+//  ELEMENTS
+// ════════════════════════════════════════════
+const fileInput      = document.getElementById('fileInput');
+const filterSel      = document.getElementById('filterSel');
+const btnMeasure     = document.getElementById('btnMeasure');
+const btnROI         = document.getElementById('btnROI');
+const btnInspect     = document.getElementById('btnInspect');
+const btnClear       = document.getElementById('btnClear');
+const btnAI          = document.getElementById('btnAI');
+const canvasOrig     = document.getElementById('canvasOrig');
+const canvasFilt     = document.getElementById('canvasFiltered');
+const origWrap       = document.getElementById('origWrap');
+const filtWrap       = document.getElementById('filteredWrap');
+const labelOrig      = document.getElementById('labelOrig');
+const labelFilt      = document.getElementById('labelFilt');
+const infoPanel      = document.getElementById('infoPanel');
+const aiPanel        = document.getElementById('aiPanel');
+const aiText         = document.getElementById('aiText');
+const btnReset       = document.getElementById('btnReset');
+const coordTip       = document.getElementById('coordTip');
+const ctxO           = canvasOrig.getContext('2d');
+const ctxF           = canvasFilt.getContext('2d');
 
-    <!-- Firebase Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-auth-compat.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-database-compat.min.js"></script>
+// ════════════════════════════════════════════
+//  FILE LOAD
+// ════════════════════════════════════════════
+fileInput.addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload = () => {
+    const offscreen = document.createElement('canvas');
+    offscreen.width  = img.width;
+    offscreen.height = img.height;
+    const oc = offscreen.getContext('2d');
+    oc.drawImage(img, 0, 0);
+    state.originalImageData = oc.getImageData(0, 0, img.width, img.height);
+    state.imgW = img.width;
+    state.imgH = img.height;
+    state.roiRect    = null;
+    state.measurement= null;
+    origWrap.classList.add('has-image');
+    filtWrap.classList.add('has-image');
+    applyFilter();
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+});
 
-    <script>
-        
-        // Toggle mobile menu
-        function toggleMenu() {
-            document.getElementById('navbarNav').classList.toggle('active');
+// Drag & drop
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (!f || !f.type.startsWith('image/')) return;
+  const dt = new DataTransfer();
+  dt.items.add(f);
+  fileInput.files = dt.files;
+  fileInput.dispatchEvent(new Event('change'));
+});
+
+// ════════════════════════════════════════════
+//  FILTER ENGINE (pure JS, no OpenCV)
+// ════════════════════════════════════════════
+function toGrayscale(rgba) {
+  const gray = new Uint8Array(rgba.width * rgba.height);
+  const d = rgba.data;
+  for (let i = 0; i < gray.length; i++) {
+    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
+    gray[i] = Math.round(0.299*r + 0.587*g + 0.114*b);
+  }
+  return gray;
+}
+
+function convolve(gray, w, h, kernel) {
+  const out = new Uint8Array(w * h);
+  const k = 1; // 3x3
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let sum = 0;
+      for (let ky = -k; ky <= k; ky++) {
+        for (let kx = -k; kx <= k; kx++) {
+          const ny = Math.min(Math.max(y+ky,0),h-1);
+          const nx = Math.min(Math.max(x+kx,0),w-1);
+          sum += gray[ny*w+nx] * kernel[(ky+k)*3+(kx+k)];
         }
-        
+      }
+      out[y*w+x] = Math.min(255, Math.max(0, sum));
+    }
+  }
+  return out;
+}
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD8jQ3iZXJFqTOidqI5zpRqDLtTfayVblU",
-            authDomain: "sitthichokthq-cbfbf.firebaseapp.com",
-            databaseURL: "https://sitthichokthq-cbfbf-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "sitthichokthq-cbfbf",
-            storageBucket: "sitthichokthq-cbfbf.firebasestorage.app",
-            messagingSenderId: "810616160157",
-            appId: "1:810616160157:web:2280d80df55b61a0fdb974",
-            measurementId: "G-ST39DD230B"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        
-        // Global variables
-        let currentUser = null;
-        let currentUserData = null;
-        let clubs = [];
-        let userClub = null;
-        
-        // Show notification
-        function showNotification(message, type = 'info') {
-            // Simple alert for now - could be enhanced with custom notifications
-            alert(message);
+function sobelEdge(gray, w, h) {
+  const out = new Uint8Array(w * h);
+  const kx = [-1,0,1,-2,0,2,-1,0,1];
+  const ky = [-1,-2,-1,0,0,0,1,2,1];
+  for (let y = 1; y < h-1; y++) {
+    for (let x = 1; x < w-1; x++) {
+      let gx = 0, gy = 0;
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          const v = gray[(y+i)*w+(x+j)];
+          gx += v * kx[(i+1)*3+(j+1)];
+          gy += v * ky[(i+1)*3+(j+1)];
         }
+      }
+      out[y*w+x] = Math.min(255, Math.sqrt(gx*gx+gy*gy)|0);
+    }
+  }
+  return out;
+}
 
-       
-        
-        // Show a specific page
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active-page');
-            });
-            
-            // Show the selected page
-            document.getElementById(pageId).classList.add('active-page');
-            
-            // Update active nav link
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Handle specific page logic
-            if (pageId === 'clubs') {
-                loadClubs();
-            } else if (pageId === 'profile') {
-                loadUserProfile();
-            } else if (pageId === 'club-detail') {
-                loadSelectedClubDetail();
-            }
-            
-            // Close mobile menu
-            document.getElementById('navbarNav').classList.remove('active');
-        }
-        
-        // Register a new user
-       function registerUser() {
-  const email = document.getElementById('register-email').value.trim();
-  const password = document.getElementById('register-password').value.trim();
-  const firstname = document.getElementById('register-firstname').value.trim();
-  const lastname = document.getElementById('register-lastname').value.trim();
-  const grade = document.getElementById('register-grade').value;
-  const room = document.getElementById('register-room').value;
-  const studentId = document.getElementById('register-studentid').value.trim();
+function applyFilter() {
+  if (!state.originalImageData) return;
+  const { imgW: w, imgH: h } = state;
+  const gray = toGrayscale(state.originalImageData);
+  const mode = filterSel.value;
+  let result;
 
-  if (!email || !password || !firstname || !lastname || !grade || !room || !studentId) {
-    showNotification('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+  if (mode === 'Cross-Correlation') {
+    result = convolve(gray, w, h, [-1,-1,-1,-1,8,-1,-1,-1,-1]);
+  } else if (mode === 'Sobel Edge') {
+    result = sobelEdge(gray, w, h);
+  } else if (mode === 'Laplacian') {
+    result = convolve(gray, w, h, [0,1,0,1,-4,1,0,1,0]);
+  } else { // Sharpen
+    result = convolve(gray, w, h, [0,-1,0,-1,5,-1,0,-1,0]);
+  }
+
+  state.filteredGray = result;
+  labelOrig.textContent = `ภาพต้นฉบับ (Original) — ${w}×${h} px`;
+  labelFilt.textContent  = `ภาพหลัง Filter — ${w}×${h} px | stride:1 | ${mode}`;
+  renderAll();
+}
+
+filterSel.addEventListener('change', applyFilter);
+
+// ════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════
+function getScaleOrigin(wrap, iw, ih) {
+  const cw = wrap.clientWidth  || 600;
+  const ch = wrap.clientHeight || 500;
+  const scale = Math.min(cw/iw, ch/ih) * 0.90 * state.zoom;
+  const ox = cw/2 + state.offsetX - (iw*scale)/2;
+  const oy = ch/2 + state.offsetY - (ih*scale)/2;
+  return { scale, ox, oy };
+}
+
+function resizeCanvas(canvas, wrap) {
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+
+function renderAll() {
+  if (!state.filteredGray) return;
+  drawOriginal();
+  drawFiltered();
+}
+
+function drawOriginal() {
+  const { imgW: iw, imgH: ih } = state;
+  resizeCanvas(canvasOrig, origWrap);
+  const { scale, ox, oy } = getScaleOrigin(origWrap, iw, ih);
+  const nw = iw * scale | 0, nh = ih * scale | 0;
+
+  // Draw image
+  const offscreen = document.createElement('canvas');
+  offscreen.width  = iw;
+  offscreen.height = ih;
+  offscreen.getContext('2d').putImageData(state.originalImageData, 0, 0);
+
+  ctxO.clearRect(0, 0, canvasOrig.width, canvasOrig.height);
+  ctxO.imageSmoothingEnabled = true;
+  ctxO.imageSmoothingQuality = 'high';
+  ctxO.drawImage(offscreen, ox, oy, nw, nh);
+
+  // ROI overlay
+  if (state.roiRect) {
+    const { x1, y1, x2, y2 } = state.roiRect;
+    ctxO.strokeStyle = '#39ff14';
+    ctxO.lineWidth = 2;
+    ctxO.strokeRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
+    ctxO.fillStyle = 'rgba(57,255,20,.08)';
+    ctxO.fillRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
+  }
+
+  drawAxes(ctxO, canvasOrig, ox, oy, nw, nh, scale);
+}
+
+function drawFiltered() {
+  const { imgW: iw, imgH: ih } = state;
+  resizeCanvas(canvasFilt, filtWrap);
+  const { scale, ox, oy } = getScaleOrigin(filtWrap, iw, ih);
+  const nw = iw * scale | 0, nh = ih * scale | 0;
+
+  // Gray → ImageData
+  const imgData = new ImageData(iw, ih);
+  for (let i = 0; i < state.filteredGray.length; i++) {
+    const v = state.filteredGray[i];
+    imgData.data[i*4]   = v;
+    imgData.data[i*4+1] = v;
+    imgData.data[i*4+2] = v;
+    imgData.data[i*4+3] = 255;
+  }
+  const offscreen = document.createElement('canvas');
+  offscreen.width = iw; offscreen.height = ih;
+  offscreen.getContext('2d').putImageData(imgData, 0, 0);
+
+  ctxF.clearRect(0, 0, canvasFilt.width, canvasFilt.height);
+  ctxF.imageSmoothingEnabled = true;
+  ctxF.imageSmoothingQuality = 'high';
+  ctxF.drawImage(offscreen, ox, oy, nw, nh);
+
+  // Measurement line
+  if (state.measurement) {
+    const { p1, p2, dist } = state.measurement;
+    const sp1 = [ox+p1[0]*scale, oy+p1[1]*scale];
+    const sp2 = [ox+p2[0]*scale, oy+p2[1]*scale];
+    ctxF.strokeStyle = 'rgba(0,245,212,.9)'; ctxF.lineWidth = 2;
+    ctxF.beginPath(); ctxF.moveTo(...sp1); ctxF.lineTo(...sp2); ctxF.stroke();
+    // endpoints
+    for (const p of [sp1, sp2]) {
+      ctxF.fillStyle = '#ff4444';
+      ctxF.beginPath(); ctxF.arc(p[0], p[1], 4, 0, Math.PI*2); ctxF.fill();
+    }
+    // label
+    const mx = (sp1[0]+sp2[0])/2, my = (sp1[1]+sp2[1])/2;
+    ctxF.fillStyle = '#ffe234';
+    ctxF.font = '11px Space Mono, monospace';
+    ctxF.fillText(`${dist.toFixed(1)} px`, mx+6, my-6);
+  }
+
+  // ROI rect
+  if (state.roiRect) {
+    const { x1, y1, x2, y2 } = state.roiRect;
+    ctxF.strokeStyle = '#39ff14'; ctxF.lineWidth = 2;
+    ctxF.strokeRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
+    ctxF.fillStyle = 'rgba(0,255,128,.06)';
+    ctxF.fillRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
+  }
+
+  // Live drag preview
+  if (state.drawing && state.startPt && state.endPt) {
+    const s = state.startPt, e = state.endPt;
+    const ss = [ox+s[0]*scale, oy+s[1]*scale];
+    const es = [ox+e[0]*scale, oy+e[1]*scale];
+    if (state.tool === 'measure') {
+      ctxF.strokeStyle = 'rgba(0,245,212,.6)'; ctxF.lineWidth = 1;
+      ctxF.setLineDash([4,4]);
+      ctxF.beginPath(); ctxF.moveTo(...ss); ctxF.lineTo(...es); ctxF.stroke();
+      ctxF.setLineDash([]);
+    } else if (state.tool === 'roi') {
+      ctxF.strokeStyle = '#ffe234'; ctxF.lineWidth = 1;
+      ctxF.setLineDash([5,3]);
+      ctxF.strokeRect(ss[0], ss[1], es[0]-ss[0], es[1]-ss[1]);
+      ctxF.setLineDash([]);
+    }
+  }
+
+  drawAxes(ctxF, canvasFilt, ox, oy, nw, nh, scale);
+}
+
+function drawAxes(ctx, canvas, ox, oy, nw, nh, scale) {
+  ctx.strokeStyle = '#2a2a45'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ox, oy); ctx.lineTo(ox+nw, oy);
+  ctx.moveTo(ox, oy); ctx.lineTo(ox, oy+nh);
+  ctx.stroke();
+  const step = Math.max(50, (100/scale|0));
+  ctx.fillStyle = '#555577'; ctx.font = '9px Space Mono, monospace';
+  for (let i = 0; i < 9999; i += step) {
+    const px = ox + i*scale;
+    if (px > ox+nw+2) break;
+    ctx.fillText(i, px, oy-4);
+  }
+  for (let i = 0; i < 9999; i += step) {
+    const py = oy + i*scale;
+    if (py > oy+nh+2) break;
+    ctx.fillText(i, ox-28, py+3);
+  }
+}
+
+// ════════════════════════════════════════════
+//  TOOLS
+// ════════════════════════════════════════════
+function screenToImage(sx, sy) {
+  const { imgW: iw, imgH: ih } = state;
+  const { scale, ox, oy } = getScaleOrigin(filtWrap, iw, ih);
+  return [ ((sx-ox)/scale)|0, ((sy-oy)/scale)|0 ];
+}
+
+filtWrap.addEventListener('mousedown', e => {
+  if (!state.filteredGray) return;
+
+  // Middle mouse OR Space held → pan
+  if (e.button === 1 || state.spaceDown) {
+    e.preventDefault();
+    state.panning = true;
+    state.panStartX = e.clientX;
+    state.panStartY = e.clientY;
+    state.panOriginX = state.offsetX;
+    state.panOriginY = state.offsetY;
+    document.body.classList.add('panning-now');
     return;
   }
 
-  // ตรวจสอบว่าเลขประจำตัวซ้ำหรือไม่
-  firebase.database().ref('users').once('value')
-    .then(snapshot => {
-      const exists = Object.values(snapshot.val() || {}).some(user => user.studentId === studentId);
-      if (exists) {
-        showNotification('❌ ข้อมูลซ้ำ: มีผู้ใช้ที่ใช้เลขประจำตัวนี้แล้ว');
-        throw new Error('Duplicate studentId');
-      }
+  state.drawing = true;
+  state.startPt = screenToImage(e.offsetX, e.offsetY);
+  state.endPt   = state.startPt;
+  if (state.tool === 'inspect') showPixelInfo(state.startPt);
+});
 
-      return firebase.auth().createUserWithEmailAndPassword(email, password);
-    })
-    .then(userCredential => {
-      const user = userCredential.user;
-      const userData = {
-        email,
-        firstname,
-        lastname,
-        grade,
-        room,
-        studentId,
-        clubId: null
-      };
-      return firebase.database().ref('users/' + user.uid).set(userData);
-    })
-    .then(() => {
-      showNotification('🎉 สมัครสมาชิกสำเร็จ!');
-      loadUserData();
-    })
-    .catch(error => {
-      if (error.message !== 'Duplicate studentId') {
-        showNotification('❌ เกิดข้อผิดพลาด: ' + error.message);
-      }
-    });
-}
+origWrap.addEventListener('mousedown', e => {
+  if (!state.filteredGray) return;
+  if (e.button === 1 || state.spaceDown) {
+    e.preventDefault();
+    state.panning = true;
+    state.panStartX = e.clientX;
+    state.panStartY = e.clientY;
+    state.panOriginX = state.offsetX;
+    state.panOriginY = state.offsetY;
+    document.body.classList.add('panning-now');
+  }
+});
 
-        
-        // Login user
-        function loginUser() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-            
-            // Validate fields
-            if (!email || !password) {
-                showNotification('กรุณากรอกอีเมลและรหัสผ่าน');
-                return;
-            }
-            
-            // Sign in with email and password
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Clear login form
-                    document.getElementById('login-email').value = '';
-                    document.getElementById('login-password').value = '';
-                    
-                    showNotification('🎉 เข้าสู่ระบบสำเร็จ!');
-                    
-                    // Load user data and show profile page
-                    loadUserData();
-                })
-                .catch((error) => {
-                    showNotification('❌ เกิดข้อผิดพลาด: ' + error.message);
-                });
-        }
-        
-        // Logout user
-        function logout() {
-            firebase.auth().signOut()
-                .then(() => {
-                    currentUser = null;
-                    currentUserData = null;
-                    userClub = null;
-                    updateUI();
-                    showPage('home');
-                    showNotification('👋 ออกจากระบบสำเร็จ!');
-                })
-                .catch((error) => {
-                    showNotification('❌ เกิดข้อผิดพลาด: ' + error.message);
-                });
-        }
-        
-        // Load user data
-        function loadUserData() {
-            currentUser = firebase.auth().currentUser;
-            
-            if (currentUser) {
-                firebase.database().ref('users/' + currentUser.uid).once('value')
-                    .then((snapshot) => {
-                        currentUserData = snapshot.val();
-                        
-                        // Check if user has a club
-                        if (currentUserData.clubId) {
-                            return firebase.database().ref('clubs/' + currentUserData.clubId).once('value');
-                        } else {
-                            userClub = null;
-                            updateUI();
-                            showPage('profile');
-                            return null;
-                        }
-                    })
-                    .then((clubSnapshot) => {
-                        if (clubSnapshot) {
-                            userClub = clubSnapshot.val();
-                            userClub.id = currentUserData.clubId;
-                        }
-                        
-                        updateUI();
-                        showPage('profile');
-                    })
-                    .catch((error) => {
-                        console.error("Error loading user data:", error);
-                    });
-            }
-        }
-        
-        // Update UI based on authentication state
-        function updateUI() {
-            const userNameDisplay = document.getElementById('user-name-display');
-            if (currentUser) {
-  // ซ่อนปุ่ม Login และ Register บน navbar
-  document.getElementById('login-nav').style.display = 'none';
-  document.getElementById('register-nav').style.display = 'none';
+document.addEventListener('mousemove', e => {
+  if (state.panning) {
+    state.offsetX = state.panOriginX + (e.clientX - state.panStartX);
+    state.offsetY = state.panOriginY + (e.clientY - state.panStartY);
+    renderAll();
+    return;
+  }
+});
 
-  // แสดงปุ่ม Logout และ Profile
-  document.getElementById('logout-nav').style.display = 'block';
-  document.getElementById('profile-nav').style.display = 'block';
-
-  // ซ่อนปุ่มสมัครสมาชิกและเข้าสู่ระบบบนหน้าแรก
-  document.querySelectorAll('#home .btn').forEach(btn => {
-    if (btn.textContent.includes('สมัครสมาชิก') || btn.textContent.includes('เข้าสู่ระบบ')) {
-      btn.style.display = 'none';
+filtWrap.addEventListener('mousemove', e => {
+  const pt = screenToImage(e.offsetX, e.offsetY);
+  if (state.filteredGray) {
+    const [x, y] = pt;
+    if (x >= 0 && x < state.imgW && y >= 0 && y < state.imgH) {
+      coordTip.style.display = 'block';
+      coordTip.style.left = (e.offsetX+12)+'px';
+      coordTip.style.top  = (e.offsetY+12)+'px';
+      const v = state.filteredGray[y*state.imgW+x];
+      coordTip.textContent = `(${x}, ${y}) · ${v}`;
     }
-  });
-
-  // ซ่อนปุ่ม "ลงทะเบียนชมรมกีฬา" บนแบนเนอร์หน้าแรก
-  const homeRegisterBtn = document.querySelector('#home .banner a.btn');
-  if (homeRegisterBtn) {
-    homeRegisterBtn.style.display = 'none';
   }
+  if (!state.drawing) return;
+  state.endPt = pt;
+  if (state.tool !== 'inspect') drawFiltered();
+});
 
-} else {
-  // แสดงปุ่ม Login และ Register บน navbar
-  document.getElementById('login-nav').style.display = 'block';
-  document.getElementById('register-nav').style.display = 'block';
-
-  // ซ่อน Logout และ Profile
-  document.getElementById('logout-nav').style.display = 'none';
-  document.getElementById('profile-nav').style.display = 'none';
-
-  // แสดงปุ่มหน้าแรกทั้งหมดเมื่อยังไม่เข้าสู่ระบบ
-  document.querySelectorAll('#home .btn').forEach(btn => {
-    btn.style.display = 'inline-flex';
-  });
-
-  const homeRegisterBtn = document.querySelector('#home .banner a.btn');
-  if (homeRegisterBtn) {
-    homeRegisterBtn.style.display = 'inline-flex';
+document.addEventListener('mouseup', e => {
+  if (state.panning) {
+    state.panning = false;
+    document.body.classList.remove('panning-now');
+    return;
   }
+});
+
+filtWrap.addEventListener('mouseleave', () => {
+  coordTip.style.display = 'none';
+  if (!state.panning) state.drawing = false;
+});
+
+filtWrap.addEventListener('mouseup', e => {
+  if (state.panning) return;
+  if (!state.drawing) return;
+  state.drawing = false;
+  state.endPt = screenToImage(e.offsetX, e.offsetY);
+
+  if (state.tool === 'measure') {
+    const p1 = state.startPt, p2 = state.endPt;
+    const dx = p2[0]-p1[0], dy = p2[1]-p1[1];
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    state.measurement = { p1, p2, dist };
+    showMeasurement(p1, p2, dist);
+  } else if (state.tool === 'roi') {
+    let [x1,y1] = state.startPt, [x2,y2] = state.endPt;
+    if (x1>x2) [x1,x2]=[x2,x1];
+    if (y1>y2) [y1,y2]=[y2,y1];
+    x1=Math.max(0,Math.min(x1,state.imgW-1));
+    x2=Math.max(0,Math.min(x2,state.imgW-1));
+    y1=Math.max(0,Math.min(y1,state.imgH-1));
+    y2=Math.max(0,Math.min(y2,state.imgH-1));
+    state.roiRect = {x1,y1,x2,y2};
+    calcROI(x1,y1,x2,y2);
+  }
+  renderAll();
+});
+
+// ── Zoom: zoom toward mouse cursor position ──
+function zoomAtPoint(wrap, mouseX, mouseY, factor) {
+  const { imgW: iw, imgH: ih } = state;
+  const { scale, ox, oy } = getScaleOrigin(wrap, iw, ih);
+  // Image coords under cursor before zoom
+  const imgX = (mouseX - ox) / scale;
+  const imgY = (mouseY - oy) / scale;
+  state.zoom = Math.max(.1, Math.min(state.zoom * factor, 40));
+  // After zoom, recalculate scale
+  const newScale = Math.min(wrap.clientWidth/iw, wrap.clientHeight/ih) * 0.90 * state.zoom;
+  // Adjust offset so imgX/imgY stays under cursor
+  const cw = wrap.clientWidth  || 600;
+  const ch = wrap.clientHeight || 500;
+  const nw = iw * newScale, nh = ih * newScale;
+  // base ox/oy without offset
+  const baseOx = cw/2 - nw/2;
+  const baseOy = ch/2 - nh/2;
+  // desired: mouseX = baseOx + state.offsetX + imgX * newScale
+  state.offsetX = mouseX - baseOx - imgX * newScale;
+  state.offsetY = mouseY - baseOy - imgY * newScale;
+  renderAll();
 }
 
-            
-            if (currentUser) {
-                // Show authenticated state
-                document.getElementById('login-nav').style.display = 'none';
-                document.getElementById('register-nav').style.display = 'none';
-                document.getElementById('profile-nav').style.display = 'block';
-                document.getElementById('logout-nav').style.display = 'block';
-                document.getElementById('clubs-info').innerHTML = '<i class="fas fa-check-circle"></i> เลือกชมรมที่คุณต้องการเข้าร่วม';
-                
-                if (currentUserData && userNameDisplay) {
-                    userNameDisplay.textContent = `${currentUserData.firstname} ${currentUserData.lastname}`;
-                    userNameDisplay.style.display = 'block';
-                }
-            } else {
-                // Show guest state
-                document.getElementById('login-nav').style.display = 'block';
-                document.getElementById('register-nav').style.display = 'block';
-                document.getElementById('profile-nav').style.display = 'none';
-                document.getElementById('logout-nav').style.display = 'none';
-                document.getElementById('clubs-info').innerHTML = '<i class="fas fa-info-circle"></i> กรุณาเข้าสู่ระบบก่อนเลือกชมรมกีฬา';
-                
-                if (userNameDisplay) {
-                    userNameDisplay.textContent = '';
-                    userNameDisplay.style.display = 'none';
-                }
-            }
-        }
-        
-        // Load clubs
-        function loadClubs() {
-            firebase.database().ref('clubs').once('value')
-                .then((snapshot) => {
-                    clubs = [];
-                    snapshot.forEach((childSnapshot) => {
-                        const club = childSnapshot.val();
-                        club.id = childSnapshot.key;
-                        clubs.push(club);
-                    });
-                    
-                    renderClubs();
-                })
-                .catch((error) => {
-                    console.error("Error loading clubs:", error);
-                });
-        }
-        
-        // Render clubs in the clubs page
-        function renderClubs() {
-            const clubsContainer = document.getElementById('clubs-container');
-            const emptyState = document.getElementById('clubs-empty');
-            
-            clubsContainer.innerHTML = '';
-            
-            if (clubs.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            clubs.forEach(club => {
-                const clubCard = document.createElement('div');
-                clubCard.className = 'club-card';
-                
-                let buttonHtml = '';
-                let isDisabled = false;
-                let buttonText = 'เข้าร่วมชมรม';
-                let buttonClass = 'btn';
-                let buttonIcon = 'fas fa-plus';
-                
-                // Check if user is logged in
-                if (currentUser) {
-                    // Check if user already joined a club
-                    if (currentUserData.clubId) {
-                        if (currentUserData.clubId === club.id) {
-                            buttonText = 'คุณเป็นสมาชิกแล้ว';
-                            buttonClass = 'btn btn-outline';
-                            buttonIcon = 'fas fa-check';
-                        } else {
-                            buttonText = 'คุณเป็นสมาชิกชมรมอื่นแล้ว';
-                            buttonClass = 'btn';
-                            buttonIcon = 'fas fa-ban';
-                            isDisabled = true;
-                        }
-                    }
-                    
-                    // Check if club is full
-                    if (club.members >= club.maxMembers && currentUserData.clubId !== club.id) {
-                        buttonText = 'ชมรมเต็มแล้ว';
-                        buttonClass = 'btn';
-                        buttonIcon = 'fas fa-times';
-                        isDisabled = true;
-                    }
-                } else {
-                    // User is not logged in
-                    buttonText = 'กรุณาเข้าสู่ระบบ';
-                    buttonClass = 'btn btn-outline';
-                    buttonIcon = 'fas fa-sign-in-alt';
-                    isDisabled = true;
-                }
-                
-                const members = club.members || 0;
-                const percentage = Math.round((members / club.maxMembers) * 100);
-                
-                buttonHtml = `<button class="${buttonClass}" ${isDisabled ? 'disabled' : `onclick="joinClub('${club.id}')"`}>
-                    <i class="${buttonIcon}"></i>
-                    ${buttonText}
-                </button>`;
-                
-                clubCard.innerHTML = `
-                    <img src="${club.imglink}" alt="${club.name}" onerror="this.src='/api/placeholder/350/200'">
-                    <div class="club-card-body">
-                        <h3 class="club-card-title">${club.name}</h3>
-                        <p class="club-card-text">${club.description}</p>
-                        <div class="club-stats">
-                            <div class="stat-item">
-                                <div class="stat-value">${members}</div>
-                                <div class="stat-label">สมาชิก</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${club.maxMembers}</div>
-                                <div class="stat-label">ที่นั่งสูงสุด</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${percentage}%</div>
-                                <div class="stat-label">อัตราเต็ม</div>
-                            </div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${percentage}%"></div>
-                        </div>
-                        <div style="margin-top: 15px;">
-                            ${buttonHtml}
-                        </div>
-                    </div>
-                `;
-                
-                clubsContainer.appendChild(clubCard);
-            });
-        }
-        
-        // Join a club
-        function joinClub(clubId) {
-            if (!currentUser) {
-                showNotification('กรุณาเข้าสู่ระบบก่อนเข้าร่วมชมรม');
-                showPage('login');
-                return;
-            }
-            
-            if (currentUserData.clubId) {
-                showNotification('คุณเป็นสมาชิกชมรมอยู่แล้ว');
-                return;
-            }
-            
-            // Get the club data
-            firebase.database().ref('clubs/' + clubId).once('value')
-                .then((snapshot) => {
-                    const club = snapshot.val();
-                    
-                    // Check if club is full
-                    if (club.members >= club.maxMembers) {
-                        showNotification('❌ ชมรมเต็มแล้ว');
-                        return;
-                    }
-                    
-                    // Update club members count
-                    const updates = {};
-                    updates[`clubs/${clubId}/members`] = (club.members || 0) + 1;
-                    updates[`users/${currentUser.uid}/clubId`] = clubId;
-                    
-                    return firebase.database().ref().update(updates);
-                })
-                .then(() => {
-                    showNotification('🎉 เข้าร่วมชมรมสำเร็จ!');
-                    
-                    // Reload user data
-                    loadUserData();
-                })
-                .catch((error) => {
-                    console.error("Error joining club:", error);
-                    showNotification('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-                });
-        }
-        
-        // Cancel club membership
-        function cancelClub() {
-            if (!currentUser || !currentUserData.clubId) {
-                showNotification('คุณไม่ได้เป็นสมาชิกชมรมใด');
-                return;
-            }
-            
-            if (!confirm('คุณต้องการยกเลิกการเข้าร่วมชมรมหรือไม่?')) {
-                return;
-            }
-            
-            const clubId = currentUserData.clubId;
-            
-            // Get the club data
-            firebase.database().ref('clubs/' + clubId).once('value')
-                .then((snapshot) => {
-                    const club = snapshot.val();
-                    
-                    // Update club members count
-                    const updates = {};
-                    updates[`clubs/${clubId}/members`] = Math.max(0, (club.members || 0) - 1);
-                    updates[`users/${currentUser.uid}/clubId`] = null;
-                    
-                    return firebase.database().ref().update(updates);
-                })
-                .then(() => {
-                    showNotification('✅ ยกเลิกการเข้าร่วมชมรมสำเร็จ!');
-                    
-                    // Reload user data
-                    loadUserData();
-                })
-                .catch((error) => {
-                    console.error("Error cancelling club:", error);
-                    showNotification('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-                });
-        }
-        
-        // Load user profile
-        function loadUserProfile() {
-            if (!currentUser || !currentUserData) {
-                showPage('login');
-                return;
-            }
-            
-            const profileInfoContainer = document.getElementById('profile-info-container');
-            profileInfoContainer.innerHTML = `
-                <div class="label">อีเมล</div>
-                <div class="value">${currentUserData.email}</div>
-                
-                <div class="label">ชื่อ</div>
-                <div class="value">${currentUserData.firstname}</div>
-                
-                <div class="label">นามสกุล</div>
-                <div class="value">${currentUserData.lastname}</div>
-                
-                <div class="label">ระดับชั้น</div>
-                <div class="value">${currentUserData.grade}</div>
-                
-                <div class="label">ห้อง</div>
-                <div class="value">${currentUserData.room}</div>
-                
-                <div class="label">เลขประจำตัว</div>
-                <div class="value">${currentUserData.studentId}</div>
-            `;
-            
-            // Show user's club if any
-            if (userClub) {
-                document.getElementById('joined-club-info').style.display = 'none';
-                document.getElementById('joined-club-container').style.display = 'block';
-                document.getElementById('joined-club-name').textContent = userClub.name;
-                document.getElementById('joined-club-description').textContent = userClub.description;
-            } else {
-                document.getElementById('joined-club-info').style.display = 'block';
-                document.getElementById('joined-club-container').style.display = 'none';
-            }
-        }
-        
-        // Load selected club detail
-        function loadSelectedClubDetail() {
-            if (!currentUser || !currentUserData || !currentUserData.clubId) {
-                showPage('clubs');
-                return;
-            }
-            
-            const clubId = currentUserData.clubId;
-            
-            firebase.database().ref('clubs/' + clubId).once('value')
-                .then((snapshot) => {
-                    const club = snapshot.val();
-                    const members = club.members || 0;
-                    const percentage = Math.round((members / club.maxMembers) * 100);
-                    
-                    document.getElementById('selected-club-name').innerHTML = `<i class="fas fa-users"></i> ${club.name}`;
-                    document.getElementById('selected-club-description').textContent = club.description;
-                    document.getElementById('selected-club-members-count').textContent = members;
-                    document.getElementById('selected-club-max-members').textContent = club.maxMembers;
-                    document.getElementById('selected-club-percentage').textContent = `${percentage}%`;
-                })
-                .catch((error) => {
-                    console.error("Error loading club detail:", error);
-                });
-        }
-        
-        // Go to joined club detail
-        function goToJoinedClub() {
-            showPage('club-detail');
-        }
-        
-        // Show edit profile modal
-        function showEditProfileModal() {
-            if (!currentUserData) return;
-            
-            document.getElementById('edit-firstname').value = currentUserData.firstname;
-            document.getElementById('edit-lastname').value = currentUserData.lastname;
-            document.getElementById('edit-grade').value = currentUserData.grade;
-            document.getElementById('edit-room').value = currentUserData.room;
-            document.getElementById('edit-studentid').value = currentUserData.studentId;
-            
-            document.getElementById('edit-profile-overlay').style.display = 'flex';
-        }
-        
-        // Close edit profile modal
-        function closeEditProfileModal() {
-            document.getElementById('edit-profile-overlay').style.display = 'none';
-        }
-        
-        // Update user profile
-        function updateProfile() {
-            if (!currentUser) return;
-            
-            const firstname = document.getElementById('edit-firstname').value.trim();
-            const lastname = document.getElementById('edit-lastname').value.trim();
-            const grade = document.getElementById('edit-grade').value;
-            const room = document.getElementById('edit-room').value;
-            const studentId = document.getElementById('edit-studentid').value.trim();
-            
-            // Validate fields
-            if (!firstname || !lastname || !grade || !room || !studentId) {
-                showNotification('กรุณากรอกข้อมูลให้ครบทุกช่อง');
-                return;
-            }
-            
-            // Update user data
-            const updates = {
-                firstname: firstname,
-                lastname: lastname,
-                grade: grade,
-                room: room,
-                studentId: studentId
-            };
-            
-            firebase.database().ref('users/' + currentUser.uid).update(updates)
-                .then(() => {
-                    showNotification('✅ อัปเดตข้อมูลสำเร็จ!');
-                    closeEditProfileModal();
-                    
-                    // Update current user data
-                    currentUserData = {
-                        ...currentUserData,
-                        ...updates
-                    };
-                    
-                    // Reload profile and update UI
-                    loadUserProfile();
-                    updateUI();
-                })
-                .catch((error) => {
-                    console.error("Error updating profile:", error);
-                    showNotification('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-                });
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const editModal = document.getElementById('edit-profile-overlay');
-            
-            if (event.target === editModal) {
-                closeEditProfileModal();
-            }
-        }
-        
-        
-        // Check authentication state
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                loadUserData();
-            } else {
-                currentUser = null;
-                currentUserData = null;
-                userClub = null;
-                updateUI();
-            }
-        });
-        
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            updateUI();
-        });
+filtWrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.12 : 0.9;
+  zoomAtPoint(filtWrap, e.offsetX, e.offsetY, factor);
+}, { passive: false });
 
-    
+origWrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.12 : 0.9;
+  zoomAtPoint(origWrap, e.offsetX, e.offsetY, factor);
+}, { passive: false });
 
-    // Add ID to home nav item
-    const homeNavItem = Array.from(nav.children).find(li => li.querySelector('.nav-link')?.innerText.includes('หน้าแรก'));
-    if (homeNavItem) homeNavItem.id = 'home-nav';
+// ── Space key for pan mode ──
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !e.repeat) {
+    e.preventDefault();
+    state.spaceDown = true;
+    document.body.classList.add('space-mode');
+  }
+  // Reset view with 'R'
+  if (e.code === 'KeyR') {
+    state.zoom = 1; state.offsetX = 0; state.offsetY = 0;
+    renderAll();
+  }
+});
+document.addEventListener('keyup', e => {
+  if (e.code === 'Space') {
+    state.spaceDown = false;
+    document.body.classList.remove('space-mode');
+    if (state.panning) {
+      state.panning = false;
+      document.body.classList.remove('panning-now');
+    }
+  }
+});
 
-    
-    </script>
+// ════════════════════════════════════════════
+//  INFO DISPLAY
+// ════════════════════════════════════════════
+function html(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+function row(key, val, cls='') {
+  return `<div class="row"><span class="key">${key}</span><span class="val ${cls}">${val}</span></div>`;
+}
+
+function showMeasurement(p1, p2, dist) {
+  infoPanel.innerHTML = `
+    <div class="section-title">📏 วัดระยะทาง</div>
+    ${row('จากจุด', `(${p1[0]}, ${p1[1]})`)}
+    ${row('ถึงจุด', `(${p2[0]}, ${p2[1]})`)}
+    ${row('ระยะห่าง', dist.toFixed(2)+' px', 'accent')}
+    ${row('Δx', Math.abs(p2[0]-p1[0])+' px')}
+    ${row('Δy', Math.abs(p2[1]-p1[1])+' px')}
+    ${row('มุม', (Math.atan2(p2[1]-p1[1], p2[0]-p1[0])*180/Math.PI).toFixed(1)+'°')}
+  `;
+}
+
+function calcROI(x1,y1,x2,y2) {
+  const rw = x2-x1, rh = y2-y1;
+  const areaPx = rw*rh;
+  const totalPx = state.imgW*state.imgH;
+  const pct = (areaPx/totalPx*100).toFixed(2);
+
+  // stats on filtered gray
+  let sum=0, min=255, max=0;
+  const vals = [];
+  for (let y=y1; y<y2; y++) {
+    for (let x=x1; x<x2; x++) {
+      const v = state.filteredGray[y*state.imgW+x];
+      sum+=v; if(v<min)min=v; if(v>max)max=v; vals.push(v);
+    }
+  }
+  const mean = vals.length ? (sum/vals.length).toFixed(2) : 0;
+  let variance = 0;
+  vals.forEach(v => variance += (v-mean)*(v-mean));
+  const std = vals.length ? Math.sqrt(variance/vals.length).toFixed(2) : 0;
+
+  infoPanel.innerHTML = `
+    <div class="section-title">⬛ ขอบเขต ROI</div>
+    ${row('จุดเริ่มต้น', `(${x1}, ${y1})`)}
+    ${row('จุดสิ้นสุด', `(${x2}, ${y2})`)}
+    ${row('กว้าง', rw+' px')}
+    ${row('สูง', rh+' px')}
+    <div class="section-title">🔲 พื้นที่ ROI</div>
+    ${row('พื้นที่', areaPx.toLocaleString()+' px²', 'green')}
+    ${row('ภาพรวม', totalPx.toLocaleString()+' px²')}
+    ${row('สัดส่วน', pct+'%', 'yellow')}
+    <div class="section-title">📊 สถิติความเข้ม</div>
+    ${row('Mean', mean, 'accent')}
+    ${row('Std', std)}
+    ${row('Min', min)}
+    ${row('Max', max, 'accent')}
+  `;
+}
+
+function showPixelInfo(pt) {
+  const [x,y] = pt;
+  if (x<0||x>=state.imgW||y<0||y>=state.imgH) return;
+  const v = state.filteredGray[y*state.imgW+x];
+  const norm = (v/255).toFixed(4);
+  infoPanel.innerHTML = `
+    <div class="section-title">🎯 ตรวจสอบพิกเซล</div>
+    ${row('พิกัด X', x)}
+    ${row('พิกัด Y', y)}
+    ${row('ความเข้ม', v, 'accent')}
+    ${row('Normalized', norm)}
+    ${row('Hex', '#'+v.toString(16).padStart(2,'0').repeat(3).toUpperCase())}
+    ${row('ระดับ', v > 200 ? 'สว่างมาก ☀' : v > 128 ? 'ปานกลาง 🌤' : v > 64 ? 'มืดปานกลาง 🌥' : 'มืด 🌑')}
+  `;
+}
+
+// ════════════════════════════════════════════
+//  TOOLBAR BUTTONS
+// ════════════════════════════════════════════
+function setTool(t) {
+  state.tool = t;
+  state.measurement = null;
+  [btnMeasure,btnROI,btnInspect].forEach(b => b.classList.remove('active'));
+  ({measure:btnMeasure, roi:btnROI, inspect:btnInspect})[t].classList.add('active');
+  renderAll();
+}
+btnMeasure.addEventListener('click', () => setTool('measure'));
+btnROI.addEventListener('click',     () => setTool('roi'));
+btnInspect.addEventListener('click', () => setTool('inspect'));
+btnClear.addEventListener('click', () => {
+  state.roiRect = null;
+  infoPanel.innerHTML = '<div class="placeholder">── ล้าง ROI แล้ว ──</div>';
+  renderAll();
+});
+btnReset.addEventListener('click', () => {
+  state.zoom = 1; state.offsetX = 0; state.offsetY = 0;
+  renderAll();
+});
+
+// ════════════════════════════════════════════
+//  AI ANALYSIS (Anthropic API)
+// ════════════════════════════════════════════
+btnAI.addEventListener('click', async () => {
+  if (!state.filteredGray) {
+    aiPanel.classList.add('visible');
+    aiText.innerHTML = '<p style="color:var(--text2)">กรุณาโหลดรูปภาพก่อน</p>';
+    return;
+  }
+
+  // Build context
+  const mode = filterSel.value;
+  const roiInfo = state.roiRect
+    ? `ROI: (${state.roiRect.x1},${state.roiRect.y1}) → (${state.roiRect.x2},${state.roiRect.y2}), ขนาด ${state.roiRect.x2-state.roiRect.x1}×${state.roiRect.y2-state.roiRect.y1} px`
+    : 'ไม่มี ROI';
+  const measInfo = state.measurement
+    ? `ระยะที่วัด: ${state.measurement.dist.toFixed(2)} px จาก ${JSON.stringify(state.measurement.p1)} ถึง ${JSON.stringify(state.measurement.p2)}`
+    : 'ไม่มีการวัดระยะ';
+
+  // Sample pixel stats from filtered image
+  const sample = state.filteredGray;
+  let sum=0, min=255, max=0;
+  const step = Math.max(1, sample.length/2000|0);
+  let count=0;
+  for (let i=0; i<sample.length; i+=step) {
+    const v=sample[i]; sum+=v; if(v<min)min=v; if(v>max)max=v; count++;
+  }
+  const mean=(sum/count).toFixed(1);
+
+  const prompt = `คุณคือผู้เชี่ยวชาญด้าน Computer Vision และ Image Processing
+
+กรุณาวิเคราะห์ Feature Map ต่อไปนี้และให้คำอธิบายสั้นๆ เป็นภาษาไทย (ไม่เกิน 120 คำ):
+
+- ขนาดภาพ: ${state.imgW}×${state.imgH} px
+- Filter ที่ใช้: ${mode}
+- ค่าสถิติทั้งภาพ: Mean=${mean}, Min=${min}, Max=${max}
+- ${roiInfo}
+- ${measInfo}
+
+วิเคราะห์: 1) ลักษณะ feature ที่ตรวจพบ 2) คุณภาพ edge/response 3) ข้อเสนอแนะการใช้งาน`;
+
+  btnAI.classList.add('loading');
+  btnAI.innerHTML = '<span class="spinner"></span> กำลังวิเคราะห์...';
+  aiPanel.classList.add('visible');
+  aiText.innerHTML = '<p style="color:var(--text2)">⏳ กำลังประมวลผล...</p>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text||'').join('') || 'ไม่สามารถวิเคราะห์ได้';
+    aiText.innerHTML = text.split('\n').filter(Boolean).map(l => `<p>${l}</p>`).join('');
+  } catch(err) {
+    aiText.innerHTML = `<p style="color:var(--red)">เกิดข้อผิดพลาด: ${err.message}</p>`;
+  } finally {
+    btnAI.classList.remove('loading');
+    btnAI.innerHTML = '✦ AI วิเคราะห์';
+  }
+});
+
+// ════════════════════════════════════════════
+//  RESIZE OBSERVER
+// ════════════════════════════════════════════
+const ro = new ResizeObserver(() => renderAll());
+ro.observe(origWrap);
+ro.observe(filtWrap);
+</script>
 </body>
 </html>
