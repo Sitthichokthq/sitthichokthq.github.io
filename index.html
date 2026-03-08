@@ -3,1066 +3,1402 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feature Map Analysis System — วิทชภณ พวงแก้ว</title>
-
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
- <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>Feature Map Analysis — วิทชภณ พวงแก้ว</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a12;
-    --panel: #11111e;
-    --panel2: #161625;
-    --border: #2a2a45;
-    --accent: #00f5d4;
-    --accent2: #7b61ff;
-    --accent3: #ff6b6b;
-    --text: #e0e0f0;
-    --text2: #8888aa;
-    --canvas-bg: #08080f;
-    --green: #39ff14;
-    --yellow: #ffe234;
-    --red: #ff4444;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+:root {
+  --bg:       #0c0c0f;
+  --surface:  #111116;
+  --surface2: #18181f;
+  --border:   #232330;
+  --border2:  #2e2e3d;
+  --accent:   #6ee7b7;
+  --accent2:  #818cf8;
+  --accent3:  #f87171;
+  --text:     #e2e2ec;
+  --text2:    #6b6b85;
+  --text3:    #3e3e52;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'IBM Plex Sans Thai', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── HEADER ── */
-  header {
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    padding: 0 16px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
-  }
-  .logo {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-  .logo span { color: var(--text2); }
-  .divider { width: 1px; height: 28px; background: var(--border); }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  /* ── TOOLBAR BUTTONS ── */
-  .toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--panel2);
-    color: var(--text2);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all .15s;
-    white-space: nowrap;
-  }
-  .btn:hover { border-color: var(--accent); color: var(--accent); }
-  .btn.active {
-    background: rgba(0,245,212,.1);
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: 0 0 8px rgba(0,245,212,.2);
-  }
-  .btn.danger:hover { border-color: var(--red); color: var(--red); }
-  .btn.upload {
-    background: rgba(0,245,212,.08);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  select.filter-sel {
-    padding: 6px 10px;
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 4px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    outline: none;
-  }
-  select.filter-sel:focus { border-color: var(--accent); }
+/* ─── HEADER ─── */
+header {
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.logo {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+.logo-sub { color: var(--text2); font-weight: 300; margin-left: 8px; }
+.sep { width: 1px; height: 22px; background: var(--border2); flex-shrink: 0; }
 
-  /* ── AI ANALYZE BTN ── */
-  .btn-ai {
-    margin-left: auto;
-    background: linear-gradient(135deg, rgba(123,97,255,.2), rgba(0,245,212,.1));
-    border-color: var(--accent2);
-    color: var(--accent2);
-    font-weight: 600;
-  }
-  .btn-ai:hover { box-shadow: 0 0 12px rgba(123,97,255,.4); color: #a78bfa; }
-  .btn-ai.loading { opacity: .6; pointer-events: none; }
+/* ─── TOOLBAR ─── */
+.toolbar { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 28px; padding: 0 10px;
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--sans);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s;
+  white-space: nowrap;
+  outline: none;
+}
+.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+.btn.active { border-color: var(--accent); color: var(--accent); background: rgba(110,231,183,.06); }
+.btn.danger:hover { border-color: var(--accent3); color: var(--accent3); }
+.btn.primary {
+  background: rgba(110,231,183,.08);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn.ai-btn {
+  margin-left: auto;
+  background: rgba(129,140,248,.08);
+  border-color: var(--accent2);
+  color: var(--accent2);
+  font-weight: 500;
+}
+.btn.ai-btn:hover { background: rgba(129,140,248,.14); }
+.btn.ai-btn.loading { opacity: .5; pointer-events: none; }
 
-  /* ── MAIN LAYOUT ── */
-  .main {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
+select.sel {
+  height: 28px; padding: 0 8px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 5px;
+  font-family: var(--sans);
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  padding-right: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%236b6b85' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 8px;
+}
+select.sel:focus { border-color: var(--accent); }
 
-  /* ── CANVASES AREA ── */
-  .canvases {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding: 10px;
-    gap: 8px;
-  }
-  .canvas-labels {
-    display: flex;
-    gap: 8px;
-  }
-  .canvas-label {
-    flex: 1;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text2);
-    padding: 4px 8px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 4px 4px 0 0;
-    border-bottom: none;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .canvas-label .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--text2);
-    flex-shrink: 0;
-  }
-  .canvas-label.orig .dot { background: var(--accent2); }
-  .canvas-label.filt .dot { background: var(--accent); }
-  .canvas-row {
-    flex: 1;
-    display: flex;
-    gap: 8px;
-    overflow: hidden;
-  }
-  .canvas-wrap {
-    flex: 1;
-    position: relative;
-    background: var(--canvas-bg);
-    border: 1px solid var(--border);
-    border-radius: 0 4px 4px 4px;
-    overflow: hidden;
-    cursor: crosshair;
-  }
-  .canvas-wrap canvas {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    image-rendering: pixelated;
-  }
-  .drop-zone {
-    position: absolute;
-    inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 10px;
-    color: var(--text2);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    pointer-events: none;
-    transition: opacity .3s;
-  }
-  .drop-zone .icon { font-size: 36px; opacity: .4; }
-  .drop-zone p { opacity: .5; text-align: center; line-height: 1.6; }
-  .canvas-wrap.has-image .drop-zone { opacity: 0; }
+/* ─── MAIN LAYOUT ─── */
+.main { flex: 1; display: flex; overflow: hidden; }
 
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 280px;
-    flex-shrink: 0;
-    border-left: 1px solid var(--border);
-    background: var(--panel);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .sidebar-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: .08em;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .sidebar-header::before {
-    content: '▶';
-    font-size: 8px;
-  }
-  .info-panel {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px 16px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11.5px;
-    line-height: 1.8;
-    color: var(--text2);
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .info-panel .section-title {
-    color: var(--accent);
-    font-size: 11px;
-    letter-spacing: .06em;
-    margin: 10px 0 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--border);
-  }
-  .info-panel .row { display: flex; justify-content: space-between; padding: 2px 0; }
-  .info-panel .row .key { color: var(--text2); }
-  .info-panel .row .val { color: var(--text); font-weight: 700; }
-  .info-panel .val.accent { color: var(--accent); }
-  .info-panel .val.green { color: var(--green); }
-  .info-panel .val.yellow { color: var(--yellow); }
-  .info-panel .placeholder {
-    text-align: center;
-    opacity: .35;
-    padding: 40px 0;
-    font-size: 11px;
-    line-height: 2;
-  }
+/* ─── CANVAS AREA ─── */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 10px 10px 10px 10px;
+  gap: 8px;
+}
+.canvas-row { flex: 1; display: flex; gap: 8px; overflow: hidden; min-height: 0; }
+.canvas-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+.pane-label {
+  display: flex; align-items: center; gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+}
+.pane-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); flex-shrink:0; }
+.pane-label.orig .pane-dot { background: var(--accent2); }
+.pane-label.filt .pane-dot { background: var(--accent); }
+.canvas-wrap {
+  flex: 1; position: relative;
+  background: #080810;
+  border: 1px solid var(--border);
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+.canvas-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+.drop-zone {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; color: var(--text2);
+  font-family: var(--mono); font-size: 11px;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.drop-zone .dz-icon {
+  width: 40px; height: 40px;
+  border: 1px dashed var(--border2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text3);
+}
+.drop-zone p { opacity: .45; line-height: 1.8; text-align: center; }
+.canvas-wrap.has-image .drop-zone { opacity: 0; }
+.coord-tip {
+  position: absolute;
+  background: rgba(8,8,16,.92);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: var(--mono); font-size: 10px;
+  padding: 3px 8px; border-radius: 4px;
+  pointer-events: none; z-index: 20; display: none;
+}
+.pan-hint {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.75); border: 1px solid var(--border);
+  color: var(--text2); font-family: var(--mono); font-size: 10px;
+  padding: 3px 12px; border-radius: 20px;
+  pointer-events: none; opacity: 0; transition: opacity .3s; white-space: nowrap;
+}
+body.space-mode .pan-hint { opacity: 1; }
+body.space-mode .canvas-wrap { cursor: grab; }
+body.space-mode.panning-now .canvas-wrap { cursor: grabbing; }
 
-  /* ── AI RESPONSE ── */
-  .ai-panel {
-    border-top: 1px solid var(--border);
-    padding: 12px 16px;
-    max-height: 220px;
-    overflow-y: auto;
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--text);
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-    display: none;
-  }
-  .ai-panel.visible { display: block; }
-  .ai-panel .ai-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--accent2);
-    letter-spacing: .08em;
-    margin-bottom: 8px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .ai-panel .ai-title .pulse {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent2);
-    animation: pulse 1.2s infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity: 1; } 50% { opacity: .3; }
-  }
-  .ai-panel p { margin-bottom: 6px; }
+/* ─── PROFILE CHART PANEL ─── */
+.profile-panel {
+  height: 0; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: height .25s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+.profile-panel.visible { height: 160px; }
+.profile-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px 6px;
+  font-family: var(--mono); font-size: 10px; color: var(--text2);
+  border-bottom: 1px solid var(--border);
+}
+.profile-header .ph-title { color: var(--accent); font-size: 10px; letter-spacing:.05em; }
+.profile-header .ph-stats { margin-left: auto; display: flex; gap: 14px; }
+.profile-header .ph-stat span { color: var(--text); }
+#profileCanvas { display: block; width: 100%; height: calc(100% - 34px); }
 
-  /* ── COORD TOOLTIP ── */
-  .coord-tip {
-    position: absolute;
-    background: rgba(0,0,0,.85);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    padding: 3px 7px;
-    border-radius: 3px;
-    pointer-events: none;
-    z-index: 20;
-    display: none;
-  }
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sb-section {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sb-title {
+  font-family: var(--mono); font-size: 10px; color: var(--text2);
+  letter-spacing: .08em; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sb-title::before { content: ''; width: 3px; height: 10px; background: var(--accent); border-radius: 2px; flex-shrink:0; }
+.sb-title.purple::before { background: var(--accent2); }
+.info-area {
+  flex: 1; overflow-y: auto; padding: 10px 14px;
+  font-family: var(--mono); font-size: 11px; line-height: 1.9; color: var(--text2);
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.info-area .kv { display: flex; justify-content: space-between; padding: 1px 0; }
+.info-area .kv .k { color: var(--text2); }
+.info-area .kv .v { color: var(--text); }
+.info-area .kv .v.a { color: var(--accent); }
+.info-area .kv .v.b { color: var(--accent2); }
+.info-area .kv .v.c { color: #fbbf24; }
+.info-area .sec {
+  font-size: 10px; color: var(--text3);
+  letter-spacing: .05em; margin: 10px 0 4px;
+  padding-bottom: 3px; border-bottom: 1px solid var(--border);
+}
+.info-area .placeholder {
+  text-align: center; color: var(--text3); padding: 30px 0; font-size: 11px; line-height: 2.2;
+}
+.ai-section {
+  border-top: 1px solid var(--border);
+  max-height: 200px; overflow-y: auto;
+  padding: 10px 14px; font-size: 12px; line-height: 1.7;
+  display: none; scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.ai-section.visible { display: block; }
+.ai-label {
+  font-family: var(--mono); font-size: 10px; color: var(--accent2);
+  letter-spacing:.06em; margin-bottom: 7px;
+  display: flex; align-items: center; gap: 6px;
+}
+.pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); animation: pulse 1.2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.2} }
+.ai-section p { margin-bottom: 5px; color: var(--text); }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* ─── SPINNER ─── */
+.spinner {
+  display: inline-block; width: 11px; height: 11px;
+  border: 1.5px solid var(--accent2); border-top-color: transparent;
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── LOADING SPINNER ── */
-  .spinner {
-    display: inline-block;
-    width: 12px; height: 12px;
-    border: 2px solid var(--accent2);
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    margin-right: 4px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
-  /* CROSSHAIR cursor when on filtered canvas */
-  #filteredWrap { cursor: crosshair; }
-  #filteredWrap.panning { cursor: grab; }
-  #filteredWrap.panning.active-pan { cursor: grabbing; }
-  #origWrap.panning { cursor: grab; }
-  #origWrap.panning.active-pan { cursor: grabbing; }
-
-  /* Space hint badge */
-  .pan-hint {
-    position: absolute;
-    bottom: 8px; left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,.7);
-    border: 1px solid var(--border);
-    color: var(--text2);
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .3s;
-    white-space: nowrap;
-  }
-  body.space-mode .pan-hint { opacity: 1; }
-  body.space-mode #filteredWrap { cursor: grab; }
-  body.space-mode #origWrap { cursor: grab; }
-  body.space-mode.panning-now #filteredWrap,
-  body.space-mode.panning-now #origWrap { cursor: grabbing; }
+/* tooltip graph hover */
+.chart-tooltip {
+  position: absolute; pointer-events: none; display: none;
+  background: rgba(8,8,20,.9); border: 1px solid var(--border2);
+  color: var(--text); font-family: var(--mono); font-size: 10px;
+  padding: 4px 8px; border-radius: 4px; z-index: 30;
+}
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <header>
-  <div class="logo">FMA <span style="color:var(--text2);font-size:11px">วิทชภณ พวงแก้ว</span></div>
-  <div class="divider"></div>
+  <div class="logo">FMA<span class="logo-sub">วิทชภณ พวงแก้ว</span></div>
+  <div class="sep"></div>
   <div class="toolbar">
-    <label class="btn upload" style="cursor:pointer">
-      <i class="fa-solid fa-file"></i> เลือกรูปภาพ
+    <label class="btn primary" style="cursor:pointer">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 6.5h6M5 9.5h4"/></svg>
+      เลือกไฟล์
       <input type="file" id="fileInput" accept="image/*" style="display:none">
     </label>
-    <div class="divider"></div>
-    <select class="filter-sel" id="filterSel">
+    <div class="sep"></div>
+    <select class="sel" id="filterSel">
       <option>Cross-Correlation</option>
       <option>Sobel Edge</option>
       <option>Laplacian</option>
       <option>Sharpen</option>
     </select>
-    <div class="divider"></div>
-    <button class="btn active" id="btnMeasure"><i class="fa-solid fa-ruler"></i> วัดระยะ</button>
-    <button class="btn" id="btnROI"><i class="fa-regular fa-square"></i> วาด ROI</button>
-    <button class="btn" id="btnInspect"><i class="fa-solid fa-eye"></i> ตรวจสอบพิกเซล</button>
-    <button class="btn danger" id="btnClear"><i class="fa-solid fa-trash"></i> ล้าง ROI</button>
-    <button class="btn" id="btnReset" title="รีเซ็ต zoom และตำแหน่ง (กด R)">⌖ รีเซ็ต View</button>
-    <button class="btn btn-ai" id="btnAI" disabled><i class="fa-solid fa-robot"></i> ✦ AI วิเคราะห์</button>
+    <div class="sep"></div>
+    <button class="btn active" id="btnMeasure">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14L14 2M5 11l2-2M8 8l2-2"/></svg>วัดระยะ
+    </button>
+    <button class="btn" id="btnROI">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1" stroke-dasharray="2 1.5"/></svg>วาด ROI
+    </button>
+    <button class="btn" id="btnInspect">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M2 8h2M12 8h2M8 2v2M8 12v2"/></svg>ตรวจสอบพิกเซล
+    </button>
+    <button class="btn" id="btnLimb">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8c0-3.31 2.69-6 6-6s6 2.69 6 6"/><path d="M2 8l12 0" stroke-dasharray="2 1.5"/></svg>Limb Profile
+    </button>
+    <button class="btn" id="btnAutoLimb" title="Auto-detect limb">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="3"/></svg>Auto Detect
+    </button>
+    <div class="sep"></div>
+    <button class="btn danger" id="btnClear">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5l6 6M11 5l-6 6"/></svg>ล้าง
+    </button>
+    <button class="btn" id="btnReset" title="R = reset view">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8a5 5 0 1 1 1.5 3.5"/><path d="M3 12V8h4"/></svg>รีเซ็ต
+    </button>
   </div>
+
 </header>
 
-<!-- ── MAIN ── -->
 <div class="main">
-  <!-- CANVASES -->
-  <div class="canvases">
-    <div class="canvas-labels">
-      <div class="canvas-label orig"><div class="dot"></div><span id="labelOrig">ภาพต้นฉบับ (Original)</span></div>
-      <div class="canvas-label filt"><div class="dot"></div><span id="labelFilt">ภาพหลัง Filter</span></div>
-    </div>
+  <!-- CANVAS AREA -->
+  <div class="canvas-area">
     <div class="canvas-row">
-      <div class="canvas-wrap" id="origWrap">
-        <canvas id="canvasOrig"></canvas>
-        <div class="drop-zone">
-          <div class="icon"><i class="fa-solid fa-image"></i></div>
-          <p>เลือกรูปภาพเพื่อเริ่มต้น<br>หรือลาก &amp; วางที่นี่</p>
+      <!-- Original -->
+      <div class="canvas-pane">
+        <div class="pane-label orig"><div class="pane-dot"></div><span id="labelOrig">ภาพต้นฉบับ (Original)</span></div>
+        <div class="canvas-wrap" id="origWrap">
+          <canvas id="canvasOrig"></canvas>
+          <div class="drop-zone">
+            <div class="dz-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <p>เลือกหรือลากรูปภาพ<br>เพื่อเริ่มต้น</p>
+          </div>
+          <div class="pan-hint">Space + ลาก เพื่อเลื่อนภาพ</div>
         </div>
-        <div class="pan-hint"><i class="fa-solid fa-hand"></i> Space + ลาก เพื่อเลื่อนภาพ</div>
       </div>
-      <div class="canvas-wrap" id="filteredWrap">
-        <canvas id="canvasFiltered"></canvas>
-        <div class="drop-zone">
-          <div class="icon"><i class="fa-solid fa-filter"></i></div>
-          <p>Feature Map<br>จะปรากฏที่นี่</p>
+      <!-- Filtered -->
+      <div class="canvas-pane">
+        <div class="pane-label filt"><div class="pane-dot"></div><span id="labelFilt">Feature Map</span></div>
+        <div class="canvas-wrap" id="filteredWrap">
+          <canvas id="canvasFiltered"></canvas>
+          <div class="drop-zone">
+            <div class="dz-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            </div>
+            <p>Feature Map<br>จะปรากฏที่นี่</p>
+          </div>
+          <div class="coord-tip" id="coordTip"></div>
+          <div class="pan-hint">Space + ลาก เพื่อเลื่อนภาพ</div>
         </div>
-        <div class="coord-tip" id="coordTip"></div>
-        <div class="pan-hint"><i class="fa-solid fa-hand"></i> Space + ลาก เพื่อเลื่อนภาพ</div>
       </div>
+    </div>
+
+    <!-- PROFILE CHART -->
+    <div class="profile-panel" id="profilePanel">
+      <div class="profile-header">
+        <span class="ph-title">LIMB BRIGHTNESS PROFILE</span>
+        <div class="ph-stats" id="phStats">
+          <span class="ph-stat">points: <span id="phLen">—</span></span>
+          <span class="ph-stat">peak: <span id="phPeak">—</span></span>
+          <span class="ph-stat">mean: <span id="phMean">—</span></span>
+        </div>
+        <button class="btn" id="btnExportPDF" style="height:20px;padding:0 7px;font-size:10px;margin-left:10px;" title="Export profile as PDF">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2z"/><path d="M5.5 8.5h5M5.5 10.5h5"/></svg>
+          PDF
+        </button>
+        <button class="btn" id="btnCloseProfile" style="height:20px;padding:0 7px;font-size:10px;margin-left:5px;">✕ ปิด</button>
+      </div>
+      <canvas id="profileCanvas"></canvas>
+      <div class="chart-tooltip" id="chartTooltip"></div>
     </div>
   </div>
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-header">DATA OUTPUT</div>
-    <div class="info-panel" id="infoPanel">
-      <div class="placeholder">── โหลดรูปภาพเพื่อเริ่มวิเคราะห์ ──<br>ใช้เครื่องมือด้านบนเพื่อ<br>วัดระยะ / วาด ROI / ตรวจสอบพิกเซล</div>
+    <div class="sb-section">
+      <div class="sb-title">DATA OUTPUT</div>
     </div>
-    <div class="ai-panel" id="aiPanel">
-      <div class="ai-title"><div class="pulse"></div> AI ANALYSIS</div>
+    <div class="info-area" id="infoPanel">
+      <div class="placeholder">── โหลดรูปภาพ<br>เพื่อเริ่มวิเคราะห์ ──</div>
+    </div>
+    <div class="ai-section" id="aiPanel">
+      <div class="ai-label"><div class="pulse"></div>AI ANALYSIS</div>
       <div id="aiText"></div>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════
+// ════════════════════
 //  STATE
-// ════════════════════════════════════════════
+// ════════════════════
 const state = {
-  originalImageData: null,   // ImageData (RGBA)
-  filteredGray: null,        // Uint8Array (grayscale)
+  originalImageData: null,
+  filteredGray: null,
   imgW: 0, imgH: 0,
-  zoom: 1.0,
-  offsetX: 0, offsetY: 0,
+  zoom: 1, offsetX: 0, offsetY: 0,
   tool: 'measure',
   drawing: false,
   startPt: null, endPt: null,
-  measurement: null,   // {p1, p2, dist}
-  roiRect: null,       // {x1,y1,x2,y2}
-  // pan state
+  measurement: null,
+  roiRect: null,
+  limbLine: null,      // {p1,p2}
+  profileData: null,   // [{pos,x,y,val}]
+  limbDetection: null, // {centerX,centerY,radius,angle,edgePixelCount}
   panning: false,
   panStartX: 0, panStartY: 0,
   panOriginX: 0, panOriginY: 0,
   spaceDown: false,
 };
 
-// ════════════════════════════════════════════
-//  ELEMENTS
-// ════════════════════════════════════════════
-const fileInput      = document.getElementById('fileInput');
-const filterSel      = document.getElementById('filterSel');
-const btnMeasure     = document.getElementById('btnMeasure');
-const btnROI         = document.getElementById('btnROI');
-const btnInspect     = document.getElementById('btnInspect');
-const btnClear       = document.getElementById('btnClear');
-const btnAI          = document.getElementById('btnAI');
-const canvasOrig     = document.getElementById('canvasOrig');
-const canvasFilt     = document.getElementById('canvasFiltered');
-const origWrap       = document.getElementById('origWrap');
-const filtWrap       = document.getElementById('filteredWrap');
-const labelOrig      = document.getElementById('labelOrig');
-const labelFilt      = document.getElementById('labelFilt');
-const infoPanel      = document.getElementById('infoPanel');
-const aiPanel        = document.getElementById('aiPanel');
-const aiText         = document.getElementById('aiText');
-const btnReset       = document.getElementById('btnReset');
-const coordTip       = document.getElementById('coordTip');
-const ctxO           = canvasOrig.getContext('2d');
-const ctxF           = canvasFilt.getContext('2d');
+const fileInput   = document.getElementById('fileInput');
+const filterSel   = document.getElementById('filterSel');
+const btnMeasure  = document.getElementById('btnMeasure');
+const btnROI      = document.getElementById('btnROI');
+const btnInspect  = document.getElementById('btnInspect');
+const btnLimb     = document.getElementById('btnLimb');
+const btnAutoLimb = document.getElementById('btnAutoLimb');
+const btnClear    = document.getElementById('btnClear');
+const btnReset    = document.getElementById('btnReset');
+const btnExportPDF= document.getElementById('btnExportPDF');
+const btnAI       = document.getElementById('btnAI');
+const canvasOrig  = document.getElementById('canvasOrig');
+const canvasFilt  = document.getElementById('canvasFiltered');
+const origWrap    = document.getElementById('origWrap');
+const filtWrap    = document.getElementById('filteredWrap');
+const labelOrig   = document.getElementById('labelOrig');
+const labelFilt   = document.getElementById('labelFilt');
+const infoPanel   = document.getElementById('infoPanel');
+const aiPanel     = document.getElementById('aiPanel');
+const aiText      = document.getElementById('aiText');
+const coordTip    = document.getElementById('coordTip');
+const profilePanel= document.getElementById('profilePanel');
+const profileCanvas=document.getElementById('profileCanvas');
+const chartTooltip= document.getElementById('chartTooltip');
+const phLen       = document.getElementById('phLen');
+const phPeak      = document.getElementById('phPeak');
+const phMean      = document.getElementById('phMean');
+const ctxO        = canvasOrig.getContext('2d');
+const ctxF        = canvasFilt.getContext('2d');
+const ctxP        = profileCanvas.getContext('2d');
 
-// ════════════════════════════════════════════
+// ════════════════════
 //  FILE LOAD
-// ════════════════════════════════════════════
+// ════════════════════
 fileInput.addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
+  const f = e.target.files[0]; if (!f) return;
   const url = URL.createObjectURL(f);
   const img = new Image();
   img.onload = () => {
-    const offscreen = document.createElement('canvas');
-    offscreen.width  = img.width;
-    offscreen.height = img.height;
-    const oc = offscreen.getContext('2d');
+    const oc = Object.assign(document.createElement('canvas'), {width: img.width, height: img.height}).getContext('2d');
     oc.drawImage(img, 0, 0);
     state.originalImageData = oc.getImageData(0, 0, img.width, img.height);
-    state.imgW = img.width;
-    state.imgH = img.height;
-    state.roiRect    = null;
-    state.measurement= null;
-    origWrap.classList.add('has-image');
-    filtWrap.classList.add('has-image');
-    applyFilter();
-    URL.revokeObjectURL(url);
+    state.imgW = img.width; state.imgH = img.height;
+    state.roiRect = null; state.measurement = null; state.limbLine = null; state.profileData = null; state.limbDetection = null;
+    origWrap.classList.add('has-image'); filtWrap.classList.add('has-image');
+    profilePanel.classList.remove('visible');
+    applyFilter(); URL.revokeObjectURL(url);
   };
   img.src = url;
 });
-
-// Drag & drop
 document.addEventListener('dragover', e => e.preventDefault());
 document.addEventListener('drop', e => {
   e.preventDefault();
   const f = e.dataTransfer.files[0];
   if (!f || !f.type.startsWith('image/')) return;
-  const dt = new DataTransfer();
-  dt.items.add(f);
-  fileInput.files = dt.files;
+  const dt = new DataTransfer(); dt.items.add(f); fileInput.files = dt.files;
   fileInput.dispatchEvent(new Event('change'));
 });
 
-// ════════════════════════════════════════════
-//  FILTER ENGINE (pure JS, no OpenCV)
-// ════════════════════════════════════════════
-function toGrayscale(rgba) {
-  const gray = new Uint8Array(rgba.width * rgba.height);
-  const d = rgba.data;
-  for (let i = 0; i < gray.length; i++) {
-    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
-    gray[i] = Math.round(0.299*r + 0.587*g + 0.114*b);
-  }
-  return gray;
+// ════════════════════
+//  FILTERS
+// ════════════════════
+function toGray(rgba) {
+  const g = new Uint8Array(rgba.width * rgba.height), d = rgba.data;
+  for (let i = 0; i < g.length; i++) g[i] = Math.round(.299*d[i*4] + .587*d[i*4+1] + .114*d[i*4+2]);
+  return g;
 }
-
-function convolve(gray, w, h, kernel) {
-  const out = new Uint8Array(w * h);
-  const k = 1; // 3x3
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      let sum = 0;
-      for (let ky = -k; ky <= k; ky++) {
-        for (let kx = -k; kx <= k; kx++) {
-          const ny = Math.min(Math.max(y+ky,0),h-1);
-          const nx = Math.min(Math.max(x+kx,0),w-1);
-          sum += gray[ny*w+nx] * kernel[(ky+k)*3+(kx+k)];
-        }
-      }
-      out[y*w+x] = Math.min(255, Math.max(0, sum));
+function convolve(g, w, h, k) {
+  const o = new Uint8Array(w*h);
+  for (let y=0;y<h;y++) for (let x=0;x<w;x++) {
+    let s=0;
+    for (let ky=-1;ky<=1;ky++) for (let kx=-1;kx<=1;kx++) {
+      const ny=Math.min(Math.max(y+ky,0),h-1), nx=Math.min(Math.max(x+kx,0),w-1);
+      s += g[ny*w+nx] * k[(ky+1)*3+(kx+1)];
     }
+    o[y*w+x] = Math.min(255, Math.max(0, s));
   }
-  return out;
+  return o;
 }
-
-function sobelEdge(gray, w, h) {
-  const out = new Uint8Array(w * h);
-  const kx = [-1,0,1,-2,0,2,-1,0,1];
-  const ky = [-1,-2,-1,0,0,0,1,2,1];
-  for (let y = 1; y < h-1; y++) {
-    for (let x = 1; x < w-1; x++) {
-      let gx = 0, gy = 0;
-      for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-          const v = gray[(y+i)*w+(x+j)];
-          gx += v * kx[(i+1)*3+(j+1)];
-          gy += v * ky[(i+1)*3+(j+1)];
-        }
-      }
-      out[y*w+x] = Math.min(255, Math.sqrt(gx*gx+gy*gy)|0);
+function sobel(g, w, h) {
+  const o=new Uint8Array(w*h), kx=[-1,0,1,-2,0,2,-1,0,1], ky=[-1,-2,-1,0,0,0,1,2,1];
+  for (let y=1;y<h-1;y++) for (let x=1;x<w-1;x++) {
+    let gx=0,gy=0;
+    for (let i=-1;i<=1;i++) for (let j=-1;j<=1;j++) {
+      const v=g[(y+i)*w+(x+j)]; gx+=v*kx[(i+1)*3+(j+1)]; gy+=v*ky[(i+1)*3+(j+1)];
     }
+    o[y*w+x] = Math.min(255, Math.sqrt(gx*gx+gy*gy)|0);
   }
-  return out;
+  return o;
 }
-
 function applyFilter() {
   if (!state.originalImageData) return;
-  const { imgW: w, imgH: h } = state;
-  const gray = toGrayscale(state.originalImageData);
+  const {imgW:w, imgH:h} = state;
+  const gray = toGray(state.originalImageData);
   const mode = filterSel.value;
-  let result;
+  state.filteredGray =
+    mode==='Cross-Correlation' ? convolve(gray,w,h,[-1,-1,-1,-1,8,-1,-1,-1,-1]) :
+    mode==='Sobel Edge'        ? sobel(gray,w,h) :
+    mode==='Laplacian'         ? convolve(gray,w,h,[0,1,0,1,-4,1,0,1,0]) :
+                                 convolve(gray,w,h,[0,-1,0,-1,5,-1,0,-1,0]);
+  labelOrig.textContent = `ภาพต้นฉบับ — ${w}×${h} px`;
+  labelFilt.textContent = `Feature Map — ${mode}`;
+  renderAll();
+}
+filterSel.addEventListener('change', applyFilter);
 
-  if (mode === 'Cross-Correlation') {
-    result = convolve(gray, w, h, [-1,-1,-1,-1,8,-1,-1,-1,-1]);
-  } else if (mode === 'Sobel Edge') {
-    result = sobelEdge(gray, w, h);
-  } else if (mode === 'Laplacian') {
-    result = convolve(gray, w, h, [0,1,0,1,-4,1,0,1,0]);
-  } else { // Sharpen
-    result = convolve(gray, w, h, [0,-1,0,-1,5,-1,0,-1,0]);
+// ════════════════════
+//  LIMB PROFILE
+// ════════════════════
+function sampleLimbProfile(p1, p2) {
+  const [x1,y1] = p1, [x2,y2] = p2;
+  const dx = x2-x1, dy = y2-y1;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  const steps = Math.ceil(len);
+  const data = [];
+  for (let i=0; i<=steps; i++) {
+    const t = i/steps;
+    const x = Math.round(x1 + dx*t);
+    const y = Math.round(y1 + dy*t);
+    if (x<0||x>=state.imgW||y<0||y>=state.imgH) continue;
+    // Use original grayscale for brightness
+    const d = state.originalImageData.data;
+    const idx = (y*state.imgW+x)*4;
+    const val = Math.round(.299*d[idx] + .587*d[idx+1] + .114*d[idx+2]);
+    data.push({ pos: i, x, y, val });
+  }
+  state.profileData = data;
+  state.limbLine = { p1, p2, len };
+}
+
+function drawProfileChart() {
+  const data = state.profileData;
+  if (!data || data.length === 0) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const W = profileCanvas.clientWidth;
+  const H = profileCanvas.clientHeight;
+  profileCanvas.width  = W * dpr;
+  profileCanvas.height = H * dpr;
+  ctxP.scale(dpr, dpr);
+
+  const PAD = { top: 12, right: 14, bottom: 24, left: 38 };
+  const cw = W - PAD.left - PAD.right;
+  const ch = H - PAD.top - PAD.bottom;
+
+  ctxP.clearRect(0, 0, W, H);
+
+  const vals = data.map(d=>d.val);
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals);
+  const meanV = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+  const maxN = data.length - 1;
+
+  phLen.textContent  = data.length;
+  phPeak.textContent = maxV;
+  phMean.textContent = meanV;
+
+  const sx = i => PAD.left + (i/maxN)*cw;
+  const sy = v => PAD.top + ch - ((v-minV)/(maxV-minV||1))*ch;
+
+  // Grid
+  ctxP.strokeStyle = '#232330'; ctxP.lineWidth = 1;
+  for (let i=0; i<=4; i++) {
+    const y = PAD.top + (ch/4)*i;
+    ctxP.beginPath(); ctxP.moveTo(PAD.left, y); ctxP.lineTo(PAD.left+cw, y); ctxP.stroke();
+    const v = maxV - (maxV-minV)*(i/4);
+    ctxP.fillStyle = '#3e3e52'; ctxP.font = '9px IBM Plex Mono, monospace';
+    ctxP.textAlign = 'right';
+    ctxP.fillText(v.toFixed(0), PAD.left-5, y+3);
+  }
+  // X labels
+  ctxP.fillStyle = '#3e3e52'; ctxP.textAlign = 'center';
+  for (let i=0; i<=5; i++) {
+    const pos = Math.round((i/5)*maxN);
+    ctxP.fillText(pos, sx(pos), PAD.top+ch+14);
   }
 
-  state.filteredGray = result;
-  labelOrig.textContent = `ภาพต้นฉบับ (Original) — ${w}×${h} px`;
-  labelFilt.textContent  = `ภาพหลัง Filter — ${w}×${h} px | stride:1 | ${mode}`;
+  // Gradient fill
+  const grad = ctxP.createLinearGradient(0, PAD.top, 0, PAD.top+ch);
+  grad.addColorStop(0, 'rgba(110,231,183,.28)');
+  grad.addColorStop(1, 'rgba(110,231,183,.0)');
+  ctxP.fillStyle = grad;
+  ctxP.beginPath();
+  ctxP.moveTo(sx(0), sy(data[0].val));
+  for (let i=1; i<data.length; i++) ctxP.lineTo(sx(i), sy(data[i].val));
+  ctxP.lineTo(sx(data.length-1), PAD.top+ch);
+  ctxP.lineTo(sx(0), PAD.top+ch);
+  ctxP.closePath(); ctxP.fill();
+
+  // Line
+  ctxP.strokeStyle = '#6ee7b7'; ctxP.lineWidth = 1.5; ctxP.lineJoin = 'round';
+  ctxP.beginPath();
+  ctxP.moveTo(sx(0), sy(data[0].val));
+  for (let i=1; i<data.length; i++) ctxP.lineTo(sx(i), sy(data[i].val));
+  ctxP.stroke();
+
+  // Peak marker
+  const peakIdx = vals.indexOf(maxV);
+  ctxP.fillStyle = '#f87171';
+  ctxP.beginPath(); ctxP.arc(sx(peakIdx), sy(maxV), 3.5, 0, Math.PI*2); ctxP.fill();
+
+  // Store for hover
+  profileCanvas._chartMeta = { data, sx, sy, PAD, cw, ch, minV, maxV };
+}
+
+profileCanvas.addEventListener('mousemove', e => {
+  const meta = profileCanvas._chartMeta; if (!meta) return;
+  const { data, sx, sy, PAD, cw } = meta;
+  const rect = profileCanvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left);
+  if (mx < PAD.left || mx > PAD.left+cw) { chartTooltip.style.display='none'; return; }
+  const idx = Math.round(((mx-PAD.left)/cw)*(data.length-1));
+  if (idx<0||idx>=data.length) { chartTooltip.style.display='none'; return; }
+  const pt = data[idx];
+  chartTooltip.style.display = 'block';
+  chartTooltip.style.left = (mx+12)+'px';
+  chartTooltip.style.top  = (e.clientY - rect.top - 8)+'px';
+  chartTooltip.textContent = `pos:${pt.pos}  (${pt.x},${pt.y})  I:${pt.val}`;
+});
+profileCanvas.addEventListener('mouseleave', () => { chartTooltip.style.display='none'; });
+
+document.getElementById('btnCloseProfile').addEventListener('click', () => {
+  profilePanel.classList.remove('visible');
+  state.limbLine = null; state.profileData = null;
+  renderAll();
+});
+
+// ════════════════════
+//  AUTO LIMB DETECTION
+// ════════════════════
+function detectLimb() {
+  if (!state.filteredGray) return;
+  
+  const {imgW:w, imgH:h} = state;
+  const edges = state.filteredGray;
+  
+  // Step 1: Find all significant edge pixels
+  const threshold = 30; // Minimum edge intensity
+  const edgePixels = [];
+  let maxVal = 0;
+  
+  for (let i = 0; i < edges.length; i++) {
+    if (edges[i] > maxVal) maxVal = edges[i];
+  }
+  
+  const adaptiveThreshold = maxVal * 0.25; // Use adaptive threshold
+  for (let i = 0; i < edges.length; i++) {
+    if (edges[i] > adaptiveThreshold) {
+      const y = Math.floor(i / w);
+      const x = i % w;
+      edgePixels.push({x, y, val: edges[i]});
+    }
+  }
+  
+  if (edgePixels.length < 20) {
+    alert('ไม่พบขอบของวัตถุ กรุณาชดเชยภาพหรือลองตัวกรอง Edge อื่น');
+    return;
+  }
+  
+  // Step 2: Find centroid of edge pixels
+  let centerX = 0, centerY = 0, totalVal = 0;
+  for (const pt of edgePixels) {
+    const weight = pt.val;
+    centerX += pt.x * weight;
+    centerY += pt.y * weight;
+    totalVal += weight;
+  }
+  centerX = centerX / totalVal;
+  centerY = centerY / totalVal;
+  
+  // Step 3: Estimate radius by finding average distance to edge pixels
+  let totalRadius = 0;
+  for (const pt of edgePixels) {
+    const dx = pt.x - centerX;
+    const dy = pt.y - centerY;
+    totalRadius += Math.sqrt(dx*dx + dy*dy);
+  }
+  const estimatedRadius = totalRadius / edgePixels.length;
+  
+  // Step 4: Find the best limb line by testing angles
+  // For a circular limb, we want a diameter that passes through max edge intensity
+  let bestAngle = 0, bestScore = -Infinity;
+  const angleSteps = 36; // Test 36 angles (every 5 degrees)
+  
+  for (let a = 0; a < angleSteps; a++) {
+    const angle = (a / angleSteps) * Math.PI;
+    
+    const x1 = Math.round(centerX + Math.cos(angle) * estimatedRadius * 1.1);
+    const y1 = Math.round(centerY + Math.sin(angle) * estimatedRadius * 1.1);
+    const x2 = Math.round(centerX - Math.cos(angle) * estimatedRadius * 1.1);
+    const y2 = Math.round(centerY - Math.sin(angle) * estimatedRadius * 1.1);
+    
+    const p1 = [Math.max(0, Math.min(x1, w-1)), Math.max(0, Math.min(y1, h-1))];
+    const p2 = [Math.max(0, Math.min(x2, w-1)), Math.max(0, Math.min(y2, h-1))];
+    
+    // Calculate score: sum of edge values along this line
+    let score = 0;
+    const dx = p2[0] - p1[0], dy = p2[1] - p1[1];
+    const lineLen = Math.sqrt(dx*dx + dy*dy);
+    const steps = Math.ceil(lineLen);
+    
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const px = Math.round(p1[0] + dx * t);
+      const py = Math.round(p1[1] + dy * t);
+      if (px >= 0 && px < w && py >= 0 && py < h) {
+        score += edges[py * w + px];
+      }
+    }
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestAngle = angle;
+    }
+  }
+  
+  // Step 5: Create the limb line from the best angle
+  const x1 = Math.round(centerX + Math.cos(bestAngle) * estimatedRadius * 1.15);
+  const y1 = Math.round(centerY + Math.sin(bestAngle) * estimatedRadius * 1.15);
+  const x2 = Math.round(centerX - Math.cos(bestAngle) * estimatedRadius * 1.15);
+  const y2 = Math.round(centerY - Math.sin(bestAngle) * estimatedRadius * 1.15);
+  
+  const p1 = [Math.max(0, Math.min(x1, w-1)), Math.max(0, Math.min(y1, h-1))];
+  const p2 = [Math.max(0, Math.min(x2, w-1)), Math.max(0, Math.min(y2, h-1))];
+  
+  // Step 6: Sample brightness profile along the detected limb
+  sampleLimbProfile(p1, p2);
+  
+  // Store detection metadata
+  state.limbDetection = {
+    centerX: Math.round(centerX),
+    centerY: Math.round(centerY),
+    radius: Math.round(estimatedRadius),
+    angle: bestAngle,
+    edgePixelCount: edgePixels.length
+  };
+  
+  showLimbInfo();
+  profilePanel.classList.add('visible');
+  setTimeout(()=>{ drawProfileChart(); }, 50);
   renderAll();
 }
 
-filterSel.addEventListener('change', applyFilter);
+btnAutoLimb.addEventListener('click', detectLimb);
 
-// ════════════════════════════════════════════
+// ════════════════════
+//  PDF EXPORT
+// ════════════════════
+document.getElementById('btnExportPDF').addEventListener('click', async () => {
+  if (!state.profileData) return;
+  
+  const btnExport = document.getElementById('btnExportPDF');
+  const originalHTML = btnExport.innerHTML;
+  btnExport.disabled = true;
+  btnExport.innerHTML = '<span class="spinner"></span> Exporting...';
+  
+  try {
+    // Create a container with all the information
+    const container = document.createElement('div');
+    container.style.cssText = `
+      width: 1280px;
+      background: white;
+      padding: 40px;
+      font-family: Arial, sans-serif;
+      color: #333;
+    `;
+    
+    // Title
+    const title = document.createElement('h1');
+    title.textContent = 'Limb Brightness Profile Analysis';
+    title.style.cssText = 'text-align: center; color: #0c0c0f; margin-bottom: 10px; font-size: 24px;';
+    container.appendChild(title);
+    
+    // Metadata
+    const metadata = document.createElement('div');
+    metadata.style.cssText = `
+      background: #f5f5f5;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-size: 12px;
+      line-height: 1.8;
+    `;
+    
+    const data = state.profileData;
+    const vals = data.map(d => d.val);
+    const minV = Math.min(...vals);
+    const maxV = Math.max(...vals);
+    const meanV = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
+    const timeStr = new Date().toLocaleString();
+    
+    let detectionInfo = '';
+    if (state.limbDetection) {
+      const det = state.limbDetection;
+      detectionInfo = `<br><strong>Detection Results:</strong> Center: (${det.centerX}, ${det.centerY}) | Radius: ${det.radius}px | Edge Pixels: ${det.edgePixelCount}`;
+    }
+    
+    metadata.innerHTML = `
+      <strong>Generated:</strong> ${timeStr}<br>
+      <strong>Image Size:</strong> ${state.imgW}×${state.imgH} pixels<br>
+      <strong>Filter Mode:</strong> ${filterSel.value}<br>
+      <strong>Profile Samples:</strong> ${data.length} points<br>
+      <strong>Intensity Range:</strong> Min=${minV} | Max=${maxV} | Mean=${meanV}
+      ${detectionInfo}
+    `;
+    container.appendChild(metadata);
+    
+    // Create the chart as an image
+    const chartCanvas = document.createElement('canvas');
+    chartCanvas.width = 1200;
+    chartCanvas.height = 500;
+    const ctx = chartCanvas.getContext('2d');
+    
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, chartCanvas.width, chartCanvas.height);
+    
+    const W = 1200, H = 500;
+    const PAD = { top: 40, right: 40, bottom: 60, left: 70 };
+    const cw = W - PAD.left - PAD.right;
+    const ch = H - PAD.top - PAD.bottom;
+    
+    const maxN = data.length - 1;
+    const sx = i => PAD.left + (i/maxN)*cw;
+    const sy = v => PAD.top + ch - ((v-minV)/(maxV-minV||1))*ch;
+    
+    // Grid lines
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+      const y = PAD.top + (ch/5)*i;
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, y);
+      ctx.lineTo(PAD.left + cw, y);
+      ctx.stroke();
+      
+      const v = maxV - (maxV-minV)*(i/5);
+      ctx.fillStyle = '#666';
+      ctx.font = 'bold 13px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillText(v.toFixed(0), PAD.left - 10, y + 5);
+    }
+    
+    // X-axis labels
+    ctx.fillStyle = '#666';
+    ctx.textAlign = 'center';
+    ctx.font = '12px Arial';
+    for (let i = 0; i <= 5; i++) {
+      const pos = Math.round((i/5)*maxN);
+      ctx.fillText(pos, sx(pos), PAD.top + ch + 35);
+    }
+    
+    // Axis labels
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 13px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Sample Position', W / 2, H - 10);
+    ctx.save();
+    ctx.translate(15, H / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Intensity Value', 0, 0);
+    ctx.restore();
+    
+    // Gradient fill
+    const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + ch);
+    grad.addColorStop(0, 'rgba(110, 231, 183, 0.2)');
+    grad.addColorStop(1, 'rgba(110, 231, 183, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(sx(0), sy(data[0].val));
+    for (let i = 1; i < data.length; i++) {
+      ctx.lineTo(sx(i), sy(data[i].val));
+    }
+    ctx.lineTo(sx(data.length-1), PAD.top + ch);
+    ctx.lineTo(sx(0), PAD.top + ch);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Line plot
+    ctx.strokeStyle = '#2E7D6E';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(sx(0), sy(data[0].val));
+    for (let i = 1; i < data.length; i++) {
+      ctx.lineTo(sx(i), sy(data[i].val));
+    }
+    ctx.stroke();
+    
+    // Peak marker
+    const peakIdx = vals.indexOf(maxV);
+    ctx.fillStyle = '#e74c3c';
+    ctx.beginPath();
+    ctx.arc(sx(peakIdx), sy(maxV), 5, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(sx(peakIdx), sy(maxV), 3, 0, Math.PI*2);
+    ctx.fill();
+    
+    // Axes
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, PAD.top);
+    ctx.lineTo(PAD.left, PAD.top + ch);
+    ctx.lineTo(PAD.left + cw, PAD.top + ch);
+    ctx.stroke();
+    
+    // Add chart to container
+    const chartImg = chartCanvas.toDataURL('image/png');
+    const img = document.createElement('img');
+    img.src = chartImg;
+    img.style.cssText = 'width: 100%; border: 1px solid #ddd; margin-bottom: 20px;';
+    container.appendChild(img);
+    
+    // Statistics table
+    const statsDiv = document.createElement('div');
+    statsDiv.style.cssText = `
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    `;
+    
+    const col1 = document.createElement('div');
+    col1.innerHTML = `
+      <h3 style="border-bottom: 2px solid #6ee7b7; padding-bottom: 10px; margin-bottom: 10px;">Profile Statistics</h3>
+      <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;"><strong>Total Points</strong></td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;"><strong>${data.length}</strong></td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Peak Value</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right; color: #e74c3c;"><strong>${maxV}</strong></td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Mean Value</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${meanV}</td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Min Value</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${minV}</td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Peak Position</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${peakIdx}/${maxN}</td></tr>
+      </table>
+    `;
+    
+    const col2 = document.createElement('div');
+    col2.innerHTML = `
+      <h3 style="border-bottom: 2px solid #818cf8; padding-bottom: 10px; margin-bottom: 10px;">Analysis Info</h3>
+      <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Detection</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${state.limbDetection ? 'Auto' : 'Manual'}</td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Standard Dev</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${(Math.sqrt(vals.reduce((a,v)=>(v-meanV)**2+a,0)/vals.length).toFixed(2))}</td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Dynamic Range</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${(maxV - minV)}</td></tr>
+        <tr><td style="padding:5px; border-bottom: 1px solid #eee;">Contrast Ratio</td><td style="padding:5px; border-bottom: 1px solid #eee; text-align:right;">${(maxV / (minV || 1)).toFixed(2)}:1</td></tr>
+      </table>
+    `;
+    
+    statsDiv.appendChild(col1);
+    statsDiv.appendChild(col2);
+    container.appendChild(statsDiv);
+    
+    // Use html2pdf to generate PDF
+    const element = container;
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `limb-profile-${new Date().toISOString().slice(0,10)}-${Date.now()}.pdf`,
+      image: { type: 'png', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+    };
+    
+    await html2pdf().set(opt).from(element).save();
+    
+    btnExport.disabled = false;
+    btnExport.innerHTML = originalHTML;
+    
+  } catch (err) {
+    console.error('PDF export error:', err);
+    alert('Error exporting PDF. Please try again.');
+    btnExport.disabled = false;
+    btnExport.innerHTML = originalHTML;
+  }
+});
+
+
+// ════════════════════
 //  RENDER
-// ════════════════════════════════════════════
+// ════════════════════
 function getScaleOrigin(wrap, iw, ih) {
-  const cw = wrap.clientWidth  || 600;
-  const ch = wrap.clientHeight || 500;
-  const scale = Math.min(cw/iw, ch/ih) * 0.90 * state.zoom;
+  const cw = wrap.clientWidth||600, ch = wrap.clientHeight||500;
+  const scale = Math.min(cw/iw, ch/ih) * .90 * state.zoom;
   const ox = cw/2 + state.offsetX - (iw*scale)/2;
   const oy = ch/2 + state.offsetY - (ih*scale)/2;
   return { scale, ox, oy };
 }
-
-function resizeCanvas(canvas, wrap) {
-  canvas.width  = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
-}
+function resizeCanvas(c, w) { c.width=w.clientWidth; c.height=w.clientHeight; }
 
 function renderAll() {
   if (!state.filteredGray) return;
-  drawOriginal();
-  drawFiltered();
+  drawOriginal(); drawFiltered();
+  if (state.profileData) drawProfileChart();
 }
 
 function drawOriginal() {
-  const { imgW: iw, imgH: ih } = state;
+  const {imgW:iw,imgH:ih}=state;
   resizeCanvas(canvasOrig, origWrap);
-  const { scale, ox, oy } = getScaleOrigin(origWrap, iw, ih);
-  const nw = iw * scale | 0, nh = ih * scale | 0;
-
-  // Draw image
-  const offscreen = document.createElement('canvas');
-  offscreen.width  = iw;
-  offscreen.height = ih;
-  offscreen.getContext('2d').putImageData(state.originalImageData, 0, 0);
-
-  ctxO.clearRect(0, 0, canvasOrig.width, canvasOrig.height);
-  ctxO.imageSmoothingEnabled = true;
-  ctxO.imageSmoothingQuality = 'high';
-  ctxO.drawImage(offscreen, ox, oy, nw, nh);
-
-  // ROI overlay
+  const {scale,ox,oy}=getScaleOrigin(origWrap,iw,ih);
+  const nw=iw*scale|0, nh=ih*scale|0;
+  const offscreen=Object.assign(document.createElement('canvas'),{width:iw,height:ih});
+  offscreen.getContext('2d').putImageData(state.originalImageData,0,0);
+  ctxO.clearRect(0,0,canvasOrig.width,canvasOrig.height);
+  ctxO.imageSmoothingEnabled=true; ctxO.imageSmoothingQuality='high';
+  ctxO.drawImage(offscreen,ox,oy,nw,nh);
   if (state.roiRect) {
-    const { x1, y1, x2, y2 } = state.roiRect;
-    ctxO.strokeStyle = '#39ff14';
-    ctxO.lineWidth = 2;
-    ctxO.strokeRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
-    ctxO.fillStyle = 'rgba(57,255,20,.08)';
-    ctxO.fillRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
+    const{x1,y1,x2,y2}=state.roiRect;
+    ctxO.strokeStyle='#6ee7b7'; ctxO.lineWidth=1.5;
+    ctxO.strokeRect(ox+x1*scale,oy+y1*scale,(x2-x1)*scale,(y2-y1)*scale);
+    ctxO.fillStyle='rgba(110,231,183,.06)';
+    ctxO.fillRect(ox+x1*scale,oy+y1*scale,(x2-x1)*scale,(y2-y1)*scale);
   }
-
+  if (state.limbLine) drawLimbOnCanvas(ctxO, ox, oy, scale, '#6ee7b7');
   drawAxes(ctxO, canvasOrig, ox, oy, nw, nh, scale);
 }
 
 function drawFiltered() {
-  const { imgW: iw, imgH: ih } = state;
+  const {imgW:iw,imgH:ih}=state;
   resizeCanvas(canvasFilt, filtWrap);
-  const { scale, ox, oy } = getScaleOrigin(filtWrap, iw, ih);
-  const nw = iw * scale | 0, nh = ih * scale | 0;
+  const {scale,ox,oy}=getScaleOrigin(filtWrap,iw,ih);
+  const nw=iw*scale|0, nh=ih*scale|0;
 
-  // Gray → ImageData
-  const imgData = new ImageData(iw, ih);
-  for (let i = 0; i < state.filteredGray.length; i++) {
-    const v = state.filteredGray[i];
-    imgData.data[i*4]   = v;
-    imgData.data[i*4+1] = v;
-    imgData.data[i*4+2] = v;
-    imgData.data[i*4+3] = 255;
+  const imgData=new ImageData(iw,ih);
+  for (let i=0;i<state.filteredGray.length;i++) {
+    const v=state.filteredGray[i];
+    imgData.data[i*4]=v; imgData.data[i*4+1]=v; imgData.data[i*4+2]=v; imgData.data[i*4+3]=255;
   }
-  const offscreen = document.createElement('canvas');
-  offscreen.width = iw; offscreen.height = ih;
-  offscreen.getContext('2d').putImageData(imgData, 0, 0);
+  const offscreen=Object.assign(document.createElement('canvas'),{width:iw,height:ih});
+  offscreen.getContext('2d').putImageData(imgData,0,0);
+  ctxF.clearRect(0,0,canvasFilt.width,canvasFilt.height);
+  ctxF.imageSmoothingEnabled=true; ctxF.imageSmoothingQuality='high';
+  ctxF.drawImage(offscreen,ox,oy,nw,nh);
 
-  ctxF.clearRect(0, 0, canvasFilt.width, canvasFilt.height);
-  ctxF.imageSmoothingEnabled = true;
-  ctxF.imageSmoothingQuality = 'high';
-  ctxF.drawImage(offscreen, ox, oy, nw, nh);
-
-  // Measurement line
   if (state.measurement) {
-    const { p1, p2, dist } = state.measurement;
-    const sp1 = [ox+p1[0]*scale, oy+p1[1]*scale];
-    const sp2 = [ox+p2[0]*scale, oy+p2[1]*scale];
-    ctxF.strokeStyle = 'rgba(0,245,212,.9)'; ctxF.lineWidth = 2;
+    const{p1,p2,dist}=state.measurement;
+    const sp1=[ox+p1[0]*scale,oy+p1[1]*scale], sp2=[ox+p2[0]*scale,oy+p2[1]*scale];
+    ctxF.strokeStyle='rgba(110,231,183,.8)'; ctxF.lineWidth=1.5;
     ctxF.beginPath(); ctxF.moveTo(...sp1); ctxF.lineTo(...sp2); ctxF.stroke();
-    // endpoints
-    for (const p of [sp1, sp2]) {
-      ctxF.fillStyle = '#ff4444';
-      ctxF.beginPath(); ctxF.arc(p[0], p[1], 4, 0, Math.PI*2); ctxF.fill();
+    for (const p of [sp1,sp2]) {
+      ctxF.fillStyle='#f87171';
+      ctxF.beginPath(); ctxF.arc(p[0],p[1],4,0,Math.PI*2); ctxF.fill();
     }
-    // label
-    const mx = (sp1[0]+sp2[0])/2, my = (sp1[1]+sp2[1])/2;
-    ctxF.fillStyle = '#ffe234';
-    ctxF.font = '11px Space Mono, monospace';
+    const mx=(sp1[0]+sp2[0])/2, my=(sp1[1]+sp2[1])/2;
+    ctxF.fillStyle='#fbbf24'; ctxF.font='10px IBM Plex Mono, monospace';
     ctxF.fillText(`${dist.toFixed(1)} px`, mx+6, my-6);
   }
-
-  // ROI rect
   if (state.roiRect) {
-    const { x1, y1, x2, y2 } = state.roiRect;
-    ctxF.strokeStyle = '#39ff14'; ctxF.lineWidth = 2;
-    ctxF.strokeRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
-    ctxF.fillStyle = 'rgba(0,255,128,.06)';
-    ctxF.fillRect(ox+x1*scale, oy+y1*scale, (x2-x1)*scale, (y2-y1)*scale);
+    const{x1,y1,x2,y2}=state.roiRect;
+    ctxF.strokeStyle='#6ee7b7'; ctxF.lineWidth=1.5;
+    ctxF.strokeRect(ox+x1*scale,oy+y1*scale,(x2-x1)*scale,(y2-y1)*scale);
+    ctxF.fillStyle='rgba(110,231,183,.04)';
+    ctxF.fillRect(ox+x1*scale,oy+y1*scale,(x2-x1)*scale,(y2-y1)*scale);
   }
+  if (state.limbLine) drawLimbOnCanvas(ctxF, ox, oy, scale, '#818cf8');
 
   // Live drag preview
   if (state.drawing && state.startPt && state.endPt) {
-    const s = state.startPt, e = state.endPt;
-    const ss = [ox+s[0]*scale, oy+s[1]*scale];
-    const es = [ox+e[0]*scale, oy+e[1]*scale];
-    if (state.tool === 'measure') {
-      ctxF.strokeStyle = 'rgba(0,245,212,.6)'; ctxF.lineWidth = 1;
-      ctxF.setLineDash([4,4]);
+    const s=state.startPt, en=state.endPt;
+    const ss=[ox+s[0]*scale,oy+s[1]*scale], es=[ox+en[0]*scale,oy+en[1]*scale];
+    ctxF.setLineDash([4,4]);
+    ctxF.lineWidth=1;
+    if (state.tool==='measure') {
+      ctxF.strokeStyle='rgba(110,231,183,.5)';
       ctxF.beginPath(); ctxF.moveTo(...ss); ctxF.lineTo(...es); ctxF.stroke();
+    } else if (state.tool==='roi') {
+      ctxF.strokeStyle='#fbbf24';
+      ctxF.strokeRect(ss[0],ss[1],es[0]-ss[0],es[1]-ss[1]);
+    } else if (state.tool==='limb') {
+      ctxF.strokeStyle='rgba(129,140,248,.7)';
+      ctxF.beginPath(); ctxF.moveTo(...ss); ctxF.lineTo(...es); ctxF.stroke();
+      // small circles on endpoints
       ctxF.setLineDash([]);
-    } else if (state.tool === 'roi') {
-      ctxF.strokeStyle = '#ffe234'; ctxF.lineWidth = 1;
-      ctxF.setLineDash([5,3]);
-      ctxF.strokeRect(ss[0], ss[1], es[0]-ss[0], es[1]-ss[1]);
-      ctxF.setLineDash([]);
+      for (const p of [ss,es]) { ctxF.fillStyle='#818cf8'; ctxF.beginPath(); ctxF.arc(p[0],p[1],3,0,Math.PI*2); ctxF.fill(); }
     }
+    ctxF.setLineDash([]);
   }
 
   drawAxes(ctxF, canvasFilt, ox, oy, nw, nh, scale);
 }
 
+function drawLimbOnCanvas(ctx, ox, oy, scale, color) {
+  const {p1,p2} = state.limbLine;
+  const sp1=[ox+p1[0]*scale, oy+p1[1]*scale];
+  const sp2=[ox+p2[0]*scale, oy+p2[1]*scale];
+  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(...sp1); ctx.lineTo(...sp2); ctx.stroke();
+  for (const p of [sp1,sp2]) {
+    ctx.fillStyle=color;
+    ctx.beginPath(); ctx.arc(p[0],p[1],4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0c0c0f';
+    ctx.beginPath(); ctx.arc(p[0],p[1],2,0,Math.PI*2); ctx.fill();
+  }
+  // draw sampled pixel dots along line (sparse)
+  if (state.profileData) {
+    const data = state.profileData;
+    const step = Math.max(1, Math.floor(data.length/60));
+    for (let i=0; i<data.length; i+=step) {
+      const pt=data[i];
+      const px=ox+pt.x*scale, py=oy+pt.y*scale;
+      const t=pt.val/255;
+      ctx.fillStyle=`rgba(110,231,183,${t*.6+.1})`;
+      ctx.beginPath(); ctx.arc(px,py,1.5,0,Math.PI*2); ctx.fill();
+    }
+  }
+}
+
 function drawAxes(ctx, canvas, ox, oy, nw, nh, scale) {
-  ctx.strokeStyle = '#2a2a45'; ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(ox, oy); ctx.lineTo(ox+nw, oy);
-  ctx.moveTo(ox, oy); ctx.lineTo(ox, oy+nh);
-  ctx.stroke();
-  const step = Math.max(50, (100/scale|0));
-  ctx.fillStyle = '#555577'; ctx.font = '9px Space Mono, monospace';
-  for (let i = 0; i < 9999; i += step) {
-    const px = ox + i*scale;
-    if (px > ox+nw+2) break;
-    ctx.fillText(i, px, oy-4);
+  ctx.strokeStyle='#1e1e2a'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ox+nw,oy); ctx.moveTo(ox,oy); ctx.lineTo(ox,oy+nh); ctx.stroke();
+  const step=Math.max(50,(100/scale|0));
+  ctx.fillStyle='#3e3e52'; ctx.font='9px IBM Plex Mono, monospace';
+  for (let i=0; i<9999; i+=step) {
+    const px=ox+i*scale; if(px>ox+nw+2) break;
+    ctx.textAlign='center'; ctx.fillText(i, px, oy-4);
   }
-  for (let i = 0; i < 9999; i += step) {
-    const py = oy + i*scale;
-    if (py > oy+nh+2) break;
-    ctx.fillText(i, ox-28, py+3);
+  for (let i=0; i<9999; i+=step) {
+    const py=oy+i*scale; if(py>oy+nh+2) break;
+    ctx.textAlign='right'; ctx.fillText(i, ox-4, py+3);
   }
 }
 
-// ════════════════════════════════════════════
+// ════════════════════
 //  TOOLS
-// ════════════════════════════════════════════
+// ════════════════════
 function screenToImage(sx, sy) {
-  const { imgW: iw, imgH: ih } = state;
-  const { scale, ox, oy } = getScaleOrigin(filtWrap, iw, ih);
-  return [ ((sx-ox)/scale)|0, ((sy-oy)/scale)|0 ];
+  const {imgW:iw,imgH:ih}=state;
+  const {scale,ox,oy}=getScaleOrigin(filtWrap,iw,ih);
+  return [((sx-ox)/scale)|0, ((sy-oy)/scale)|0];
 }
+function setTool(t) {
+  state.tool=t; state.measurement=null;
+  [btnMeasure,btnROI,btnInspect,btnLimb].forEach(b=>b.classList.remove('active'));
+  ({measure:btnMeasure,roi:btnROI,inspect:btnInspect,limb:btnLimb})[t].classList.add('active');
+  renderAll();
+}
+btnMeasure.addEventListener('click',()=>setTool('measure'));
+btnROI.addEventListener('click',()=>setTool('roi'));
+btnInspect.addEventListener('click',()=>setTool('inspect'));
+btnLimb.addEventListener('click',()=>setTool('limb'));
 
+btnClear.addEventListener('click',()=>{
+  state.roiRect=null; state.limbLine=null; state.profileData=null; state.limbDetection=null;
+  profilePanel.classList.remove('visible');
+  infoPanel.innerHTML='<div class="placeholder">── ล้างแล้ว ──</div>';
+  renderAll();
+});
+btnReset.addEventListener('click',()=>{
+  state.zoom=1; state.offsetX=0; state.offsetY=0; renderAll();
+});
+
+// ════════════════════
+//  MOUSE INTERACTIONS
+// ════════════════════
 filtWrap.addEventListener('mousedown', e => {
   if (!state.filteredGray) return;
-
-  // Middle mouse OR Space held → pan
-  if (e.button === 1 || state.spaceDown) {
+  if (e.button===1||state.spaceDown) {
     e.preventDefault();
-    state.panning = true;
-    state.panStartX = e.clientX;
-    state.panStartY = e.clientY;
-    state.panOriginX = state.offsetX;
-    state.panOriginY = state.offsetY;
-    document.body.classList.add('panning-now');
-    return;
+    state.panning=true; state.panStartX=e.clientX; state.panStartY=e.clientY;
+    state.panOriginX=state.offsetX; state.panOriginY=state.offsetY;
+    document.body.classList.add('panning-now'); return;
   }
-
-  state.drawing = true;
-  state.startPt = screenToImage(e.offsetX, e.offsetY);
-  state.endPt   = state.startPt;
-  if (state.tool === 'inspect') showPixelInfo(state.startPt);
+  state.drawing=true;
+  state.startPt=screenToImage(e.offsetX,e.offsetY);
+  state.endPt=state.startPt;
+  if (state.tool==='inspect') showPixelInfo(state.startPt);
 });
-
 origWrap.addEventListener('mousedown', e => {
   if (!state.filteredGray) return;
-  if (e.button === 1 || state.spaceDown) {
+  if (e.button===1||state.spaceDown) {
     e.preventDefault();
-    state.panning = true;
-    state.panStartX = e.clientX;
-    state.panStartY = e.clientY;
-    state.panOriginX = state.offsetX;
-    state.panOriginY = state.offsetY;
+    state.panning=true; state.panStartX=e.clientX; state.panStartY=e.clientY;
+    state.panOriginX=state.offsetX; state.panOriginY=state.offsetY;
     document.body.classList.add('panning-now');
   }
 });
-
 document.addEventListener('mousemove', e => {
   if (state.panning) {
-    state.offsetX = state.panOriginX + (e.clientX - state.panStartX);
-    state.offsetY = state.panOriginY + (e.clientY - state.panStartY);
+    state.offsetX=state.panOriginX+(e.clientX-state.panStartX);
+    state.offsetY=state.panOriginY+(e.clientY-state.panStartY);
     renderAll();
-    return;
   }
 });
-
 filtWrap.addEventListener('mousemove', e => {
-  const pt = screenToImage(e.offsetX, e.offsetY);
+  const pt=screenToImage(e.offsetX,e.offsetY);
   if (state.filteredGray) {
-    const [x, y] = pt;
-    if (x >= 0 && x < state.imgW && y >= 0 && y < state.imgH) {
-      coordTip.style.display = 'block';
-      coordTip.style.left = (e.offsetX+12)+'px';
-      coordTip.style.top  = (e.offsetY+12)+'px';
-      const v = state.filteredGray[y*state.imgW+x];
-      coordTip.textContent = `(${x}, ${y}) · ${v}`;
+    const[x,y]=pt;
+    if (x>=0&&x<state.imgW&&y>=0&&y<state.imgH) {
+      coordTip.style.display='block';
+      coordTip.style.left=(e.offsetX+12)+'px';
+      coordTip.style.top=(e.offsetY+12)+'px';
+      const v=state.filteredGray[y*state.imgW+x];
+      coordTip.textContent=`(${x}, ${y})  ${v}`;
     }
   }
   if (!state.drawing) return;
-  state.endPt = pt;
-  if (state.tool !== 'inspect') drawFiltered();
+  state.endPt=pt;
+  if (state.tool!=='inspect') drawFiltered();
 });
-
+filtWrap.addEventListener('mouseleave',()=>{ coordTip.style.display='none'; });
 document.addEventListener('mouseup', e => {
-  if (state.panning) {
-    state.panning = false;
-    document.body.classList.remove('panning-now');
-    return;
-  }
+  if (state.panning) { state.panning=false; document.body.classList.remove('panning-now'); return; }
 });
-
-filtWrap.addEventListener('mouseleave', () => {
-  coordTip.style.display = 'none';
-  if (!state.panning) state.drawing = false;
-});
-
 filtWrap.addEventListener('mouseup', e => {
   if (state.panning) return;
   if (!state.drawing) return;
-  state.drawing = false;
-  state.endPt = screenToImage(e.offsetX, e.offsetY);
+  state.drawing=false;
+  state.endPt=screenToImage(e.offsetX,e.offsetY);
 
-  if (state.tool === 'measure') {
-    const p1 = state.startPt, p2 = state.endPt;
-    const dx = p2[0]-p1[0], dy = p2[1]-p1[1];
-    const dist = Math.sqrt(dx*dx+dy*dy);
-    state.measurement = { p1, p2, dist };
-    showMeasurement(p1, p2, dist);
-  } else if (state.tool === 'roi') {
-    let [x1,y1] = state.startPt, [x2,y2] = state.endPt;
-    if (x1>x2) [x1,x2]=[x2,x1];
-    if (y1>y2) [y1,y2]=[y2,y1];
-    x1=Math.max(0,Math.min(x1,state.imgW-1));
-    x2=Math.max(0,Math.min(x2,state.imgW-1));
-    y1=Math.max(0,Math.min(y1,state.imgH-1));
-    y2=Math.max(0,Math.min(y2,state.imgH-1));
-    state.roiRect = {x1,y1,x2,y2};
-    calcROI(x1,y1,x2,y2);
+  if (state.tool==='measure') {
+    const[p1,p2]=[state.startPt,state.endPt];
+    const dx=p2[0]-p1[0], dy=p2[1]-p1[1];
+    state.measurement={p1,p2,dist:Math.sqrt(dx*dx+dy*dy)};
+    showMeasurement(p1,p2,state.measurement.dist);
+  } else if (state.tool==='roi') {
+    let[x1,y1]=state.startPt,[x2,y2]=state.endPt;
+    if(x1>x2)[x1,x2]=[x2,x1]; if(y1>y2)[y1,y2]=[y2,y1];
+    x1=Math.max(0,Math.min(x1,state.imgW-1)); x2=Math.max(0,Math.min(x2,state.imgW-1));
+    y1=Math.max(0,Math.min(y1,state.imgH-1)); y2=Math.max(0,Math.min(y2,state.imgH-1));
+    state.roiRect={x1,y1,x2,y2}; calcROI(x1,y1,x2,y2);
+  } else if (state.tool==='limb') {
+    const p1=state.startPt, p2=state.endPt;
+    sampleLimbProfile(p1, p2);
+    showLimbInfo();
+    profilePanel.classList.add('visible');
+    setTimeout(()=>{ drawProfileChart(); }, 50);
   }
   renderAll();
 });
 
-// ── Zoom: zoom toward mouse cursor position ──
-function zoomAtPoint(wrap, mouseX, mouseY, factor) {
-  const { imgW: iw, imgH: ih } = state;
-  const { scale, ox, oy } = getScaleOrigin(wrap, iw, ih);
-  // Image coords under cursor before zoom
-  const imgX = (mouseX - ox) / scale;
-  const imgY = (mouseY - oy) / scale;
-  state.zoom = Math.max(.1, Math.min(state.zoom * factor, 40));
-  // After zoom, recalculate scale
-  const newScale = Math.min(wrap.clientWidth/iw, wrap.clientHeight/ih) * 0.90 * state.zoom;
-  // Adjust offset so imgX/imgY stays under cursor
-  const cw = wrap.clientWidth  || 600;
-  const ch = wrap.clientHeight || 500;
-  const nw = iw * newScale, nh = ih * newScale;
-  // base ox/oy without offset
-  const baseOx = cw/2 - nw/2;
-  const baseOy = ch/2 - nh/2;
-  // desired: mouseX = baseOx + state.offsetX + imgX * newScale
-  state.offsetX = mouseX - baseOx - imgX * newScale;
-  state.offsetY = mouseY - baseOy - imgY * newScale;
+// Zoom
+function zoomAtPoint(wrap, mx, my, factor) {
+  const{imgW:iw,imgH:ih}=state;
+  const{scale,ox,oy}=getScaleOrigin(wrap,iw,ih);
+  const imgX=(mx-ox)/scale, imgY=(my-oy)/scale;
+  state.zoom=Math.max(.1,Math.min(state.zoom*factor,40));
+  const nScale=Math.min(wrap.clientWidth/iw,wrap.clientHeight/ih)*.90*state.zoom;
+  const cw=wrap.clientWidth||600, ch=wrap.clientHeight||500;
+  const nw=iw*nScale, nh=ih*nScale;
+  const baseOx=cw/2-nw/2, baseOy=ch/2-nh/2;
+  state.offsetX=mx-baseOx-imgX*nScale; state.offsetY=my-baseOy-imgY*nScale;
   renderAll();
 }
+filtWrap.addEventListener('wheel',e=>{ e.preventDefault(); zoomAtPoint(filtWrap,e.offsetX,e.offsetY,e.deltaY<0?1.12:.9); },{passive:false});
+origWrap.addEventListener('wheel',e=>{ e.preventDefault(); zoomAtPoint(origWrap,e.offsetX,e.offsetY,e.deltaY<0?1.12:.9); },{passive:false});
 
-filtWrap.addEventListener('wheel', e => {
-  e.preventDefault();
-  const factor = e.deltaY < 0 ? 1.12 : 0.9;
-  zoomAtPoint(filtWrap, e.offsetX, e.offsetY, factor);
-}, { passive: false });
-
-origWrap.addEventListener('wheel', e => {
-  e.preventDefault();
-  const factor = e.deltaY < 0 ? 1.12 : 0.9;
-  zoomAtPoint(origWrap, e.offsetX, e.offsetY, factor);
-}, { passive: false });
-
-// ── Space key for pan mode ──
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space' && !e.repeat) {
-    e.preventDefault();
-    state.spaceDown = true;
-    document.body.classList.add('space-mode');
-  }
-  // Reset view with 'R'
-  if (e.code === 'KeyR') {
-    state.zoom = 1; state.offsetX = 0; state.offsetY = 0;
-    renderAll();
-  }
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&!e.repeat){e.preventDefault();state.spaceDown=true;document.body.classList.add('space-mode');}
+  if(e.code==='KeyR'){state.zoom=1;state.offsetX=0;state.offsetY=0;renderAll();}
 });
-document.addEventListener('keyup', e => {
-  if (e.code === 'Space') {
-    state.spaceDown = false;
-    document.body.classList.remove('space-mode');
-    if (state.panning) {
-      state.panning = false;
-      document.body.classList.remove('panning-now');
-    }
-  }
+document.addEventListener('keyup',e=>{
+  if(e.code==='Space'){state.spaceDown=false;document.body.classList.remove('space-mode');
+  if(state.panning){state.panning=false;document.body.classList.remove('panning-now');}}
 });
 
-// ════════════════════════════════════════════
+// ════════════════════
 //  INFO DISPLAY
-// ════════════════════════════════════════════
-function html(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+// ════════════════════
+function kv(k,v,cls='') { return `<div class="kv"><span class="k">${k}</span><span class="v ${cls}">${v}</span></div>`; }
+function sec(t) { return `<div class="sec">${t}</div>`; }
 
-function row(key, val, cls='') {
-  return `<div class="row"><span class="key">${key}</span><span class="val ${cls}">${val}</span></div>`;
+function showMeasurement(p1,p2,dist) {
+  infoPanel.innerHTML = sec('MEASUREMENT') +
+    kv('จาก','('+p1[0]+', '+p1[1]+')') +
+    kv('ถึง','('+p2[0]+', '+p2[1]+')') +
+    kv('ระยะห่าง', dist.toFixed(2)+' px','a') +
+    kv('Δx', Math.abs(p2[0]-p1[0])+' px') +
+    kv('Δy', Math.abs(p2[1]-p1[1])+' px') +
+    kv('มุม', (Math.atan2(p2[1]-p1[1],p2[0]-p1[0])*180/Math.PI).toFixed(1)+'°');
 }
-
-function showMeasurement(p1, p2, dist) {
-  infoPanel.innerHTML = `
-    <div class="section-title">📏 วัดระยะทาง</div>
-    ${row('จากจุด', `(${p1[0]}, ${p1[1]})`)}
-    ${row('ถึงจุด', `(${p2[0]}, ${p2[1]})`)}
-    ${row('ระยะห่าง', dist.toFixed(2)+' px', 'accent')}
-    ${row('Δx', Math.abs(p2[0]-p1[0])+' px')}
-    ${row('Δy', Math.abs(p2[1]-p1[1])+' px')}
-    ${row('มุม', (Math.atan2(p2[1]-p1[1], p2[0]-p1[0])*180/Math.PI).toFixed(1)+'°')}
-  `;
-}
-
 function calcROI(x1,y1,x2,y2) {
-  const rw = x2-x1, rh = y2-y1;
-  const areaPx = rw*rh;
-  const totalPx = state.imgW*state.imgH;
-  const pct = (areaPx/totalPx*100).toFixed(2);
-
-  // stats on filtered gray
-  let sum=0, min=255, max=0;
-  const vals = [];
-  for (let y=y1; y<y2; y++) {
-    for (let x=x1; x<x2; x++) {
-      const v = state.filteredGray[y*state.imgW+x];
-      sum+=v; if(v<min)min=v; if(v>max)max=v; vals.push(v);
-    }
+  const rw=x2-x1, rh=y2-y1, areaPx=rw*rh, totalPx=state.imgW*state.imgH;
+  let sum=0,min=255,max=0; const vals=[];
+  for(let y=y1;y<y2;y++) for(let x=x1;x<x2;x++) {
+    const v=state.filteredGray[y*state.imgW+x];
+    sum+=v; if(v<min)min=v; if(v>max)max=v; vals.push(v);
   }
-  const mean = vals.length ? (sum/vals.length).toFixed(2) : 0;
-  let variance = 0;
-  vals.forEach(v => variance += (v-mean)*(v-mean));
-  const std = vals.length ? Math.sqrt(variance/vals.length).toFixed(2) : 0;
-
-  infoPanel.innerHTML = `
-    <div class="section-title">⬛ ขอบเขต ROI</div>
-    ${row('จุดเริ่มต้น', `(${x1}, ${y1})`)}
-    ${row('จุดสิ้นสุด', `(${x2}, ${y2})`)}
-    ${row('กว้าง', rw+' px')}
-    ${row('สูง', rh+' px')}
-    <div class="section-title">🔲 พื้นที่ ROI</div>
-    ${row('พื้นที่', areaPx.toLocaleString()+' px²', 'green')}
-    ${row('ภาพรวม', totalPx.toLocaleString()+' px²')}
-    ${row('สัดส่วน', pct+'%', 'yellow')}
-    <div class="section-title">📊 สถิติความเข้ม</div>
-    ${row('Mean', mean, 'accent')}
-    ${row('Std', std)}
-    ${row('Min', min)}
-    ${row('Max', max, 'accent')}
-  `;
+  const mean=vals.length?(sum/vals.length).toFixed(2):0;
+  let variance=0; vals.forEach(v=>variance+=(v-mean)*(v-mean));
+  const std=vals.length?Math.sqrt(variance/vals.length).toFixed(2):0;
+  infoPanel.innerHTML = sec('ROI BOUNDS') +
+    kv('จุดเริ่มต้น','('+x1+', '+y1+')') + kv('จุดสิ้นสุด','('+x2+', '+y2+')') +
+    kv('กว้าง×สูง', rw+'×'+rh+' px') + sec('AREA') +
+    kv('พื้นที่', areaPx.toLocaleString()+' px²','a') +
+    kv('สัดส่วน', (areaPx/totalPx*100).toFixed(2)+'%','c') + sec('INTENSITY STATS') +
+    kv('Mean', mean,'a') + kv('Std', std) + kv('Min', min) + kv('Max', max,'a');
 }
-
 function showPixelInfo(pt) {
-  const [x,y] = pt;
-  if (x<0||x>=state.imgW||y<0||y>=state.imgH) return;
-  const v = state.filteredGray[y*state.imgW+x];
-  const norm = (v/255).toFixed(4);
-  infoPanel.innerHTML = `
-    <div class="section-title">🎯 ตรวจสอบพิกเซล</div>
-    ${row('พิกัด X', x)}
-    ${row('พิกัด Y', y)}
-    ${row('ความเข้ม', v, 'accent')}
-    ${row('Normalized', norm)}
-    ${row('Hex', '#'+v.toString(16).padStart(2,'0').repeat(3).toUpperCase())}
-    ${row('ระดับ', v > 200 ? 'สว่างมาก ☀' : v > 128 ? 'ปานกลาง 🌤' : v > 64 ? 'มืดปานกลาง 🌥' : 'มืด 🌑')}
-  `;
+  const[x,y]=pt;
+  if(x<0||x>=state.imgW||y<0||y>=state.imgH) return;
+  const v=state.filteredGray[y*state.imgW+x];
+  infoPanel.innerHTML = sec('PIXEL INSPECT') +
+    kv('X', x) + kv('Y', y) + kv('Intensity', v,'a') +
+    kv('Normalized', (v/255).toFixed(4)) +
+    kv('Hex','#'+v.toString(16).padStart(2,'0').repeat(3).toUpperCase()) +
+    kv('Level', v>200?'สว่างมาก':v>128?'ปานกลาง':v>64?'มืดปานกลาง':'มืด');
+}
+function showLimbInfo() {
+  const d=state.profileData; if(!d||!d.length) return;
+  const vals=d.map(p=>p.val);
+  const mn=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+  const pk=Math.max(...vals);
+  const pkIdx=vals.indexOf(pk);
+  const {p1,p2,len}=state.limbLine;
+  
+  let detectionHtml = '';
+  if (state.limbDetection) {
+    const det = state.limbDetection;
+    detectionHtml = sec('AUTO DETECTION') +
+      kv('จุดศูนย์กลาง', `(${det.centerX}, ${det.centerY})`) +
+      kv('รัศมี', det.radius + ' px', 'a') +
+      kv('พิกเซลขอบ', det.edgePixelCount.toLocaleString());
+  }
+  
+  infoPanel.innerHTML = detectionHtml + sec('LIMB PROFILE') +
+    kv('จาก','('+p1[0]+', '+p1[1]+')') + kv('ถึง','('+p2[0]+', '+p2[1]+')') +
+    kv('ความยาวเส้น', len.toFixed(1)+' px') + kv('จำนวน points', d.length) +
+    sec('BRIGHTNESS STATS') +
+    kv('Peak', pk,'a') + kv('Peak pos', d[pkIdx].x+', '+d[pkIdx].y) +
+    kv('Mean', mn) + kv('Min', Math.min(...vals)) + kv('Max', pk,'c') +
+    sec('VARIABILITY') +
+    kv('Range', pk - Math.min(...vals)) +
+    kv('StdDev', (Math.sqrt(vals.reduce((a,v)=>(v-mn)**2+a,0)/vals.length).toFixed(2)));
 }
 
-// ════════════════════════════════════════════
-//  TOOLBAR BUTTONS
-// ════════════════════════════════════════════
-function setTool(t) {
-  state.tool = t;
-  state.measurement = null;
-  [btnMeasure,btnROI,btnInspect].forEach(b => b.classList.remove('active'));
-  ({measure:btnMeasure, roi:btnROI, inspect:btnInspect})[t].classList.add('active');
-  renderAll();
-}
-btnMeasure.addEventListener('click', () => setTool('measure'));
-btnROI.addEventListener('click',     () => setTool('roi'));
-btnInspect.addEventListener('click', () => setTool('inspect'));
-btnClear.addEventListener('click', () => {
-  state.roiRect = null;
-  infoPanel.innerHTML = '<div class="placeholder">── ล้าง ROI แล้ว ──</div>';
-  renderAll();
-});
-btnReset.addEventListener('click', () => {
-  state.zoom = 1; state.offsetX = 0; state.offsetY = 0;
-  renderAll();
-});
-
-// ════════════════════════════════════════════
-//  AI ANALYSIS (Anthropic API)
-// ════════════════════════════════════════════
+// ════════════════════
+//  AI ANALYSIS
+// ════════════════════
 btnAI.addEventListener('click', async () => {
   if (!state.filteredGray) {
     aiPanel.classList.add('visible');
-    aiText.innerHTML = '<p style="color:var(--text2)">กรุณาโหลดรูปภาพก่อน</p>';
-    return;
+    aiText.innerHTML='<p style="color:var(--text2)">กรุณาโหลดรูปภาพก่อน</p>'; return;
   }
-
-  // Build context
-  const mode = filterSel.value;
-  const roiInfo = state.roiRect
-    ? `ROI: (${state.roiRect.x1},${state.roiRect.y1}) → (${state.roiRect.x2},${state.roiRect.y2}), ขนาด ${state.roiRect.x2-state.roiRect.x1}×${state.roiRect.y2-state.roiRect.y1} px`
-    : 'ไม่มี ROI';
-  const measInfo = state.measurement
-    ? `ระยะที่วัด: ${state.measurement.dist.toFixed(2)} px จาก ${JSON.stringify(state.measurement.p1)} ถึง ${JSON.stringify(state.measurement.p2)}`
-    : 'ไม่มีการวัดระยะ';
-
-  // Sample pixel stats from filtered image
-  const sample = state.filteredGray;
-  let sum=0, min=255, max=0;
-  const step = Math.max(1, sample.length/2000|0);
-  let count=0;
-  for (let i=0; i<sample.length; i+=step) {
-    const v=sample[i]; sum+=v; if(v<min)min=v; if(v>max)max=v; count++;
-  }
-  const mean=(sum/count).toFixed(1);
-
-  const prompt = `คุณคือผู้เชี่ยวชาญด้าน Computer Vision และ Image Processing
-
-กรุณาวิเคราะห์ Feature Map ต่อไปนี้และให้คำอธิบายสั้นๆ เป็นภาษาไทย (ไม่เกิน 120 คำ):
-
-- ขนาดภาพ: ${state.imgW}×${state.imgH} px
-- Filter ที่ใช้: ${mode}
-- ค่าสถิติทั้งภาพ: Mean=${mean}, Min=${min}, Max=${max}
-- ${roiInfo}
-- ${measInfo}
-
-วิเคราะห์: 1) ลักษณะ feature ที่ตรวจพบ 2) คุณภาพ edge/response 3) ข้อเสนอแนะการใช้งาน`;
+  const mode=filterSel.value;
+  const roiInfo=state.roiRect?`ROI: (${state.roiRect.x1},${state.roiRect.y1})→(${state.roiRect.x2},${state.roiRect.y2})`:'ไม่มี ROI';
+  const limbInfo=state.profileData?`Limb profile: ${state.profileData.length} pts, peak=${Math.max(...state.profileData.map(d=>d.val))}`:'ไม่มี Limb profile';
+  const sample=state.filteredGray;
+  let sum=0,min=255,max=0,count=0;
+  const step=Math.max(1,sample.length/2000|0);
+  for(let i=0;i<sample.length;i+=step){const v=sample[i];sum+=v;if(v<min)min=v;if(v>max)max=v;count++;}
+  const prompt=`คุณคือผู้เชี่ยวชาญด้าน Astronomical Image Processing และ Computer Vision
+วิเคราะห์ Feature Map ต่อไปนี้ (ไม่เกิน 120 คำ ภาษาไทย):
+- ขนาดภาพ: ${state.imgW}×${state.imgH} px  Filter: ${mode}
+- Mean=${(sum/count).toFixed(1)}, Min=${min}, Max=${max}
+- ${roiInfo}  ${limbInfo}
+วิเคราะห์: 1) ลักษณะ feature 2) Limb darkening/brightening 3) คุณภาพ edge 4) ข้อเสนอแนะ`;
 
   btnAI.classList.add('loading');
-  btnAI.innerHTML = '<span class="spinner"></span> กำลังวิเคราะห์...';
+  btnAI.innerHTML='<span class="spinner"></span> กำลังวิเคราะห์...';
   aiPanel.classList.add('visible');
-  aiText.innerHTML = '<p style="color:var(--text2)">⏳ กำลังประมวลผล...</p>';
-
+  aiText.innerHTML='<p style="color:var(--text2)">กำลังประมวลผล...</p>';
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:prompt}]})
     });
-    const data = await res.json();
-    const text = data.content?.map(c => c.text||'').join('') || 'ไม่สามารถวิเคราะห์ได้';
-    aiText.innerHTML = text.split('\n').filter(Boolean).map(l => `<p>${l}</p>`).join('');
+    const data=await res.json();
+    const text=data.content?.map(c=>c.text||'').join('')||'ไม่สามารถวิเคราะห์ได้';
+    aiText.innerHTML=text.split('\n').filter(Boolean).map(l=>`<p>${l}</p>`).join('');
   } catch(err) {
-    aiText.innerHTML = `<p style="color:var(--red)">เกิดข้อผิดพลาด: ${err.message}</p>`;
+    aiText.innerHTML=`<p style="color:var(--accent3)">เกิดข้อผิดพลาด: ${err.message}</p>`;
   } finally {
     btnAI.classList.remove('loading');
-    btnAI.innerHTML = '✦ AI วิเคราะห์';
+    btnAI.innerHTML='<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.6 3.5L8 10l-3.1 1.5.6-3.5L3 5.5l3.5-.5z"/></svg> AI วิเคราะห์';
   }
 });
 
-// ════════════════════════════════════════════
+// ════════════════════
 //  RESIZE OBSERVER
-// ════════════════════════════════════════════
-const ro = new ResizeObserver(() => renderAll());
-ro.observe(origWrap);
-ro.observe(filtWrap);
+// ════════════════════
+const ro=new ResizeObserver(()=>renderAll());
+ro.observe(origWrap); ro.observe(filtWrap);
+profilePanel.addEventListener('transitionend',()=>{ if(state.profileData) drawProfileChart(); });
 </script>
 </body>
 </html>
