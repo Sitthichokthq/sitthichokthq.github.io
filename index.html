@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Psych Midterm Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#EEF0F8; --card:#FFFFFF; --ink:#1B2A5C; --muted:#5B6488; --line:#C9CFE6;
+  --hl:#FFE24A; --hl-ink:#3B3200; --ok:#178A5E; --ok-bg:#DDF5EA; --bad:#D6343A; --bad-bg:#FBE3E4;
+  --graphite:#2E3350;
+  --f-head:"Prompt","Sarabun",system-ui,sans-serif;
+  --f-body:"Sarabun","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1330; --card:#171E44; --ink:#EAEDFF; --muted:#9AA3D1; --line:#2B3466;
+    --hl:#FFD93B; --hl-ink:#2B2400; --ok:#3DD598; --ok-bg:#0F3A2E; --bad:#FF6B6F; --bad-bg:#43191F;
+    --graphite:#C9D0FF;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1330; --card:#171E44; --ink:#EAEDFF; --muted:#9AA3D1; --line:#2B3466;
+  --hl:#FFD93B; --hl-ink:#2B2400; --ok:#3DD598; --ok-bg:#0F3A2E; --bad:#FF6B6F; --bad-bg:#43191F;
+  --graphite:#C9D0FF;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;min-height:100%;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 32px;background-attachment:local}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+#app{max-width:640px;margin:0 auto;padding:16px 16px 48px}
+h1,h2,h3{font-family:var(--f-head);margin:0;line-height:1.25}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-family:var(--f-head);font-weight:700;font-size:22px}
+.iconbtn{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:4px 10px;font-size:15px}
+.sheet{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:16px;box-shadow:4px 4px 0 var(--ink);margin-bottom:16px}
+.lvl{display:flex;align-items:center;gap:12px}
+.lvl b{font-family:var(--f-head);font-size:28px}
+.bar{flex:1;height:14px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:var(--paper)}
+.bar i{display:block;height:100%;background:var(--hl);border-right:2px solid var(--ink)}
+.small{font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:2px solid var(--ink);background:var(--card);border-radius:999px;padding:4px 12px;font-size:15px;position:relative}
+.chip[aria-pressed="true"]{background:var(--hl);color:var(--hl-ink);font-weight:700}
+.chip .m{font-size:12px;opacity:.75;margin-left:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{text-align:left;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:14px;box-shadow:3px 3px 0 var(--ink);transition:transform .08s}
+.mode:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.mode h3{font-size:18px;margin-bottom:2px}
+.mode p{margin:0;font-size:14px;color:var(--muted);line-height:1.4}
+.mode.wide{grid-column:1/-1}
+.mode[disabled]{opacity:.5}
+.hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;font-family:var(--f-head);font-weight:600}
+.hearts{letter-spacing:2px}
+.prog{height:8px;border:2px solid var(--ink);border-radius:6px;background:var(--card);overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--ink)}
+.tag{display:inline-block;font-size:13px;background:var(--hl);color:var(--hl-ink);border:2px solid var(--ink);border-radius:8px;padding:0 8px;font-weight:600;margin-bottom:8px}
+.q{font-size:19px;font-weight:600;margin:0 0 14px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:10px 12px;width:100%}
+.opt .b{flex:none;width:30px;height:30px;border:2px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:var(--f-head);font-size:14px;font-weight:600}
+.opt:not([disabled]):hover{background:var(--hl);color:var(--hl-ink)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok)}
+.opt.ok .b{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.no{background:var(--bad-bg);border-color:var(--bad)}
+.opt.no .b{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-radius:12px;border:2px solid var(--ink);background:var(--card)}
+.fb.ok{border-color:var(--ok)} .fb.no{border-color:var(--bad)}
+.fb strong{font-family:var(--f-head)}
+.btn{display:inline-block;background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:10px 18px;font-family:var(--f-head);font-weight:600;margin-top:12px}
+.btn.alt{background:var(--card);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.score{font-family:var(--f-head);font-size:56px;font-weight:700;line-height:1}
+.wrongitem{border-top:2px dashed var(--line);padding:10px 0}
+.wrongitem:first-child{border-top:0}
+.card3d{perspective:1000px;margin-bottom:12px}
+.flash{min-height:250px;border:2px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:4px 4px 0 var(--ink);padding:20px;display:flex;flex-direction:column;justify-content:center;width:100%;text-align:left}
+.flash.back{background:var(--hl);color:var(--hl-ink)}
+.flash .lab{font-size:13px;opacity:.7;margin-bottom:6px}
+.flash .ans{font-family:var(--f-head);font-weight:600;font-size:20px;margin-bottom:8px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{border:2px solid var(--ink);background:var(--card);border-radius:10px;padding:8px 10px;font-size:15px;text-align:left;min-height:48px;line-height:1.35}
+.tile.sel{background:var(--hl);color:var(--hl-ink)}
+.tile.done{background:var(--ok-bg);border-color:var(--ok);opacity:.55}
+.tile.shake{background:var(--bad-bg);border-color:var(--bad)}
+.tile[disabled]{cursor:default}
+.combo{color:var(--bad);font-weight:700}
+.timer{font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+@media (prefers-reduced-motion:reduce){.mode{transition:none}}
+@media (max-width:420px){.modes{grid-template-columns:1fr}.q{font-size:18px}}
+.boss{position:relative;text-align:center;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:12px 14px 10px;box-shadow:4px 4px 0 var(--ink);margin-bottom:12px}
+.bemoji{font-size:64px;line-height:1.1;display:inline-block}
+.bname{font-family:var(--f-head);font-weight:600;margin-bottom:6px}
+.hp{height:16px;border:2px solid var(--ink);border-radius:9px;background:var(--paper);overflow:hidden}
+.hp i{display:block;height:100%;background:var(--bad);transition:width .5s}
+.bemoji.hit{animation:hit .5s}
+.bemoji.atk{animation:atk .5s}
+@keyframes hit{0%{transform:none}20%{transform:translateX(-12px) rotate(-8deg);filter:brightness(2)}40%{transform:translateX(12px) rotate(8deg)}100%{transform:none}}
+@keyframes atk{0%{transform:scale(1)}40%{transform:scale(1.4) translateY(8px)}100%{transform:scale(1)}}
+.dmg{position:absolute;top:18px;left:50%;font-family:var(--f-head);font-weight:700;font-size:28px;color:var(--bad);animation:dmg 1s forwards;pointer-events:none;-webkit-text-stroke:1px var(--ink)}
+@keyframes dmg{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-50px);opacity:0}}
+.sheet.shake,.tile.shake{animation:shk .4s}
+@keyframes shk{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.opt.ok{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.03)}}
+.opt.dim{opacity:.3;text-decoration:line-through}
+.pus{display:flex;gap:8px;margin-bottom:12px}
+.pu{border:2px solid var(--ink);background:var(--card);border-radius:10px;padding:2px 10px;font-size:14px;font-family:var(--f-head)}
+.pu[disabled]{opacity:.4;cursor:default}
+.say{font-weight:600;margin-bottom:4px}
+.cf{position:fixed;top:-40px;z-index:60;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg)}}
+#toast{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:grid;justify-items:center;gap:8px;z-index:70;pointer-events:none}
+.tst{background:var(--ink);color:var(--paper);border-radius:12px;padding:8px 16px;font-family:var(--f-head);font-weight:600;animation:tin .25s;box-shadow:3px 3px 0 var(--hl)}
+@keyframes tin{from{transform:translateY(20px);opacity:0}}
+.bdg{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:14px;background:var(--hl);color:var(--hl-ink);margin:0 6px 6px 0}
+.bdg.lock{background:var(--card);color:var(--muted);border-style:dashed}
+.hero{display:flex;align-items:center;gap:12px}
+.mascot{font-size:52px;line-height:1}
+.won{animation:bounce .8s infinite alternate}
+@keyframes bounce{to{transform:translateY(-10px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="fx" aria-hidden="true"></div><div id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+/* ---------- DATA ---------- */
+var MODS = {
+  intro:"จิตวิทยาเบื้องต้น", comm:"การสื่อสาร", mot:"แรงจูงใจ/อารมณ์", stress:"เครียด/Burnout",
+  learn:"การเรียนรู้", mem:"ความจำ", pos:"Positive Psych", cog:"Cognition/Piaget", iq:"Intelligence & RAS"
+};
+/* [module, question, correct, [3 wrong], explanation, scenarioFlag] */
+var Q = [
+/* INTRO */
+["intro","ใครก่อตั้งห้องทดลองจิตวิทยาเชิงทดลองแห่งแรกของโลก (ปี 1879 ที่ Leipzig)?","Wilhelm Wundt",["William James","Sigmund Freud","John B. Watson"],"1879 + Leipzig + Wundt = จุดกำเนิดจิตวิทยาวิทยาศาสตร์"],
+["intro","Structuralism (Wundt/Titchener) ศึกษาอะไร และใช้วิธีใด?","Structure ของ Consciousness ด้วย Introspection",["Unconscious ด้วยการวิเคราะห์ความฝัน","Observable behavior ด้วยการทดลอง","Adaptation ด้วยการสังเกตสัตว์"],"Structuralism = Wundt/Titchener + Introspection"],
+["intro","กลุ่มใดเน้นว่ากระบวนการทางจิตช่วยให้มนุษย์ปรับตัว (Adaptation) เพื่อการอยู่รอด?","Functionalism (William James)",["Structuralism","Psychoanalysis","Humanism"],"Functionalism = William James + Adaptation"],
+["intro","Freud (Psychoanalysis) เน้นสิ่งใดเป็นหลัก?","Unconscious mind และประสบการณ์วัยเด็ก",["Free will และ Self-actualization","เฉพาะพฤติกรรมที่สังเกตได้","หน้าที่ของจิตเพื่อการปรับตัว"],"Psychoanalysis = Freud + Unconscious"],
+["intro","Behaviorism (Watson & Skinner) ศึกษาอะไร?","Observable behavior จากการเรียนรู้และสิ่งแวดล้อม",["Consciousness ผ่าน Introspection","Free will","Unconscious drives"],"Behaviorism = Observable"],
+["intro","Humanism (Maslow & Rogers) ถูกเรียกว่าอะไร และเน้นอะไร?","3rd Force — Free will และศักยภาพมนุษย์",["1st Force — โครงสร้างของจิต","2nd Force — พฤติกรรมที่สังเกตได้","3rd Force — แรงขับทางเพศ"],"Humanism = Maslow/Rogers + Free Will + Self-actualization"],
+["intro","รากศัพท์กรีกของ Psychology คือ?","Psyche (จิต/วิญญาณ) + Logos (การศึกษา)",["Physis + Logos","Psyche + Techne","Mens + Scientia"],"Psyche = Mind/Soul, Logos = Study"],
+["intro","Mind กับ Behavior ต่างกันอย่างไร?","Mind = ประสบการณ์ภายใน (Subjective); Behavior = การกระทำที่ Observable",["Mind = สังเกตได้; Behavior = ภายใน","เป็นสิ่งเดียวกัน","Mind = การกระทำ; Behavior = ความคิด"],"Subjective vs Observable"],
+/* COMM */
+["comm","โมเดล S-M-C-R ของ David Berlo (1960) ย่อมาจาก?","Sender, Message, Channel, Receiver",["Source, Meaning, Code, Response","Speaker, Media, Context, Reply","Sender, Medium, Content, Reaction"],"4 องค์ประกอบพื้นฐานของการสื่อสาร"],
+["comm","ใครทำหน้าที่ Encoding และใครทำหน้าที่ Decoding?","Sender เข้ารหัส / Receiver ถอดรหัส",["Sender ถอดรหัส / Receiver เข้ารหัส","Channel เข้ารหัส / Message ถอดรหัส","ทั้งสองทำ Encoding เหมือนกัน"],"Sender encodes / Receiver decodes"],
+["comm","กฎ Mehrabian 55/38/7 — ตัวเลข 55% คืออะไร?","Non-verbal (ภาษากาย)",["Paralanguage (น้ำเสียง)","Verbal (คำพูด)","Proxemics (ระยะห่าง)"],"55 = Body language, 38 = Tone, 7 = Words"],
+["comm","Proxemics คือ non-verbal cue เกี่ยวกับอะไร?","ระยะห่างระหว่างบุคคล (Personal space)",["การสบตา","การสัมผัส","น้ำเสียงและจังหวะพูด"],"Proxemics = Proximity = ระยะห่าง"],
+["comm","Oculesics และ Haptics คือ?","การสบตา และ การสัมผัส",["การสัมผัส และ การสบตา","ท่าทาง และ น้ำเสียง","ระยะห่าง และ สีหน้า"],"Ocul = eye, Haptic = touch"],
+["comm","Kinesics และ Paralanguage คือ?","ภาษากาย/สีหน้า/ท่าทาง และ น้ำเสียง/ระดับเสียง",["ระยะห่าง และ การสัมผัส","น้ำเสียง และ สีหน้า","การสบตา และ ระยะห่าง"],"Big 5: Kinesics, Paralanguage, Proxemics, Oculesics, Haptics"],
+["comm","Thomas-Kilmann Conflict Model (TKI) ประเมินจาก 2 มิติใด?","Assertiveness vs Cooperativeness",["Emotion vs Logic","Speed vs Accuracy","Trust vs Power"],"Assertive = เป้าหมายตนเอง, Cooperative = เป้าหมายผู้อื่น"],
+["comm","โหมดจัดการความขัดแย้งแบบ Win-Win คือ?","Collaborating",["Competing","Compromising","Accommodating"],"Competing = Win-Lose, Avoiding = Lose-Lose"],
+["comm","SBI Feedback Model ย่อมาจาก?","Situation, Behavior, Impact",["Speak, Believe, Improve","Situation, Belief, Intention","Sender, Behavior, Interpretation"],"บอกบริบท + พฤติกรรมที่เห็นจริง (ไม่ตัดสิน) + ผลกระทบ"],
+["comm","ประโยคใดเป็น 'I' Message ที่ถูกต้อง?","ฉันรู้สึกกังวลเมื่องานส่งช้า เพราะฉันต้องแก้แผนใหม่",["เธอนี่ไม่เคยรับผิดชอบเลย","ทุกคนก็รู้ว่าเธอทำงานช้า","ทำไมเธอถึงชอบทำให้คนอื่นเดือดร้อน"],"I Message = พูดความรู้สึกของตนเอง ไม่กล่าวโทษ",1],
+["comm","เพื่อนขอให้ช่วยงาน คุณไม่อยากทำแต่ยอมทำตามทั้งหมดเพื่อรักษาน้ำใจ นี่คือโหมดใด?","Accommodating (Yielding)",["Compromising","Avoiding","Collaborating"],"Accommodating = ยอมตามผู้อื่น",1],
+["comm","สองฝ่ายต่างยอมลดข้อเรียกร้องคนละครึ่งเพื่อจบปัญหา คือโหมดใด?","Compromising (Middle ground)",["Competing","Collaborating","Avoiding"],"Compromising = หาจุดกึ่งกลาง",1],
+["comm","'ในประชุมเมื่อวาน (S) คุณพูดแทรก 3 ครั้ง (B) ทำให้ทีมไม่กล้าเสนอความเห็น (I)' เป็นการให้ feedback แบบใด?","SBI Model",["Mehrabian's Rule","Transactional Appraisal","Two-Factor Theory"],"S + B + I ครบ",1],
+/* MOT */
+["mot","Motivation คือ?","กระบวนการที่เปิด ผลักดัน กำหนดทิศทาง และรักษาพฤติกรรมมุ่งสู่เป้าหมาย",["การตอบสนองต่อสิ่งเร้าตามสัญชาตญาณ","การเปลี่ยนแปลงพฤติกรรมอย่างถาวรจากประสบการณ์","การตื่นตัวทางสรีระเท่านั้น"],"Initiates + Guides + Maintains goal-directed behavior"],
+["mot","ลำดับขั้นความต้องการของ Maslow จากล่างขึ้นบนคือ?","Physiological → Safety → Belongingness/Love → Esteem → Self-Actualization",["Safety → Physiological → Esteem → Belongingness → Self-Actualization","Physiological → Belongingness → Safety → Esteem → Self-Actualization","Physiological → Safety → Esteem → Belongingness → Self-Actualization"],"ปัจจัย 4 ก่อน แล้วปลอดภัย รัก เคารพ และสุดท้ายศักยภาพสูงสุด"],
+["mot","Drive-Reduction Theory (Clark Hull) — พฤติกรรมเกิดเพื่ออะไร?","ลดแรงขับ (Drive) เพื่อรักษา Homeostasis",["เพิ่ม Arousal ให้สูงที่สุด","ได้รับ Incentive ภายนอก","แสดง Free will"],"Need → Drive → Behavior → Homeostasis"],
+["mot","Homeostasis คือ?","แนวโน้มของร่างกายในการรักษาสมดุลภายใน",["การแสวงหาความตื่นเต้น","การเรียนรู้จากรางวัล","การตีความอารมณ์"],"ดุลยภาพทางร่างกาย"],
+["mot","Incentive Theory อธิบายว่าพฤติกรรมถูกกระตุ้นด้วย?","สิ่งจูงใจภายนอก (Pull factor / Reward)",["แรงขับภายในจากความขาดแคลน","ความคิดอัตโนมัติเชิงลบ","การเลียนแบบตัวแบบ"],"Drive = Push, Incentive = Pull"],
+["mot","ตามทฤษฎีใดที่ว่า 'การตื่นตัวทางร่างกายเกิดก่อน แล้วจึงรู้สึกอารมณ์'?","James-Lange Theory",["Cannon-Bard Theory","Schachter-Singer Theory","Facial Feedback"],"We feel afraid because our heart runs fast"],
+["mot","Cannon-Bard Theory ระบุว่า?","Arousal และ Emotion เกิดพร้อมกันและเป็นอิสระต่อกัน",["Arousal เกิดก่อน Emotion","Emotion เกิดก่อน Arousal","Emotion เกิดจาก Cognitive label อย่างเดียว"],"Simultaneous & independent"],
+["mot","Schachter-Singer Two-Factor Theory ประกอบด้วย?","Physiological Arousal + Cognitive Labeling",["Arousal + Behavior","Appraisal + Coping","Need + Drive"],"ตีความ/ติดป้ายความหมายให้ Arousal"],
+["mot","Facial Feedback Hypothesis คือ?","การเคลื่อนไหวของกล้ามเนื้อใบหน้าส่งผลต่อการรู้สึกอารมณ์",["อารมณ์ทำให้ใบหน้าเปลี่ยนเท่านั้น","การรับรู้สีหน้าผู้อื่น","การควบคุมอารมณ์ด้วยเหตุผล"],"บังคับยิ้ม → รู้สึกดีขึ้น"],
+["mot","3 องค์ประกอบของอารมณ์ ได้แก่?","Physiological Arousal, Behavioral Response, Cognitive Appraisal",["Encoding, Storage, Retrieval","Sender, Message, Receiver","Situation, Behavior, Impact"],"ร่างกาย + พฤติกรรม + การประเมินทางปัญญา"],
+["mot","ใจเต้นแรงก่อน แล้วจึงรู้สึกกลัว สอดคล้องกับทฤษฎีใด?","James-Lange",["Cannon-Bard","Two-Factor","Drive-Reduction"],"Body reaction → Emotion",1],
+["mot","ใจเต้นแรง แล้วตีความว่า 'ตื่นเต้นเพราะได้เจอดารา' สอดคล้องกับทฤษฎีใด?","Schachter-Singer Two-Factor",["James-Lange","Cannon-Bard","Incentive Theory"],"Arousal + Label",1],
+["mot","การอดใจไม่กินขนมทันทีเพื่อรอรางวัลใหญ่กว่าภายหลัง คือ?","Delaying Gratification",["Homeostasis","Incentive","Insight"],"Self-control / Marshmallow test",1],
+/* STRESS */
+["stress","BioPsychoSocial Model อธิบายสุขภาพจากปัจจัยใด?","Biological + Psychological + Social",["Behavioral + Physical + Spiritual","Brain + Personality + Society","Body + Emotion + Environment"],"Holistic Health approach"],
+["stress","ลำไส้ผลิต Serotonin ประมาณเท่าใดของร่างกาย?","ประมาณ 90%",["ประมาณ 10%","ประมาณ 50%","ประมาณ 25%"],"Gut = Second Brain"],
+["stress","DOSE: Oxytocin เกี่ยวข้องกับอะไร?","ความผูกพัน/ความรัก",["ความสำเร็จ/รางวัล","การบรรเทาความเจ็บปวด","สมดุลอารมณ์"],"D=ความสำเร็จ, O=ผูกพัน, S=สมดุลอารมณ์, E=บรรเทาปวด"],
+["stress","DOSE: Endorphin ทำหน้าที่?","บรรเทาความเจ็บปวด",["สร้างความผูกพัน","ให้รางวัลเมื่อสำเร็จ","ปรับสมดุลอารมณ์"],"Endorphin = Pain relief"],
+["stress","ข้อใดคือความต่างของ Stress vs Burnout?","Stress = Over-engagement; Burnout = Disengagement",["Stress = Disengagement; Burnout = Over-engagement","ทั้งสองคือ Hyper-reactive","ไม่มีความต่าง"],"Hyper-reactive vs Emotional blunting"],
+["stress","ข้อใด 'ไม่ใช่' 3 มิติของ Burnout?","Hyperarousal (ตื่นตัวเกิน)",["Emotional Exhaustion","Depersonalization / Cynicism","Reduced Personal Efficacy"],"Burnout: หมดพลัง + เหินห่าง/มองลบ + รู้สึกไร้ประสิทธิภาพ"],
+["stress","Yerkes-Dodson Law มีรูปกราฟแบบใด?","Inverted U (U คว่ำ)",["เส้นตรงขึ้น","U ปกติ","เส้นตรงลง"],"Arousal พอดี = Performance สูงสุด"],
+["stress","ระบบประสาท Sympathetic ทำหน้าที่?","Fight or Flight (ตื่นตัว)",["Rest and Digest","Encoding","Homeostasis เท่านั้น"],"Sympathetic = หัวใจเต้นแรง; Parasympathetic = ผ่อนคลาย"],
+["stress","ระบบประสาท Parasympathetic เกี่ยวข้องกับ?","Rest and Digest (ผ่อนคลาย)",["Fight or Flight","Cognitive Appraisal","Arousal เพิ่มขึ้น"],"Calm down"],
+["stress","Primary Appraisal (Lazarus & Folkman) ประเมินอะไร?","สิ่งเร้านั้นเป็นอันตราย/คุกคามหรือไม่",["เรามีทรัพยากรรับมือพอไหม","ควรใช้ Coping แบบใด","อารมณ์เกิดก่อนหรือหลัง"],"Is it a threat?"],
+["stress","Secondary Appraisal คือการประเมิน?","ทรัพยากรในการเผชิญปัญหาที่เรามี",["ความรุนแรงของสิ่งเร้า","ผลกระทบต่อสังคม","ระดับ Arousal"],"Can I handle it?"],
+["stress","ข้อสอบใกล้แล้ว คุณทำตารางอ่านหนังสือ นี่คือ Coping แบบใด?","Problem-Focused Coping",["Emotion-Focused Coping","Avoidance","Placebo Effect"],"แก้ที่ต้นเหตุ ใช้เมื่อควบคุมได้",1],
+["stress","ญาติป่วยหนักและคุณแก้ไม่ได้ จึงระบายกับเพื่อนเพื่อให้ใจสงบ คือ Coping แบบใด?","Emotion-Focused Coping",["Problem-Focused Coping","Cognitive Reframing","Eustress"],"จัดการอารมณ์เมื่อเปลี่ยนสถานการณ์ไม่ได้",1],
+["stress","รู้สึกด้านชา ไม่สนใจงาน มองงานไร้ค่า ไม่มีพลัง น่าจะเป็น?","Burnout",["Eustress","Stress (Over-engaged)","Homeostasis"],"Disengagement / Emotional blunting",1],
+["stress","ตื่นเต้นพอดีก่อนสอบ ทำให้ตั้งใจอ่านมากขึ้น คือ?","Eustress",["Distress","Burnout","Depersonalization"],"Good manageable stress",1],
+["stress","5-4-3-2-1 และ Butterfly Hug คือเทคนิคใด?","Grounding / Relaxation",["Cognitive Reframing","Problem-Focused Coping","Elaborative Rehearsal"],"เทคนิคผ่อนคลายและดึงสติกลับสู่ปัจจุบัน"],
+["stress","ANTs ใน Cognitive Reframing คือ?","Automatic Negative Thoughts",["Anxiety Neural Tests","Active Neutral Thoughts","Adaptive Normal Thinking"],"Challenge the ANTs"],
+["stress","Placebo Effect คือ?","การดีขึ้นทางกาย/ใจจากความเชื่อมั่น",["ผลข้างเคียงของยา","การตอบสนองต่อสารเคมีจริง","การเรียนรู้จากรางวัล"],"Mind over matter / Belief"],
+/* LEARN */
+["learn","Learning ตามนิยามคือ?","การเปลี่ยนแปลงที่ค่อนข้างถาวรอันเกิดจากประสบการณ์",["การเปลี่ยนพฤติกรรมชั่วคราวจากความเมา","การเติบโตตามวัย","การเปลี่ยนแปลงจากความง่วงหรือความป่วย"],"Relatively enduring + Experience (ไม่รวม วุฒิภาวะ/ป่วย/เมา/ง่วง)"],
+["learn","ใน Classical Conditioning (Pavlov) อาหารคืออะไร?","US (Unconditioned Stimulus)",["CS","NS","CR"],"US = สิ่งเร้าไร้เงื่อนไข ทำให้เกิด UR โดยธรรมชาติ"],
+["learn","เสียงกระดิ่งหลังจากเรียนรู้แล้ว ทำให้น้ำลายไหล — เสียงกระดิ่งคือ?","CS (Conditioned Stimulus)",["US","UR","NS"],"ก่อนเรียนรู้ = NS, หลังเรียนรู้ = CS"],
+["learn","น้ำลายไหลเมื่อได้ยินเสียงกระดิ่งคือ?","CR (Conditioned Response)",["UR","US","NS"],"CR = ตอบสนองต่อ CS"],
+["learn","Extinction คือ?","CR ลดหายไปเมื่อเสนอ CS โดยไม่มี US",["CR กลับมาหลังพัก","ตอบสนองต่อสิ่งเร้าที่คล้าย CS","ตอบสนองเฉพาะ CS"],"CS without US → CR stops"],
+["learn","Spontaneous Recovery คือ?","CR กลับมาเองหลังพักช่วงหนึ่งหลัง Extinction",["CR หายไปถาวร","การเรียนรู้ใหม่ทันที","การตอบสนองต่อสิ่งเร้าคล้ายกัน"],"ฟื้นกลับมาหลังพัก"],
+["learn","เด็กกลัวหนูขาว แล้วกลัวกระต่ายขนฟูด้วย คือ?","Generalization",["Discrimination","Extinction","Acquisition"],"Similar stimuli → Same response",1],
+["learn","กลัวหมาเฉพาะพันธุ์ที่เคยกัด แต่ไม่กลัวหมาพันธุ์อื่น คือ?","Discrimination",["Generalization","Spontaneous Recovery","Extinction"],"ตอบสนองเฉพาะ CS",1],
+["learn","Little Albert Experiment (Watson) จับคู่อะไรเพื่อสร้าง Conditioned Fear?","หนูขาว + เสียงดัง",["กระดิ่ง + อาหาร","หนูขาว + อาหาร","เสียงดัง + กระดิ่ง"],"หนูขาว = NS→CS, เสียงดัง = US"],
+["learn","แม่ให้ขนมเมื่อลูกเก็บของเล่น แล้วลูกเก็บของบ่อยขึ้น คือ?","Positive Reinforcement",["Negative Reinforcement","Positive Punishment","Negative Punishment"],"เพิ่มสิ่งพอใจ → พฤติกรรมเพิ่ม",1],
+["learn","กินยาแล้วปวดหัวหาย จึงกินยาบ่อยขึ้น คือ?","Negative Reinforcement",["Positive Reinforcement","Positive Punishment","Negative Punishment"],"เอาสิ่งไม่พอใจออก → พฤติกรรมเพิ่ม",1],
+["learn","คาดเข็มขัดเพื่อให้เสียงเตือนหยุดดัง คือ?","Negative Reinforcement",["Positive Punishment","Positive Reinforcement","Negative Punishment"],"เสียงเตือนถูกเอาออก → คาดเข็มขัดมากขึ้น",1],
+["learn","มาสายแล้วถูกเพิ่มงานให้ทำ ทำให้มาสายน้อยลง คือ?","Positive Punishment",["Negative Reinforcement","Negative Punishment","Positive Reinforcement"],"เพิ่มสิ่งไม่พอใจ → พฤติกรรมลด",1],
+["learn","โกหกแล้วถูกยึดมือถือ ทำให้โกหกน้อยลง คือ?","Negative Punishment",["Positive Punishment","Negative Reinforcement","Positive Reinforcement"],"เอาสิ่งพอใจออก → พฤติกรรมลด",1],
+["learn","วิธีแยก NR กับ PP ที่ดีที่สุดคือถามอะไร?","พฤติกรรมเพิ่มหรือลด? แล้วมีอะไรถูกเพิ่มหรือถูกเอาออก?",["สีหน้าของผู้ถูกกระทำเป็นอย่างไร","สิ่งนั้นดีหรือไม่ดีในความรู้สึกเรา","ใครเป็นคนให้ผลกรรม"],"Reinforcement = เพิ่ม, Punishment = ลด; Positive = เพิ่มสิ่ง, Negative = เอาออก"],
+["learn","Observational Learning (Bandura, Bobo Doll) มีลำดับ 4 ขั้นใด?","Attention → Retention → Reproduction → Motivation",["Retention → Attention → Motivation → Reproduction","Attention → Reproduction → Retention → Motivation","Motivation → Attention → Retention → Reproduction"],"ใส่ใจ → จำ → ทำตาม → มีแรงจูงใจ"],
+["learn","Latent Learning และ Cognitive Map เป็นแนวคิดของ?","Edward Tolman",["Wolfgang Köhler","B.F. Skinner","Albert Bandura"],"เรียนรู้แฝง แสดงออกเมื่อมีแรงจูงใจ"],
+["learn","Insight Learning ('Aha!') เป็นผลงานของ?","Wolfgang Köhler (ลิงชิมแปนซี)",["Edward Tolman","Ivan Pavlov","John Watson"],"ปรับโครงสร้างความคิดอย่างฉับพลัน"],
+/* MEM */
+["mem","3 กระบวนการของความจำคือ?","Encoding → Storage → Retrieval",["Sensory → STM → LTM","Recall → Recognition → Relearning","Visual → Acoustic → Semantic"],"ใส่รหัส → เก็บ → ดึงกลับ"],
+["mem","3 ประเภทของรหัสความจำ (Encoding)?","Visual, Acoustic, Semantic",["Sensory, Short, Long","Recall, Recognition, Relearning","Linear, Intuitive, Relational"],"ภาพ / เสียง / ความหมาย"],
+["mem","ข้อสอบปรนัย (เลือกตัวเลือก) ใช้การดึงข้อมูลแบบใด?","Recognition",["Recall","Relearning","Maintenance rehearsal"],"Recognition = จำได้เมื่อเห็นตัวเลือก",1],
+["mem","ข้อสอบอัตนัย (เขียนตอบเอง) ใช้การดึงข้อมูลแบบใด?","Recall",["Recognition","Relearning","Elaboration"],"Recall = ไม่มีเบาะแส",1],
+["mem","กลับมาเรียนวิชาที่เคยเรียนแล้วใช้เวลาน้อยลง คือ?","Relearning",["Recall","Recognition","Encoding"],"เรียนซ้ำประหยัดเวลา",1],
+["mem","ท่องเบอร์โทรซ้ำๆ ในใจเพื่อคงไว้ใน STM คือ?","Maintenance Rehearsal",["Elaborative Rehearsal","Semantic encoding","Relearning"],"ท่องซ้ำ",1],
+["mem","อ่านทวนแล้วเชื่อมโยงกับความรู้เดิมเพื่อเข้า LTM คือ?","Elaborative Rehearsal",["Maintenance Rehearsal","Recognition","Sensory memory"],"Deep processing / Meaningful connection",1],
+["mem","Sensory Memory เก็บข้อมูลได้นานเท่าใดตามเอกสาร?","0.5–2 วินาที",["20–30 วินาที","5–10 นาที","ถาวร"],"คัดกรองด้วย Selective Attention"],
+["mem","Short-Term Memory มีความจุและระยะเวลาเท่าใด?","7±2 items, 20–30 วินาที",["ไม่จำกัด, ถาวร","3±1 items, 5 นาที","7±2 items, ถาวร"],"เรียกอีกอย่างว่า Working Memory"],
+["mem","Long-Term Memory มีลักษณะใด?","ความจุไม่จำกัด และคงอยู่ถาวร",["ความจุ 7±2 items","เก็บ 0.5–2 วินาที","เก็บ 20–30 วินาที"],"Unlimited + Permanent"],
+["mem","Three-Stage Model เป็นของใคร และลำดับคืออะไร?","Atkinson-Shiffrin: Sensory → STM → LTM",["Baddeley: Sensory → LTM → STM","Rumelhart: Encoding → Storage → Retrieval","Piaget: Schema → Assimilation → Accommodation"],"เข้าประสาทสัมผัส → คิดชั่วคราว → เก็บถาวร"],
+["mem","PDP Model อธิบายความจำว่า?","กระจายตามเครือข่ายประสาทและประมวลผลพร้อมกันแบบขนาน",["เก็บเป็นลำดับทีละขั้น","เก็บที่ตำแหน่งเดียวในสมอง","ทำงานเฉพาะเมื่อท่องซ้ำ"],"Parallel Distributed Processing"],
+/* POS */
+["pos","Disease Model เทียบกับ Positive Psychology?","Disease: −5 → 0; Positive: 0 → +5",["Disease: 0 → +5; Positive: −5 → 0","ทั้งสองเน้นการรักษาโรค","Disease: +5 → 0; Positive: 0 → −5"],"ซ่อมแซม vs พัฒนาจุดแข็ง/Flourishing"],
+["pos","Dual Factor Model: สุขภาวะต่ำและรู้สึกว่างเปล่า คือ?","Languishing",["Flourishing","Struggling","Floundering"],"Flourishing = สุขภาวะสูง ปัญหาน้อย"],
+["pos","Hedonic vs Eudaimonic Wellbeing?","Hedonic = เพลิดเพลินระยะสั้น; Eudaimonic = ความหมาย/เป้าหมาย/การเติบโต",["Hedonic = ความหมาย; Eudaimonic = เพลิดเพลิน","ทั้งสองคือความสุขจากรางวัล","Hedonic = Flow; Eudaimonic = Grit"],"Pleasure vs Purpose"],
+["pos","PERMA Model (Seligman) — ตัว 'E' และ 'M' คืออะไร?","Engagement และ Meaning",["Emotion และ Motivation","Energy และ Memory","Effort และ Mastery"],"P=Positive Emotion, E=Engagement, R=Relationships, M=Meaning, A=Accomplishment"],
+["pos","Flow State (Csikszentmihalyi) เกิดเมื่อ?","Skill สมดุลกับ Challenge",["Skill สูง Challenge ต่ำมาก","Skill ต่ำ Challenge สูงมาก","ไม่มี Skill และ Challenge"],"Skill == Challenge"],
+["pos","Active-Constructive Responding (Shelly Gable) คือ?","ร่วมยินดีกับข่าวดีผู้อื่นด้วยความกระตือรือร้นและจริงใจ",["เงียบเมื่อได้ยินข่าวดี","เปลี่ยนเรื่องไปพูดเรื่องตนเอง","ชี้ข้อเสียของข่าวดี"],"ตอบสนองแบบ Active + Constructive"],
+["pos","Grit และ Growth Mindset เป็นแนวคิดของใคร?","Grit = Angela Duckworth; Growth Mindset = Carol Dweck",["Grit = Carol Dweck; Growth = Duckworth","Grit = Seligman; Growth = Gable","Grit = Maslow; Growth = Rogers"],"Grit = ทรหดระยะยาว, Growth = ความสามารถพัฒนาได้"],
+["pos","Flourishing คือ?","สุขภาวะสูงและสุขภาพจิตทำงานได้ดี",["ไม่มีโรคทางจิตเวชเท่านั้น","สุขภาวะต่ำ ปัญหามาก","ความสุขระยะสั้น"],"Optimal human functioning"],
+/* COG */
+["cog","ขั้น Sensorimotor (Piaget) อายุเท่าใด และเกิดอะไร?","0–2 ปี; Object Permanence",["2–7 ปี; Egocentrism","7–11 ปี; Conservation","11 ปีขึ้นไป; Abstract logic"],"เรียนรู้ผ่านสัมผัสและการเคลื่อนไหว"],
+["cog","ขั้น Preoperational มีลักษณะเด่น?","2–7 ปี; ใช้สัญลักษณ์ภาษา และ Egocentrism",["0–2 ปี; Object Permanence","7–11 ปี; Conservation","11+ ปี; Hypothetical thinking"],"ยึดตนเองเป็นศูนย์กลาง"],
+["cog","ขั้น Concrete Operational มีลักษณะเด่น?","7–11 ปี; ตรรกะรูปธรรมและ Conservation",["2–7 ปี; Egocentrism","0–2 ปี; Object Permanence","11+ ปี; Abstract"],"เข้าใจว่าปริมาณคงที่แม้เปลี่ยนภาชนะ"],
+["cog","ขั้น Formal Operational มีลักษณะเด่น?","11 ปีขึ้นไป; คิดนามธรรม สมมติฐาน ตรรกะขั้นสูง",["7–11 ปี; ตรรกะรูปธรรม","2–7 ปี; ใช้สัญลักษณ์","0–2 ปี; ประสาทสัมผัส"],"Abstract & hypothetical"],
+["cog","เด็กเห็นแมวแล้วเรียกว่า 'หมา' (ใช้ Schema เดิม) คือ?","Assimilation",["Accommodation","Conservation","Object Permanence"],"ผนวกข้อมูลใหม่เข้า Schema เดิม",1],
+["cog","เด็กรู้ว่านั่นคือแมว จึงสร้าง Schema 'แมว' ขึ้นใหม่ คือ?","Accommodation",["Assimilation","Egocentrism","Heuristic"],"ปรับ/สร้าง Schema ใหม่",1],
+["cog","เด็กปิดตาแล้วคิดว่าคนที่อยู่ตรงหน้าหายไป แสดงว่ายังไม่มี?","Object Permanence",["Conservation","Abstract thinking","Schema"],"เกิดใน Sensorimotor Stage",1],
+["cog","เด็กเทน้ำจากแก้วเตี้ยกว้างใส่แก้วสูงแคบ แล้วบอกว่าน้ำเพิ่มขึ้น แสดงว่ายังไม่มี?","Conservation",["Object Permanence","Assimilation","Mental Set"],"Conservation เกิดใน Concrete Operational",1],
+["cog","Algorithm เทียบกับ Heuristic?","Algorithm = ขั้นตอนแน่นอนรับประกันคำตอบ; Heuristic = ทางลัดความคิด",["Algorithm = ทางลัด; Heuristic = ขั้นตอนแน่นอน","ทั้งสองรับประกันคำตอบ","ทั้งสองคือสัญชาตญาณ"],"Guaranteed vs Fast shortcut"],
+["cog","Functional Fixedness คือ?","ยึดติดหน้าที่เดิมของสิ่งของ จึงไม่เห็นการใช้แบบใหม่",["ยึดวิธีแก้ปัญหาเดิมๆ","ไม่มีเหตุผลเชิงนามธรรม","เข้าใจว่าปริมาณคงที่"],"เช่น ไม่คิดว่าเหรียญใช้เป็นไขควงได้"],
+["cog","Mental Set คือ?","ยึดติดวิธีแก้ปัญหาเดิมๆ ที่เคยได้ผล",["ยึดติดหน้าที่เดิมของสิ่งของ","สร้าง Schema ใหม่","ตัดสินใจโดยทางลัด"],"Barrier to problem solving"],
+["cog","สูตร IQ คือ?","(Mental Age / Chronological Age) × 100",["(Chronological Age / Mental Age) × 100","Mental Age + Chronological Age","g factor × s factor"],"MA/CA × 100"],
+["cog","Spearman's Two-Factor Theory ประกอบด้วย?","g factor (ปัญญารวม) + s factor (ความสามารถเฉพาะ)",["Fluid + Crystallized","Analytical + Creative","Verbal + Spatial เท่านั้น"],"g = General, s = Specific"],
+["cog","Gardner's Multiple Intelligences เสนอว่า?","ปัญญามีหลายด้าน (8+) ไม่ได้มีแบบเดียว",["ปัญญามีแค่ g factor","ปัญญาวัดได้ด้วย IQ อย่างเดียว","ปัญญาไม่เปลี่ยนแปลงเลย"],"พหุปัญญา"],
+/* IQ/RAS */
+["iq","ข้อสรุปหลักของเอกสารเรื่อง Intelligence คือ?","Intelligence is a concept and NOT a thing",["Intelligence คือ IQ score","Intelligence เป็นอวัยวะในสมอง","Intelligence คงที่ตลอดชีวิต"],"เป็นแนวคิด ไม่ใช่สิ่งของ"],
+["iq","APA มอง IQ tests อย่างไร?","เปรียบเทียบกับคนวัยเดียวกัน แต่ไม่ได้วัดปัญญาทุกรูปแบบ",["วัดปัญญาทุกรูปแบบครบถ้วน","วัดเฉพาะอารมณ์","ไม่มีประโยชน์เลย"],"IQ tests do NOT measure all forms of intelligence"],
+["iq","Perceptual Associative Processes คือ?","ตีความสิ่งเร้าโดยการจดจำ จัดหมวดหมู่ และเชื่อมโยงตามประสบการณ์",["การเก็บความจำถาวร","การแก้ปัญหาด้วยอัลกอริทึม","การตอบสนองแบบสะท้อนกลับ"],"Interpreting experience"],
+["iq","Encoded Assumptions คืออะไร และเกิดอะไรเมื่อถูกละเมิด?","Mind programming จากประสบการณ์ในอดีต; เกิด Stress และ Reaction",["ความจำระยะสั้น; เกิดความสุข","ความรู้ทางวิชาการ; เกิด Insight","สัญชาตญาณ; เกิด Flow"],"Violated → Stress → Reaction (ไม่ใช่ Intelligent Action)"],
+["iq","Rules of Engagement คือ?","ปฏิกิริยาอัตโนมัติใต้สำนึกเพื่อปกป้องความรู้สึกตนเอง",["ขั้นตอนการแก้ปัญหาอย่างมีเหตุผล","กฎของการทดลอง","แนวทางการสื่อสารสร้างสรรค์"],"ทำให้ Reaction ครอบงำ Intelligent Action"],
+["iq","Encoded Assumptions ↑ และ Rules of Engagement ↑ ส่งผลอย่างไร?","Circle of Tolerance ↓ และ Intelligent Action ↓",["Circle of Tolerance ↑ และ Intelligent Action ↑","Circle of Tolerance ↑ และ Intelligent Action ↓","ไม่มีผลต่อ Intelligent Action"],"ข้อสมมติเยอะ → ความอดทนต่อความต่างลดลง"],
+["iq","RAS (Reticular Activating System) ทำหน้าที่อะไรเมื่อเรา 'ผิด'?","หาข้ออ้างภายนอกเพื่อลดความรู้สึกว่าผิด (External Blaming)",["ช่วยยอมรับความผิดทันที","ทำให้เราเรียนรู้จากความผิด","ปิดการรับรู้ทั้งหมด"],"มนุษย์ไม่ชอบเป็นฝ่ายผิด"],
+["iq","ในความขัดแย้ง เมื่อเราพยายามพิสูจน์ว่าอีกฝ่ายผิด จะเกิดอะไร?","RAS ของอีกฝ่ายปกป้องตนและพยายามพิสูจน์ว่าเราผิดกลับ",["อีกฝ่ายยอมรับทันที","ปัญหาจบเร็วขึ้น","เกิด Flow ร่วมกัน"],"วงจรขัดแย้ง → Self-Preservation ไม่ใช่การหาทางออก"],
+["iq","MacLean's Triune Brain — สมองส่วนใดคิดเชิงเหตุผลและสร้างสรรค์ (80%)?","Cognitive Brain",["Limbic Brain","Reptilian Brain","Brainstem เท่านั้น"],"Thinking brain"],
+["iq","Limbic Brain (10%) ทำหน้าที่?","อารมณ์ สัญชาตญาณ และเปลี่ยนความคิดเป็นการกระทำ",["คิดวิเคราะห์เชิงตรรกะ","ควบคุมหัวใจและอวัยวะ","วางแผนระยะยาว"],"Emotion & Action"],
+["iq","Reptilian Brain (10%) ทำหน้าที่?","ควบคุมสิ่งที่ไม่ตั้งใจ เอาตัวรอด และปฏิกิริยาอัตโนมัติ ('Act like Lizard!')",["คิดสร้างสรรค์","จัดการอารมณ์ละเอียดอ่อน","วางกลยุทธ์"],"Survival instinct"],
+["iq","Time Focus Quadrant #4 (High Focus, High Fulfillment) คือ?","สภาวะผลิตภาพสูง — Action: Focus",["Unproductive — Action: Avoid","Short-term gratification — Action: Limit","Duty without passion — Action: Manage"],"#1 Avoid, #2 Limit, #3 Manage, #4 Focus"],
+["iq","เล่นเกม/โซเชียลเพื่อความสุขชั่วขณะ (Focus ต่ำ, Fulfillment สูง) อยู่ Quadrant ใด และควรทำอย่างไร?","Quadrant #2 — Limit",["Quadrant #1 — Avoid","Quadrant #3 — Manage","Quadrant #4 — Focus"],"Short-term emotional gratification",1],
+["iq","ทำงานเพราะหน้าที่ ไม่มีความสนใจหรือประโยชน์ส่วนตัว อยู่ Quadrant ใด?","Quadrant #3 — Manage",["Quadrant #1 — Avoid","Quadrant #2 — Limit","Quadrant #4 — Focus"],"High Focus, Low Fulfillment",1],
+["iq","ในเอกสาร 'The 4 Insanities' ข้อใดถูกต้อง?","ความยุติธรรม (Fairness) เป็นเรื่อง Subjective ตามความรู้สึกว่า 'ควรได้รับ'",["ความจริงมีเพียงหนึ่งเดียวสำหรับทุกคน","ทุกคนประมวลผลข้อมูลเหมือนกัน","Common sense เป็นสากล"],"Reality, Processing, Fairness, Truth = Subjective"],
+["iq","Emotional Driver ที่ต้องการ 'ถูกสังเกตเห็นและยอมรับในคุณค่า' คือ?","Recognition/Significance",["Control/Security","Diversity","Excellence"],"ใน 8 Driving Forces"],
+["iq","Emotional Driver ที่หมายถึงการเรียนรู้และเติบโตอย่างต่อเนื่อง?","Challenge/Growth",["Achievement","Belonging/Love","Responsibility/Contribution"],"Achievement = ก้าวหน้าตามแผน"]
+];
+
+/* Match pairs: [term, clue] */
+var PAIRS = [
+["Structuralism","Wundt/Titchener + Introspection"],["Functionalism","William James + Adaptation"],["Psychoanalysis","Freud + Unconscious"],["Behaviorism","Watson/Skinner + Observable"],["Humanism","Maslow/Rogers + Free Will"],
+["Mehrabian's Rule","55 Body / 38 Tone / 7 Words"],["Kinesics","Body language & posture"],["Proxemics","Personal space / distance"],["Oculesics","Eye contact"],["Haptics","Touch"],["SBI Model","Situation-Behavior-Impact"],["Collaborating","Win-Win"],["Avoiding","Lose-Lose"],
+["James-Lange","Body reaction → Emotion"],["Cannon-Bard","Arousal & emotion simultaneous"],["Two-Factor Theory","Arousal + Cognitive label"],["Facial Feedback","Smile → feel happier"],["Homeostasis","Internal balance / Drive-Reduction"],
+["Sympathetic","Fight or Flight"],["Parasympathetic","Rest & Digest"],["Primary Appraisal","Is it a threat?"],["Secondary Appraisal","Can I handle it?"],["Yerkes-Dodson","Inverted U-curve"],["Depersonalization","Cynicism / detached in Burnout"],
+["US","Natural trigger (Food)"],["CS","Learned trigger (Bell)"],["Extinction","CS without US → CR stops"],["Negative Reinforcement","Remove pain → behavior UP"],["Positive Punishment","Add pain → behavior DOWN"],["Bandura","Bobo Doll / Modeling"],["Köhler","Insight / Aha!"],["Tolman","Latent learning / Cognitive map"],
+["Recall","Essay test (no cues)"],["Recognition","Multiple choice test"],["Short-Term Memory","7±2 items, 20–30s"],["Elaborative Rehearsal","Link new info to old knowledge"],
+["PERMA","Seligman 5 pillars"],["Flow","Skill = Challenge"],["Grit","Duckworth / long-term passion"],["Eudaimonic","Meaning & purpose"],
+["Sensorimotor","0–2y + Object Permanence"],["Preoperational","2–7y + Egocentrism"],["Concrete Operational","7–11y + Conservation"],["Formal Operational","11y+ + Abstract logic"],["Accommodation","Change the schema"],["Functional Fixedness","Stuck on usual object use"],["g Factor","Spearman general intelligence"],
+["RAS","Searches for external blame"],["Reptilian Brain","Act like Lizard!"],["Cognitive Brain","80% brain mass, reasoning"],["Quadrant #4","High Focus + High Fulfillment"]
+];
+
+/* ---------- STATE ---------- */
+var KEY = "psy-midterm-quest-v1";
+var S = load() || {};
+S.xp = S.xp||0; S.seen = S.seen||{}; S.miss = S.miss||[]; S.badges = S.badges||{}; S.bosses = S.bosses||{}; S.mute = !!S.mute; S.best = S.best||0;
+var scope = "all";
+var G = null, timerId = null, F = null, M = null;
+var THAI = ["ก","ข","ค","ง"];
+
+var BOSS = {
+  all:["👹","บอสใหญ่ Midterm"], scen:["🐙","หมึกยักษ์โจทย์สถานการณ์"], intro:["👻","ผีดิบ Introspection"],
+  comm:["🐉","มังกรภาษากาย"], mot:["🗿","ยักษ์พีระมิด Maslow"], stress:["🔥","อสูรไฟ Burnout"],
+  learn:["🐕","หมาน้ำลายไหล"], mem:["🐟","ปลาทองความจำ 3 วิ"], pos:["🫠","สไลม์ Languishing"],
+  cog:["👶","ทารกจอมยึดตัวเอง"], iq:["🦎","จิ้งจกสมองเลื้อยคลาน"]
+};
+var BADGES = {
+  first:["🩸","เลือดแรก","ตอบถูกข้อแรก"], combo5:["🔥","ไฟลุก","คอมโบ x5"], combo10:["🌋","ภูเขาไฟ","คอมโบ x10"],
+  boss:["👑","นักล่าบอส","ปราบบอส 1 ตัว"], boss3:["🗡️","เซียนล่าบอส","ปราบบอส 3 หัวข้อ"], perfect:["💎","เพอร์เฟกต์","ชนะบอสโดยไม่เสียหัวใจ"],
+  speed10:["⚡","สายฟ้า","ตอบถูก 10 ข้อใน Speed"], match0:["🧩","ตาแหลม","จับคู่ไม่ผิดเลย"], book:["🧹","ล้างสมุด","ล้างสมุดข้อพลาดจนหมด"], fifty:["📚","หนอนหนังสือ","ตอบถูกไม่ซ้ำ 50 ข้อ"]
+};
+var TITLES = ["สมองมือใหม่","เด็กฝึกงาน Wundt","นักสังเกต Introspection","ผู้รอดชีวิต Midterm","จอมขยายความ","เจ้าพ่อ PERMA","ปรมาจารย์ g-factor"];
+var OKS = ["เฉียบ! 🔥","สมองกำลังขยายความ 💪","ถูกต้องนะจ๊ะ ✨","อาจารย์ต้องปรบมือ 👏","ความจำระยะยาวเรียกหา 📥","โหดจริงอะ 😎","Schema แน่นปึ้ก 🧱"];
+var BADS = ["ไม่เป็นไร สมองกำลังอัปเดต 🔄","ข้อนี้แค่วอร์มอัพ 🫡","จำไว้! ตอนสอบจริงจะไม่พลาด 📌","Schema กำลัง Accommodate อยู่ 🛠️","เมื่อกี้แค่ Extinction ชั่วคราว 🌫️","บอสหัวเราะแล้วนะ 😈"];
+
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
+function $(s){ return document.querySelector(s); }
+function app(h){ $("#app").innerHTML = h; window.scrollTo(0,0); }
+function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+function level(){ return Math.floor(S.xp/150)+1; }
+function title(){ return TITLES[Math.min(level()-1, TITLES.length-1)]; }
+function addXP(n){
+  var l = level(); S.xp += n; save();
+  if(level()>l){ toast("🎉 เลเวลอัป! Lv."+level()+" · "+title()); sfx.win(); confetti(40); }
+}
+function buzz(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+
+/* ---------- SOUND / FX ---------- */
+var AC = null;
+function tone(f,d,type,vol,delay){
+  if(S.mute) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    var o = AC.createOscillator(), g = AC.createGain(), s = AC.currentTime+(delay||0);
+    o.type = type||"sine"; o.frequency.value = f;
+    g.gain.setValueAtTime(vol||0.1, s); g.gain.exponentialRampToValueAtTime(0.0001, s+d);
+    o.connect(g); g.connect(AC.destination); o.start(s); o.stop(s+d);
+  }catch(e){}
+}
+var sfx = {
+  ok:function(c){ var u=Math.min(c,8)*50; tone(600+u,.12,"triangle",.12,0); tone(900+u,.16,"triangle",.1,.08); },
+  bad:function(){ tone(180,.25,"sawtooth",.07,0); tone(120,.3,"sawtooth",.07,.12); },
+  hit:function(){ tone(320,.08,"square",.06,0); },
+  win:function(){ [523,659,784,1046].forEach(function(f,i){ tone(f,.25,"triangle",.12,i*.12); }); },
+  badge:function(){ tone(880,.1,"sine",.12,0); tone(1175,.22,"sine",.12,.1); }
+};
+function toggleMute(){ S.mute = !S.mute; save(); var m=$("#mb"); if(m) m.textContent = S.mute?"🔇":"🔊"; if(!S.mute) sfx.hit(); }
+function confetti(n){
+  if(window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  var fx = $("#fx"), em = ["🎉","✨","🧠","⭐","💡","🎊"];
+  for(var i=0;i<n;i++){
+    var s = document.createElement("span"); s.className="cf"; s.textContent = rnd(em);
+    s.style.left = Math.random()*100+"vw"; s.style.fontSize = (16+Math.random()*18)+"px";
+    s.style.animationDuration = (1.6+Math.random()*1.6)+"s"; s.style.animationDelay = (Math.random()*.4)+"s";
+    fx.appendChild(s); (function(x){ setTimeout(function(){ x.remove(); },4000); })(s);
+  }
+}
+function toast(t){
+  var c = $("#toast"), d = document.createElement("div"); d.className="tst"; d.textContent=t; c.appendChild(d);
+  setTimeout(function(){ d.remove(); }, 3200);
+}
+function award(id){ if(S.badges[id]) return; S.badges[id]=1; save(); toast("🏅 ปลดล็อก: "+BADGES[id][1]); sfx.badge(); }
+
+function poolFor(sc){
+  var idx = [];
+  for(var i=0;i<Q.length;i++){
+    if(sc==="all" || (sc==="scen" && Q[i][5]) || Q[i][0]===sc) idx.push(i);
+  }
+  return idx;
+}
+function mastery(mod){
+  var p = poolFor(mod), n = 0;
+  p.forEach(function(i){ if(S.seen[i]>0) n++; });
+  return Math.round(100*n/p.length);
+}
+
+/* ---------- HOME ---------- */
+function home(){
+  stopTimer(); G=null;
+  var xpIn = S.xp % 150;
+  var chips = '<button class="chip" aria-pressed="'+(scope==="all")+'" onclick="setScope(\'all\')">ทุกหัวข้อ</button>';
+  chips += '<button class="chip" aria-pressed="'+(scope==="scen")+'" onclick="setScope(\'scen\')">โจทย์สถานการณ์</button>';
+  Object.keys(MODS).forEach(function(k){
+    chips += '<button class="chip" aria-pressed="'+(scope===k)+'" onclick="setScope(\''+k+'\')">'+MODS[k]+'<span class="m">'+mastery(k)+'%</span></button>';
+  });
+  var b = BOSS[scope]||BOSS.all, n = poolFor(scope).length, mc = S.miss.length;
+  var bs = Object.keys(BADGES).map(function(k){
+    var e = S.badges[k];
+    return '<span class="bdg'+(e?'':' lock')+'">'+(e? BADGES[k][0]+' '+BADGES[k][1] : '🔒 '+BADGES[k][2])+'</span>';
+  }).join('');
+  var hi = ["พร้อมลุยมิดเทอมหรือยัง?","วันนี้ล่าบอสสักตัวไหม?","ทวนแบบเล่นเกม จำได้นานกว่านะ","สมองฉัน + ความรู้เธอ = A"];
+  app(
+  '<div class="top"><div class="brand">Psych Midterm Quest</div><div class="row" style="gap:6px;flex-wrap:nowrap"><button class="iconbtn" id="mb" onclick="toggleMute()" aria-label="เปิดปิดเสียง">'+(S.mute?"🔇":"🔊")+'</button><button class="iconbtn" onclick="toggleTheme()" aria-label="สลับธีม">◐</button></div></div>'+
+  '<div class="sheet"><div class="hero"><div class="mascot">🧠</div><div style="flex:1"><div style="font-family:var(--f-head);font-weight:600">Lv.'+level()+' · '+title()+'</div><div class="bar"><i style="width:'+(xpIn/150*100)+'%"></i></div><div class="small">'+xpIn+' / 150 XP · ตอบถูกแล้ว '+Object.keys(S.seen).length+' / '+Q.length+' ข้อ</div></div></div><div class="small" style="margin-top:8px">💬 '+rnd(hi)+'</div></div>'+
+  '<div class="sheet"><h2 style="font-size:18px">เลือกสนามที่จะเล่น</h2><div class="chips">'+chips+'</div><div class="small" style="margin-top:8px">มี '+n+' ข้อในสนามนี้ (% = สัดส่วนข้อที่เคยตอบถูก)</div></div>'+
+  '<div class="modes">'+
+  '<button class="mode wide" onclick="startQuiz(\'boss\')"><div class="row" style="align-items:center;flex-wrap:nowrap"><span style="font-size:48px;line-height:1">'+b[0]+'</span><div><h3>⚔️ ท้าสู้บอส: '+b[1]+(S.bosses[scope]?' ✅':'')+'</h3><p>10 ข้อ · หัวใจ 3 ดวง · ตอบถูกติดกันเพื่อโจมตีคริติคอล · มีไอเทม 50:50 และข้าม</p></div></div></button>'+
+  '<button class="mode" onclick="startQuiz(\'speed\')"><h3>⏱️ Speed 60s</h3><p>ตอบถูกครบ 5 ข้อติด ได้เวลาเพิ่ม +3 วิ สถิติ: '+S.best+' ข้อ</p></button>'+
+  '<button class="mode" onclick="startMatch()"><h3>🧩 Match</h3><p>จับคู่ศัพท์กับคีย์เวิร์ด ลุ้น 3 ดาว</p></button>'+
+  '<button class="mode" onclick="startFlash()"><h3>🃏 Flashcards</h3><p>พลิกการ์ดทวนคำตอบพร้อมคำอธิบาย</p></button>'+
+  '<button class="mode" onclick="startQuiz(\'miss\')" '+(mc?'':'disabled')+'><h3>📓 สมุดข้อพลาด ('+mc+')</h3><p>ตอบถูกอีกครั้งเพื่อลบออก</p></button>'+
+  '</div>'+
+  '<div class="sheet" style="margin-top:16px"><h2 style="font-size:18px;margin-bottom:10px">เหรียญตรา</h2>'+bs+'</div>'+
+  '<p class="small">ใช้ปุ่ม 1–4 บนคีย์บอร์ดเพื่อตอบเร็วขึ้น · ความคืบหน้าเซฟในเบราว์เซอร์นี้</p>'
+  );
+}
+function setScope(s){ scope = s; home(); }
+function toggleTheme(){
+  var r = document.documentElement, cur = r.getAttribute("data-theme");
+  var dark = cur ? cur==="dark" : (window.matchMedia && matchMedia("(prefers-color-scheme:dark)").matches);
+  r.setAttribute("data-theme", dark ? "light" : "dark");
+}
+
+/* ---------- QUIZ / BOSS / SPEED ---------- */
+function startQuiz(mode){
+  stopTimer();
+  var list;
+  if(mode==="miss") list = shuffle(S.miss.filter(function(i){ return Q[i]; }));
+  else list = shuffle(poolFor(scope));
+  if(mode==="boss") list = list.slice(0,10);
+  if(!list.length){ home(); return; }
+  G = {id:Math.random(), mode:mode, list:list, i:0, score:0, lives:3, streak:0, bestStreak:0, xp:0, wrong:[], locked:false, time:60, hp:90, hpMax:90, pu:{fifty:1, skip:1}};
+  if(mode==="speed"){
+    timerId = setInterval(function(){
+      if(!G) return;
+      G.time--;
+      var t = $("#tm"); if(t){ t.textContent = G.time+"s"; t.className = "timer"+(G.time<=10?" low":""); }
+      if(G.time<=0){ finish(); }
+    },1000);
+  }
+  renderQ();
+}
+function hudLeft(){
+  if(G.mode==="boss") return '<span class="hearts" aria-label="หัวใจ">'+"❤️".repeat(Math.max(G.lives,0))+"🖤".repeat(3-Math.max(G.lives,0))+'</span>';
+  if(G.mode==="speed") return '<span id="tm" class="timer'+(G.time<=10?' low':'')+'">'+G.time+'s</span>';
+  return '<span>สมุดข้อพลาด</span>';
+}
+function comboHTML(){ return G.streak>=2 ? '<span class="combo">🔥 คอมโบ x'+G.streak+'</span>' : '<span class="small">ตอบถูก '+G.score+'</span>'; }
+function renderQ(){
+  if(G.i>=G.list.length){ finish(); return; }
+  var qi = G.list[G.i], q = Q[qi];
+  var opts = shuffle([{t:q[2],ok:true}].concat(q[3].map(function(w){ return {t:w,ok:false}; })));
+  G.opts = opts; G.locked = false;
+  var h = '<div class="top"><button class="iconbtn" onclick="quit()">← ออก</button><span class="small" id="xpv">+'+G.xp+' XP</span><button class="iconbtn" id="mb" onclick="toggleMute()">'+(S.mute?"🔇":"🔊")+'</button></div>';
+  if(G.mode==="boss"){
+    var b = BOSS[scope]||BOSS.all;
+    h += '<div class="boss"><div class="bemoji" id="be">'+b[0]+'</div><div class="bname">'+b[1]+'</div><div class="hp"><i id="hpb" style="width:'+(Math.max(G.hp,0)/G.hpMax*100)+'%"></i></div><div class="small" id="hpt">HP '+Math.max(G.hp,0)+' / '+G.hpMax+'</div></div>';
+  }
+  h += '<div class="hud"><span id="hud1">'+hudLeft()+'</span><span id="cmb">'+comboHTML()+'</span></div>';
+  if(G.mode==="boss"){
+    h += '<div class="pus"><button class="pu" id="pu1" onclick="useFifty()" '+(G.pu.fifty?'':'disabled')+'>✂️ 50:50 ×'+G.pu.fifty+'</button><button class="pu" id="pu2" onclick="useSkip()" '+(G.pu.skip?'':'disabled')+'>⏭️ ข้าม ×'+G.pu.skip+'</button></div>';
+  }
+  if(G.mode!=="speed") h += '<div class="prog"><i style="width:'+(G.i/G.list.length*100)+'%"></i></div>';
+  h += '<div class="sheet" id="qs"><span class="tag">'+MODS[q[0]]+(q[5]?' · สถานการณ์':'')+'</span><p class="q">'+q[1]+'</p><div class="opts">';
+  opts.forEach(function(o,k){
+    h += '<button class="opt" data-k="'+k+'" onclick="pick('+k+')"><span class="b">'+THAI[k]+'</span><span>'+o.t+'</span></button>';
+  });
+  h += '</div><div id="fb"></div></div>';
+  app(h);
+}
+function useFifty(){
+  if(!G || G.locked || !G.pu.fifty) return;
+  G.pu.fifty--; var n = 0;
+  document.querySelectorAll(".opt").forEach(function(b,i){
+    if(!G.opts[i].ok && n<2){ b.disabled = true; b.classList.add("dim"); n++; }
+  });
+  var p = $("#pu1"); p.disabled = true; p.textContent = "✂️ 50:50 ×0"; sfx.hit();
+}
+function useSkip(){
+  if(!G || G.locked || !G.pu.skip) return;
+  G.pu.skip--; G.locked = true; G.i++; sfx.hit(); renderQ();
+}
+function pick(k){
+  if(!G || G.locked) return;
+  if(G.opts[k] && document.querySelectorAll(".opt")[k].disabled) return;
+  G.locked = true;
+  var qi = G.list[G.i], q = Q[qi], ok = G.opts[k].ok, say, gain = 0, dmg = 0, crit = false;
+  document.querySelectorAll(".opt").forEach(function(b,i){
+    b.disabled = true;
+    if(G.opts[i].ok){ b.classList.add("ok"); b.querySelector(".b").textContent="✓"; }
+    else if(i===k){ b.classList.add("no"); b.querySelector(".b").textContent="✕"; }
+  });
+  var be = $("#be");
+  if(ok){
+    G.score++; G.streak++; if(G.streak>G.bestStreak) G.bestStreak=G.streak;
+    gain = 10 + Math.min(G.streak,5)*2; G.xp += gain; addXP(gain);
+    S.seen[qi] = (S.seen[qi]||0)+1;
+    var mi = S.miss.indexOf(qi);
+    if(mi>-1){ S.miss.splice(mi,1); if(!S.miss.length && G.mode==="miss") award("book"); }
+    save(); sfx.ok(G.streak); buzz(20);
+    award("first"); if(G.streak>=5) award("combo5"); if(G.streak>=10) award("combo10"); if(Object.keys(S.seen).length>=50) award("fifty");
+    say = G.streak===3 ? "คอมโบ x3! เริ่มร้อนแล้ว 🔥" : G.streak===5 ? "x5!! ไฟลุกท่วมห้องสอบ 🌋" : G.streak===10 ? "x10!!! ตำนานแล้วครับท่าน 👑" : rnd(OKS);
+    if(G.mode==="boss"){
+      crit = G.streak>=3; dmg = 10 + (G.streak>=3?5:0) + (G.streak>=5?5:0); G.hp -= dmg;
+      if(be){ be.classList.remove("hit","atk"); void be.offsetWidth; be.classList.add("hit"); if(G.hp<=0) be.textContent="💫"; }
+      var d = document.createElement("span"); d.className="dmg"; d.textContent=(crit?"CRIT ":"")+"-"+dmg;
+      $(".boss").appendChild(d); setTimeout(function(){ d.remove(); },1000);
+      $("#hpb").style.width = (Math.max(G.hp,0)/G.hpMax*100)+"%"; $("#hpt").textContent = "HP "+Math.max(G.hp,0)+" / "+G.hpMax;
+    }
+    if(G.mode==="speed" && G.streak%5===0){ G.time += 3; say += " (+3 วิ ⏱️)"; }
+  } else {
+    G.streak = 0; G.lives--; G.wrong.push(qi);
+    if(S.miss.indexOf(qi)<0) S.miss.push(qi);
+    save(); sfx.bad(); buzz([60,40,60]); say = rnd(BADS);
+    var qs = $("#qs"); if(qs){ qs.classList.add("shake"); }
+    if(be){ be.classList.remove("hit","atk"); void be.offsetWidth; be.classList.add("atk"); }
+  }
+  $("#hud1").innerHTML = hudLeft(); $("#cmb").innerHTML = comboHTML(); $("#xpv").textContent = "+"+G.xp+" XP";
+  var over = (G.mode==="boss" && (G.lives<=0 || G.hp<=0)) || G.i+1>=G.list.length;
+  var fb = '<div class="fb '+(ok?'ok':'no')+'"><div class="say">🧠 '+say+'</div><strong>'+(ok?'ถูกต้อง +'+gain+' XP':'ยังไม่ถูก')+'</strong><br>'+
+    (ok?'':'คำตอบ: <b>'+q[2]+'</b><br>')+'<span class="small">💡 '+q[4]+'</span></div>';
+  if(G.mode==="speed"){
+    $("#fb").innerHTML = fb;
+    var id = G.id;
+    setTimeout(function(){ if(!G || G.id!==id) return; G.i++; renderQ(); }, ok?900:2200);
+  } else {
+    $("#fb").innerHTML = fb+'<button class="btn" onclick="next()">'+(over?'ดูผลลัพธ์':'ข้อต่อไป')+'</button>';
+    var nb = $("#fb .btn"); if(nb) nb.focus();
+  }
+}
+function next(){
+  if(!G) return;
+  if(G.mode==="boss" && (G.lives<=0 || G.hp<=0)){ finish(); return; }
+  G.i++; renderQ();
+}
+function quit(){ stopTimer(); home(); }
+function finish(){
+  stopTimer();
+  var g = G, mode = g.mode, b = BOSS[scope]||BOSS.all;
+  var total = mode==="speed" ? Math.min(g.i+ (g.locked?1:0), g.list.length) : Math.min(g.i+1, g.list.length);
+  var win = (mode==="boss" && g.hp<=0), bonus = 0, big, head, sub;
+  if(mode==="boss"){
+    if(win){
+      bonus = 30; if(g.lives===3){ bonus += 20; award("perfect"); }
+      S.bosses[scope] = 1; save(); award("boss"); if(Object.keys(S.bosses).length>=3) award("boss3");
+      g.xp += bonus; addXP(bonus); sfx.win(); confetti(70);
+      big = '<div class="won" style="font-size:72px">🏆</div>'; head = "ปราบ "+b[1]+" สำเร็จ!"; sub = "โบนัสชนะบอส +"+bonus+" XP"+(g.lives===3?" (รวมเพอร์เฟกต์ ไม่เสียหัวใจเลย)":"");
+    } else {
+      big = '<div style="font-size:72px">'+b[0]+'😈</div>';
+      head = g.lives<=0 ? "หัวใจหมด — บอสชนะรอบนี้" : "บอสรอดไปได้ เหลือ HP "+Math.max(g.hp,0);
+      sub = "ทวนข้อที่พลาดด้านล่าง แล้วท้าอีกรอบ (ตอบถูกติดกันเพื่อโจมตีคริติคอล)"; sfx.bad();
+    }
+  } else if(mode==="speed"){
+    if(g.score>=10) award("speed10");
+    var rec = g.score>S.best; if(rec){ S.best = g.score; save(); confetti(40); sfx.win(); }
+    big = '<div style="font-size:72px">⏱️</div>'; head = rec ? "สถิติใหม่! "+g.score+" ข้อ" : "หมดเวลา!"; sub = "สถิติสูงสุด: "+S.best+" ข้อ";
+  } else {
+    big = '<div style="font-size:72px">📓</div>'; head = "จบสมุดข้อพลาด"; sub = S.miss.length ? "ยังเหลือ "+S.miss.length+" ข้อในสมุด" : "สมุดว่างแล้ว เก่งมาก!";
+  }
+  var h = '<div class="top"><div class="brand">ผลลัพธ์</div></div><div class="sheet" style="text-align:center">'+big+'<h2 style="margin:6px 0">'+head+'</h2><div class="score">'+g.score+'<span class="small" style="font-size:22px"> / '+total+'</span></div>'+
+    '<p class="small" style="margin:8px 0 0">'+sub+'</p><p class="small" style="margin:4px 0 0">ได้ +'+g.xp+' XP · คอมโบสูงสุด x'+g.bestStreak+'</p></div>';
+  if(g.wrong.length){
+    h += '<div class="sheet"><h2 style="font-size:18px;margin-bottom:6px">ข้อที่ควรทวน ('+g.wrong.length+')</h2>';
+    g.wrong.forEach(function(qi){
+      var q = Q[qi];
+      h += '<div class="wrongitem"><div class="small">'+MODS[q[0]]+'</div><div>'+q[1]+'</div><div style="color:var(--ok);font-weight:600">✓ '+q[2]+'</div><div class="small">💡 '+q[4]+'</div></div>';
+    });
+    h += '</div>';
+  }
+  h += '<div class="row"><button class="btn" onclick="startQuiz(\''+mode+'\')">'+(mode==="boss"&&!win?'ท้าบอสอีกครั้ง':'เล่นอีกรอบ')+'</button><button class="btn alt" onclick="home()">กลับหน้าแรก</button></div>';
+  G = null;
+  app(h);
+}
+
+/* ---------- FLASHCARDS ---------- */
+function startFlash(){
+  stopTimer();
+  var list = shuffle(poolFor(scope));
+  if(!list.length){ home(); return; }
+  F = {list:list, i:0, flipped:false, known:0, total:list.length};
+  renderFlash();
+}
+function renderFlash(){
+  if(F.i>=F.list.length){ flashDone(); return; }
+  var q = Q[F.list[F.i]], body;
+  if(!F.flipped){
+    body = '<button class="flash" onclick="flip()"><div class="lab">'+MODS[q[0]]+' · แตะเพื่อดูคำตอบ</div><div class="ans">'+q[1]+'</div></button>';
+  } else {
+    body = '<button class="flash back" onclick="flip()"><div class="lab">คำตอบ</div><div class="ans">'+q[2]+'</div><div>💡 '+q[4]+'</div></button>';
+  }
+  var acts = F.flipped ? '<div class="row"><button class="btn alt" onclick="flashRate(false)">ยังไม่แน่ใจ (วนมาใหม่)</button><button class="btn" onclick="flashRate(true)">จำได้แล้ว ✓</button></div>' : '<p class="small">คิดคำตอบในใจก่อนแล้วค่อยพลิก — การดึงคำตอบเองช่วยจำได้ดีกว่าการอ่านซ้ำ</p>';
+  app('<div class="top"><button class="iconbtn" onclick="home()">← ออก</button><span class="small">เหลือ '+(F.list.length-F.i)+' ใบ · จำได้ '+F.known+'/'+F.total+'</span></div><div class="card3d">'+body+'</div>'+acts);
+}
+function flip(){ F.flipped = !F.flipped; sfx.hit(); renderFlash(); }
+function flashRate(k){
+  var qi = F.list[F.i];
+  if(k){ F.known++; addXP(3); sfx.ok(1); } else { F.list.push(qi); }
+  F.i++; F.flipped = false; renderFlash();
+}
+function flashDone(){
+  sfx.win(); confetti(30);
+  app('<div class="top"><div class="brand">จบสำรับ</div></div><div class="sheet" style="text-align:center"><div style="font-size:64px">🃏</div><div class="score">'+F.known+'<span class="small" style="font-size:22px"> / '+F.total+'</span></div><p>จำได้ครบทุกใบ +'+(F.known*3)+' XP</p></div><div class="row"><button class="btn" onclick="startFlash()">สับไพ่เล่นใหม่</button><button class="btn alt" onclick="home()">กลับหน้าแรก</button></div>');
+}
+
+/* ---------- MATCH ---------- */
+function startMatch(){
+  stopTimer();
+  var p = shuffle(PAIRS).slice(0,6);
+  M = {pairs:p, L:shuffle(p.map(function(x,i){ return {id:i,t:x[0]}; })), R:shuffle(p.map(function(x,i){ return {id:i,t:x[1]}; })), sl:null, sr:null, done:{}, err:0, n:0, round:(M?M.round:0)+1, bad:null};
+  renderMatch();
+}
+function renderMatch(){
+  var h = '<div class="top"><button class="iconbtn" onclick="home()">← ออก</button><span class="small">รอบที่ '+M.round+' · จับแล้ว '+M.n+'/6 · ผิด '+M.err+'</span></div>'+
+    '<div class="sheet"><h2 style="font-size:18px;margin-bottom:4px">จับคู่ศัพท์กับคีย์เวิร์ด</h2><p class="small" style="margin:0 0 12px">แตะศัพท์ทางซ้าย แล้วแตะคีย์เวิร์ดที่ตรงกันทางขวา ผิด ≤ 1 ครั้งได้ 3 ดาว</p><div class="match"><div style="display:grid;gap:10px">';
+  M.L.forEach(function(x){
+    var c = M.done[x.id] ? "tile done" : (M.sl===x.id ? "tile sel" : "tile");
+    if(M.bad && M.bad.l===x.id) c += " shake";
+    h += '<button class="'+c+'" '+(M.done[x.id]?'disabled':'')+' onclick="mPick(\'L\','+x.id+')"><b>'+x.t+'</b></button>';
+  });
+  h += '</div><div style="display:grid;gap:10px">';
+  M.R.forEach(function(x){
+    var c = M.done[x.id] ? "tile done" : (M.sr===x.id ? "tile sel" : "tile");
+    if(M.bad && M.bad.r===x.id) c += " shake";
+    h += '<button class="'+c+'" '+(M.done[x.id]?'disabled':'')+' onclick="mPick(\'R\','+x.id+')">'+x.t+'</button>';
+  });
+  h += '</div></div></div>';
+  app(h);
+}
+function mPick(side,id){
+  M.bad = null;
+  if(side==="L") M.sl = (M.sl===id? null : id); else M.sr = (M.sr===id? null : id);
+  if(M.sl!==null && M.sr!==null){
+    if(M.sl===M.sr){ M.done[M.sl]=true; M.n++; M.sl=M.sr=null; sfx.ok(M.n); buzz(15); }
+    else { M.err++; M.bad={l:M.sl,r:M.sr}; M.sl=M.sr=null; sfx.bad(); buzz([50,30,50]); }
+    if(M.n>=M.pairs.length){ matchDone(); return; }
+    renderMatch();
+    if(M.bad){ setTimeout(function(){ if(M){ M.bad=null; renderMatch(); } },700); }
+    return;
+  }
+  sfx.hit(); renderMatch();
+}
+function matchDone(){
+  var stars = M.err<=1 ? 3 : (M.err<=3 ? 2 : 1);
+  var gain = Math.max(10, 40 - M.err*4); addXP(gain); sfx.win();
+  if(stars===3) confetti(50);
+  if(M.err===0) award("match0");
+  app('<div class="top"><div class="brand">จับคู่ครบ!</div></div><div class="sheet" style="text-align:center"><div class="won" style="font-size:52px">'+"⭐".repeat(stars)+"☆".repeat(3-stars)+'</div><p style="margin:8px 0 0"><b>ผิด '+M.err+' ครั้ง · +'+gain+' XP</b></p></div><div class="sheet">'+
+    M.pairs.map(function(p){ return '<div class="wrongitem"><b>'+p[0]+'</b><br><span class="small">'+p[1]+'</span></div>'; }).join('')+
+    '</div><div class="row"><button class="btn" onclick="startMatch()">รอบต่อไป</button><button class="btn alt" onclick="home()">กลับหน้าแรก</button></div>');
+}
+
+/* keyboard: 1-4 answer */
+document.addEventListener("keydown", function(e){
+  if(!G) return;
+  var k = parseInt(e.key,10);
+  if(k>=1 && k<=4) pick(k-1);
+});
+home();
+</script>
+</body>
+</html>
